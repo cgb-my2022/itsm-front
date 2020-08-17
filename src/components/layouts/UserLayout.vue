@@ -5,11 +5,11 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">RISUN TTMS</span>
+            <span class="title">RISUN ITSM</span>
           </a>
         </div>
         <div class="desc">
-          TTMS 是旭阳自主研发火运管理系统
+          ITSM 是旭阳自主研发运维管理平台
         </div>
       </div>
 

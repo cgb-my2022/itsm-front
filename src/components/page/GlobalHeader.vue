@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 火运管理系统</span>
+      <span v-if="device === 'desktop'">欢迎进入 运维管理系统</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>

@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: 'RISUN TTMS',
+        default: 'RISUN ITSM',
         required: false
       },
       showTitle: {
