@@ -101,13 +101,13 @@
           </a-row>
         </a-tab-pane>-->
         <a-tab-pane :forceRender="true" key="tab2" tab="企业微信登陆">
-        <div id="wx_qrcode" class="wx_bg"></div>
-      </a-tab-pane>
+          <div id="wx_qrcode" class="wx_bg"></div>
+        </a-tab-pane>
         <!--<a-tab-pane key="tab2" tab="企业微信登陆">-->
-          <!--<div class="wx_bg">企业微信登陆</div>-->
+        <!--<div class="wx_bg">企业微信登陆</div>-->
         <!--</a-tab-pane>-->
       </a-tabs>
-     <!-- <div class="user-login-other">
+      <!-- <div class="user-login-other">
         <span>其他登陆方式</span>
         <a @click="onThirdLogin('github')" title="github"><a-icon class="item-icon" type="github"></a-icon></a>
         <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"><a-icon class="item-icon" type="wechat"></a-icon></a>
@@ -163,13 +163,13 @@
 
 <script>
   // import md5 from "md5"
-  import api from '@/api'
+  //import api from '@/api'
   import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
   import { mapActions } from 'vuex'
   import { timeFix } from '@/utils/util'
   import Vue from 'vue'
   import { ACCESS_TOKEN, ENCRYPTED_STRING, USER_INFO } from '@/store/mutation-types'
-  import { putAction, postAction, getAction } from '@/api/manage'
+  import { putAction, postAction, getAction, getAsyncAction } from '@/api/manage'
   import { encryption, getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
 
@@ -226,14 +226,59 @@
       Vue.ls.remove(ACCESS_TOKEN)
       this.getRouterData();
       this.handleChangeCheckCode();
+
+      let that = this;
+      let token = this.$route.query.token
+      if (token) {
+        that.ThirdLogin(token).then(res => {
+          if (res.success) {
+            that.loginSuccess()
+          } else {
+            that.requestFailed(res);
+          }
+        })
+      }
+
       // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
       // this.getEncrypte();
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
     methods: {
       ...mapActions([ 'Login', 'Logout', 'PhoneLogin', 'ThirdLogin' ]),
+      onThirdLoginInit(source) {
+        getAsyncAction(`/thirdLogin/render/${source}`).then(res => {
+          let url = res.message;
+          let appid = this.GetQueryString(url, 'appid')
+          let agentid = this.GetQueryString(url, 'agentid')
+          let redirecturi = this.GetQueryString(url, 'redirect_uri')
+          let state = this.GetQueryString(url, 'state')
+
+          window.WwLogin({
+            id: 'wx_qrcode', // 登录页面显示二维码的容器id
+            appid: appid, // 企业微信的CorpID，在企业微信管理端查看
+            agentid: agentid, // 授权方的网页应用id，在具体的网页应用中查看
+            redirect_uri: encodeURIComponent(redirecturi), // 重定向的地址，需要进行encode
+            state: state,
+            href: 'data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7d2lkdGg6IDI1MHB4O30NCi5pbXBvd2VyQm94IC50aXRsZSB7ZGlzcGxheTogbm9uZTt9DQouaW1wb3dlckJveCAuaW5mbyB7d2lkdGg6IDIwMHB4O30NCi5zdGF0dXNfaWNvbiB7ZGlzcGxheTogbm9uZSAgIWltcG9ydGFudH0NCi5pbXBvd2VyQm94IC5zdGF0dXMge3RleHQtYWxpZ246IGNlbnRlcjt9'// 自定义样式链接，只支持https协议的资源地址
+          })
+        }).catch(() => {
+          // this.requestCodeSuccess = false
+        })
+      },
+      GetQueryString(url, name) {
+        try {
+          var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+          var r = url.split('?')[1].match(reg);
+          if (r != null) {
+            return r[2];
+          }
+          return ''; // 如果此处只写return;则返回的是undefined
+        } catch (e) {
+          return ''; // 如果此处只写return;则返回的是undefined
+        }
+      },
       // 第三方登录
-      onThirdLogin(source) {
+      /* onThirdLogin(source) {
         let url = window._CONFIG['domianURL'] + `/thirdLogin/render/${source}`
         window.open(url, `login ${source}`, 'height=500, width=500, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no')
         let that = this;
@@ -252,7 +297,7 @@
           })
         }
         window.addEventListener('message', receiveMessage, false);
-      },
+      }, */
       // handler
       handleUsernameOrEmail (rule, value, callback) {
         const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
@@ -501,14 +546,7 @@
     }
     },
     mounted() {
-      window.WwLogin({
-        id: 'wx_qrcode', // 登录页面显示二维码的容器id
-        appid: 'ww92e8a0cb0975b937', // 企业微信的CorpID，在企业微信管理端查看
-        agentid: '1000002', // 授权方的网页应用id，在具体的网页应用中查看
-        redirect_uri: encodeURIComponent('127.0.0.1'), // 重定向的地址，需要进行encode
-        state: '',
-        href: 'data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7d2lkdGg6IDI1MHB4O30NCi5pbXBvd2VyQm94IC50aXRsZSB7ZGlzcGxheTogbm9uZTt9DQouaW1wb3dlckJveCAuaW5mbyB7d2lkdGg6IDIwMHB4O30NCi5zdGF0dXNfaWNvbiB7ZGlzcGxheTogbm9uZSAgIWltcG9ydGFudH0NCi5pbXBvd2VyQm94IC5zdGF0dXMge3RleHQtYWxpZ246IGNlbnRlcjt9'// 自定义样式链接，只支持https协议的资源地址
-      })
+      this.onThirdLoginInit('wechat_enterprise');
     }
   }
 </script>

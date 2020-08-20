@@ -47,6 +47,14 @@ export function getAction(url,parameter) {
   })
 }
 
+export async function getAsyncAction(url,parameter) {
+  return await axios({
+    url: url,
+    method: 'get',
+    params: parameter
+  })
+}
+
 //deleteAction
 export function deleteAction(url,parameter) {
   return axios({

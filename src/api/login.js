@@ -52,7 +52,7 @@ export function logout(logoutToken) {
     method: 'post',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
-      'X-Access-Token':  logoutToken
+      'X-Access-Token': logoutToken
     }
   })
 }
@@ -68,6 +68,24 @@ export function thirdLogin(token) {
     method: 'get',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+/**
+ * 第三方登录
+ * @param token
+ * @returns {*}
+ */
+export function wxcodeToToken(code, state) {
+  return axios({
+    url: `/thirdLogin/wechat_enterprise/callback`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    params: {
+      'code': `${code}`, 'state': `${state}`
     }
   })
 }
