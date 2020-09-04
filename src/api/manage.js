@@ -19,6 +19,14 @@ export function postAction(url,parameter) {
     data: parameter
   })
 }
+//post 同步请求
+export async function postAsyncAction(url,parameter) {
+  return await axios({
+    url: url,
+    method: 'post',
+    params: parameter
+  })
+}
 
 //post method= {post | put}
 export function httpAction(url,parameter,method) {

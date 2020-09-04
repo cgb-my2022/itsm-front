@@ -11,22 +11,19 @@
     :footer="null"
     @cancel="handleModalCancel">
     <a-spin :spinning="confirmLoading">
-      <a-tabs defaultActiveKey="1" tabPosition="left">
+      <a-tabs defaultActiveKey="1" tabPosition="top">
 
         <a-tab-pane key="1">
           <span slot="tab">
             <a-icon type="file-text"/>
             <span>任务处理</span>
           </span>
-          <br>
-        <br>
         <template v-if="opt=='submit'">
           <biz-task-module :formData="formData" @complete = "completeProcess"></biz-task-module>
         </template>
         <template v-else-if="opt=='reject'">
           <biz-task-reject-module :formData="formData" @complete = "completeProcess"></biz-task-reject-module>
         </template>
-        <br>
         </a-tab-pane>
         <a-tab-pane key="2">
           <span slot="tab">

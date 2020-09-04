@@ -16,7 +16,7 @@
 
         <a-col :span="24">
           <a-form-item label="代码生成目录" :labelCol="!single?labelCol2:labelCol" :wrapperCol="!single?wrapperCol2:wrapperCol">
-            <a-input-search @change="storeProjectPath" v-decorator="['projectPath', validatorRules.projectPath]" placeholder="请选择代码生成目录" @search="onSelectDir" :disabled="isDisabledAuth('online:codeGenerate:projectPath')">
+            <a-input-search  @change="storeProjectPath" v-decorator="['projectPath', validatorRules.projectPath]" placeholder="请选择代码生成目录" @search="onSelectDir" :disabled="isDisabledAuth('online:codeGenerate:projectPath')">
               <a-button slot="enterButton" icon="folder-open" :disabled="isDisabledAuth('online:codeGenerate:projectPath')">浏览</a-button>
             </a-input-search>
           </a-form-item>
@@ -59,7 +59,7 @@
 
         <a-col :span="!single?12:24">
           <a-form-item label="包名(小写)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="['entityPackage',validatorRules.entityPackage]" placeholder="请输入包名"></a-input>
+            <a-input v-decorator="['entityPackage',validatorRules.entityPackage]"  placeholder="请输入包名"></a-input>
           </a-form-item>
         </a-col>
 
@@ -228,6 +228,7 @@
           tableName_tmp:"",
           ftlDescription:"",
           entityName:"",
+          entityPackage:"system",
           codeTypes:"controller,service,dao,mapper,entity,vue"
         },
         model:{},

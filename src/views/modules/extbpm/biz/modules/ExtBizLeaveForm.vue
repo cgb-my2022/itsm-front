@@ -124,7 +124,7 @@
             //时间格式化
             formData.beginDate = formData.beginDate?formData.beginDate.format('YYYY-MM-DD HH:mm:ss'):null;
             formData.endDate = formData.endDate?formData.endDate.format('YYYY-MM-DD HH:mm:ss'):null;
-            
+
             console.log(formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){

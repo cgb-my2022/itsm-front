@@ -183,6 +183,22 @@ function getUserInfoByExpression(expression) {
       // 当前登录用户部门编号
       case 'sysOrgCode':
         return userInfo.orgCode
+      // 当前登录用户所属公司
+      case 'companyName':
+        return userInfo.companyName
+    // 当前登录用户电话
+      case 'phone':
+        return userInfo.phone
+    // 当前登录用户部门名称
+      case 'deptName':
+        return userInfo.deptName
+
+      // 当前登录用户所在公司位置
+      case 'workplaceCompanyId':
+        return userInfo.workplaceCompanyId
+      // 当前登录用户所在部门位置
+      case 'workplaceDepartid':
+        return userInfo.workplaceDepartid
     }
   }
   return null

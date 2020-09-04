@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          TTMS 是旭阳自主研发火运管理系统
+          ITMS 是旭阳自主研发运维管理系统
         </div>
       </div>
 

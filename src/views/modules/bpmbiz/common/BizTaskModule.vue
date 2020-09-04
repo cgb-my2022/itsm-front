@@ -2,12 +2,12 @@
   <div style="background: #ffffff;margin-right: 10px">
     <!-- 步骤条 -->
     <a-spin :spinning="loading">
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
       当前任务办理环节：
       <a-select style="width:300px" :defaultValue="currTask.id">
         <a-select-option :value="currTask.id">{{ currTask.taskName }}</a-select-option>
       </a-select>
-    </div>
+    </div>-->
     <a-card>
       <a-steps progressDot :current="stepIndex" style="padding: 10px" size="default">
         <template v-if="resultObj.bpmLogListCount >3">
@@ -130,21 +130,21 @@
             </a-col>
           </a-row>
         </a-list-item>
-        <a-list-item>
+        <!--<a-list-item>
           <a-checkbox :checked="checkedNext" @change="handleCheckedNextChange">指定下一步操作人（指定下一步会签人员）</a-checkbox>
           <a-checkbox :checked="checkedCc" @change="handleCheckedCcChange">是否抄送</a-checkbox>
         </a-list-item>
         <a-list-item style="line-height: 32px" :hidden="!checkedNext">
           <span>指定下一步操作人（指定下一步会签人员）：</span>
-          <!--<a-input style="width: 200px;" v-model="model.nextUserName"></a-input>-->
+          &lt;!&ndash;<a-input style="width: 200px;" v-model="model.nextUserName"></a-input>&ndash;&gt;
           <a-select style="width: 300px;"
             mode="multiple"
             placeholder="点击选择按钮"
             :value="hqUserList"
           >
-            <!--<a-select-option v-for="(item,index) in hqUserSelectList" :key="item.name">
+            &lt;!&ndash;<a-select-option v-for="(item,index) in hqUserSelectList" :key="item.name">
               {{ item.name }}
-            </a-select-option>-->
+            </a-select-option>&ndash;&gt;
           </a-select>
           <a-button type="primary" @click="handleHqUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
           <a-button type="primary" @click="hqUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
@@ -153,30 +153,32 @@
         </a-list-item>
         <a-list-item style="line-height: 32px" :hidden="!checkedCc">
           <span>抄送给：</span>
-          <!--<a-input style="width: 200px;" v-model="model.ccUserRealNames"></a-input>-->
+          &lt;!&ndash;<a-input style="width: 200px;" v-model="model.ccUserRealNames"></a-input>&ndash;&gt;
           <a-select style="width: 300px;"
                     mode="multiple"
                     placeholder="点击选择按钮"
                     :value="ccUserList"
           >
-            <!--<a-select-option v-for="(item,index) in ccUserSelectList" :key="item.name">
+            &lt;!&ndash;<a-select-option v-for="(item,index) in ccUserSelectList" :key="item.name">
               {{ item.name }}
-            </a-select-option>-->
+            </a-select-option>&ndash;&gt;
           </a-select>
           <a-button type="primary" @click="handleCcUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
           <a-button type="primary" @click="ccUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
-        </a-list-item>
+        </a-list-item>-->
       </a-list>
       <!-- 流转按钮 -->
       <div style="margin-top:20px;text-align:center">
-        <template v-if="model.processModel==1">
+        <!--<template v-if="model.processModel==1">
           <template v-for="(item,index) in resultObj.transitionList">
             <a-button type="primary" @click="handleProcessComplete(item.nextnode)">{{ item.Transition }}</a-button>
           </template>
         </template>
         <template v-else>
           <a-button type="primary" @click="handleManyProcessComplete()">确认提交</a-button>
-        </template>
+        </template>-->
+        <a-button type="primary" @click="handleProcessComplete(2)">同意</a-button>
+        <a-button type="danger" @click="handleProcessComplete(6)">驳回</a-button>
       </div>
       <br>
     </a-card>
@@ -189,7 +191,7 @@
 <script>
   import Vue from 'vue'
   import { ACCESS_TOKEN } from '@/store/mutation-types'
-  import { getAction,httpAction,getFileAccessHttpUrl } from '@/api/manage'
+  import { getAction,httpAction,getFileAccessHttpUrl,putAction } from '@/api/manage'
   import AListItem from "ant-design-vue/es/list/Item";
   import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
   import BizSelectUserModal from "../BizSelectUserModal.vue";
@@ -209,7 +211,8 @@
         url: {
           getProcessTaskTransInfo: '/act/task/getProcessTaskTransInfo',
           processComplete:'/act/task/processComplete',
-          upload:window._CONFIG['domianURL']+"/sys/common/upload"
+          upload:window._CONFIG['domianURL']+"/sys/common/upload",
+          updateStatus:window._CONFIG['domianURL']+"/system/serviceOrder/updateServiceOrderStatus"
         },
         headers: {},
         resultObj:{},
@@ -231,6 +234,10 @@
           ccUserIds:"",
           ccUserRealNames:"",
           fileList:"",
+        },
+        serviceOrderModel: {
+          id: '',
+          orderStatus: ''
         },
         bodyStyle:{
           padding: "10px"
@@ -334,7 +341,57 @@
           this.loading = false;
         })
       },
-      handleProcessComplete (nextnode) {
+      //flag 2:同意 6：拒绝
+      handleProcessComplete (flag) {
+        const that = this;
+        if(!this.model.reason || this.model.reason.length==0){
+          this.$message.warning("请填写处理意见");
+          return
+        }
+        var content = "";
+        if(flag===1){
+          content = "确认同意吗?"
+        }else {
+          content = "确认拒绝吗?"
+        }
+        console.log("流程办理数据：",this.model);
+        var method = 'post';
+        this.$confirm({
+          title:"提示",
+          content:content,
+          onOk: function(){
+
+            that.loading = true;
+            that.model.fileList = JSON.stringify(that.fileList)
+            that.serviceOrderModel.orderStatus = flag
+            that.serviceOrderModel.id = that.formData.dataId
+            putAction(that.url.updateStatus, that.serviceOrderModel).then((res)=>{
+              if(res.success){
+                httpAction(that.url.processComplete,that.model,method).then((res)=>{
+                  if(res.success){
+                    that.$message.success(res.message);
+                    that.$emit('complete');
+                  }else{
+                    that.$message.warning(res.message);
+                  }
+                }).finally(() => {
+                  that.loading = false;
+                  that.close();
+                })
+              }else{
+                that.$message.warning(res.message);
+                that.loading = false;
+                that.close();
+              }
+            })
+
+
+
+          }
+        });
+
+      },
+     /* handleProcessComplete (nextnode) {
         const that = this;
         if(!this.model.reason || this.model.reason.length==0){
           this.$message.warning("请填写处理意见");
@@ -365,7 +422,7 @@
           }
         });
 
-      },
+      },*/
       handleManyProcessComplete(){
           if(this.model.processModel==3){
             if(!this.model.rejectModelNode || this.model.rejectModelNode.length==0){

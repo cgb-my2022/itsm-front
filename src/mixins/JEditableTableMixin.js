@@ -1,6 +1,6 @@
 import JEditableTable from '@/components/jeecg/JEditableTable'
 import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
-import { httpAction, getAction } from '@/api/manage'
+import { httpAction, getAction, postAsyncAction } from '@/api/manage'
 
 export const JEditableTableMixin = {
   components: {
@@ -118,6 +118,21 @@ export const JEditableTableMixin = {
         this.confirmLoading = false
       })
     },
+    /** 发起请求，自动判断是执行新增还是修改操作   返回对象*/
+    requestReturn(formData) {
+      let url = this.url.add
+      this.confirmLoading = true
+      postAsyncAction(url, formData).then((res) => {
+        if (res.success) {
+        } else {
+          this.$message.warning(res.message)
+        }
+        return res.result
+      }).finally(() => {
+        this.confirmLoading = false
+        return '';
+      })
+    },
 
     /* --- handle 事件 --- */
 
@@ -154,7 +169,29 @@ export const JEditableTableMixin = {
         }
       })
     },
+    //确定按钮点击事件 返回新增数据结果
 
+    handleReturnOk() {
+      /** 触发表单验证 */
+      this.getAllTable().then(tables => {
+        /** 一次性验证主表和所有的次表 */
+        return validateFormAndTables(this.form, tables)
+      }).then(allValues => {
+        if (typeof this.classifyIntoFormData !== 'function') {
+          throw this.throwNotFunction('classifyIntoFormData')
+        }
+        let formData = this.classifyIntoFormData(allValues)
+        // 发起请求
+        return this.requestReturn(formData)
+      }).catch(e => {
+        if (e.error === VALIDATE_NO_PASSED) {
+          // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+          this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+        } else {
+          console.error(e)
+        }
+      })
+    },
     /* --- throw --- */
 
     /** not a function */

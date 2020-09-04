@@ -206,7 +206,8 @@
           overflow-y: auto;
         }
         .ant-table-body {
-          min-width: 800px;
+         // min-width: 800px;
+          min-width: 320px;
         }
       }
       .sidemenu {

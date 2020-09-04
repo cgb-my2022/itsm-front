@@ -2,15 +2,16 @@
   <a-card :bordered="false" :bodyStyle="bodyStyle">
 
 
-    <a-tabs defaultActiveKey="1" tabPosition="left">
+    <a-tabs defaultActiveKey="1" tabPosition="top" >
       <!-- 我的任务 -->
       <a-tab-pane key="1">
         <span slot="tab">
           <a-icon type="user"/>
           <span>我的任务</span>
         </span>
+        <a-card>
         <my-running-task-list></my-running-task-list>
-
+        </a-card>
       </a-tab-pane>
       <!-- 组任务 -->
       <a-tab-pane key="2" forceRender>
@@ -18,9 +19,9 @@
           <a-icon type="team"/>
           <span>组任务</span>
         </span>
-
+        <a-card>
         <my-group-task-list></my-group-task-list>
-
+        </a-card>
       </a-tab-pane>
       <!-- 历史任务 -->
       <a-tab-pane key="3">
@@ -28,8 +29,9 @@
           <a-icon type="clock-circle"/>
           <span>历史任务</span>
         </span>
-
+        <a-card>
         <my-his-task-list></my-his-task-list>
+        </a-card>
       </a-tab-pane>
 
     </a-tabs>
