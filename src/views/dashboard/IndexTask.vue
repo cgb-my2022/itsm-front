@@ -289,7 +289,7 @@
       toServiceOrderList() {
         this.$router.replace('/joa/ServiceOrderList')
       },
-      getTipColor(rd) {
+      /*getTipColor(rd) {
         let num = rd.restDay
         if (num <= 0) {
           return tip_red
@@ -298,7 +298,7 @@
         } else if (num >= 4) {
           return tip_green
         }
-      },
+      },*/
       goPage() {
         this.$message.success('请根据具体业务跳转页面')
         // this.$router.push({ path: '/comp/mytask' })

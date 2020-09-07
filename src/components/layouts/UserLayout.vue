@@ -5,7 +5,7 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">RISUN TTMS</span>
+            <span class="title">RISUN ITSM</span>
           </a>
         </div>
         <div class="desc">
