@@ -10,7 +10,7 @@
 
       <div>
         <a-form-item label="用户名：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-          <a-input-search placeholder="点击选择用户" disabled @search="handleSelect" v-model="model.userName">
+          <a-input-search placeholder="点击选择用户"  @search="handleSelect" v-model="model.userName">
             <a-button slot="enterButton" icon="search">选择</a-button>
           </a-input-search>
         </a-form-item>

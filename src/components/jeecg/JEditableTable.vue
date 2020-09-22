@@ -461,6 +461,48 @@
 
                     </div>
 
+                    <div v-else-if="col.type === formTypes.fileView" :key="i">
+                      <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
+                        <div :key="fileKey" style="position: relative;">
+                          <a-tooltip  :title="file.name">
+                            <a-icon type="paper-clip" />
+                            <span style="margin-left:5px"><a  @click="handleClickDownFileByUrl(id)">{{ getEllipsisWord(file.name,5) }}</a></span>
+                          </a-tooltip>
+                        </div>
+                      </template>
+
+                      <div :hidden="uploadValues[id] != null">
+                        <a-tooltip
+                          :key="i"
+                          :id="id"
+                          placement="top"
+                          :title="(tooltips[id] || {}).title"
+                          :visible="(tooltips[id] || {}).visible || false"
+                          :autoAdjustOverflow="true"
+                          :getPopupContainer="getParentContainer"
+                        >
+
+                          <span
+                            @mouseover="()=>{handleMouseoverCommono(row,col)}"
+                            @mouseout="()=>{handleMouseoutCommono(row,col)}">
+                            <a-upload
+                              name="file"
+                              :data="{'isup':1}"
+                              :multiple="false"
+                              :action="getUploadAction(col.action)"
+                              :headers="uploadGetHeaders(row,col)"
+                              :showUploadList="false"
+                              v-bind="buildProps(row,col)"
+                              @change="(v)=>handleChangeUpload(v,id,row,col)"
+                            >
+                              <a-button icon="upload">上传文件</a-button>
+                            </a-upload>
+                          </span>
+                        </a-tooltip>
+                      </div>
+
+                    </div>
+
                     <div v-else-if="col.type === formTypes.image" :key="i">
                       <template v-if="uploadValues[id] != null" v-for="(file,fileKey) of [(uploadValues[id]||{})]">
                         <div :key="fileKey" style="position: relative;">
@@ -1252,7 +1294,7 @@
               } else {
                 multiSelectValues[inputId] = []
               }
-            } else if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+            } else if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.fileView|| column.type === FormTypes.image) {
               if (sourceValue) {
                 let fileName = ''
                 if (sourceValue.indexOf(',') > 0) {
@@ -1533,7 +1575,7 @@
             } else if (column.type === FormTypes.upload) {
               value[column.key] = cloneObject(this.uploadValues[inputId] || null)
 
-            } else if (column.type === FormTypes.image || column.type === FormTypes.file) {
+            } else if (column.type === FormTypes.image || column.type === FormTypes.file || column.type === FormTypes.fileView) {
               let currUploadObj = cloneObject(this.uploadValues[inputId] || null)
               if (currUploadObj) {
                 value[column.key] = currUploadObj['path'] || null
@@ -1823,7 +1865,7 @@
                 element = element.getElementsByTagName('input')[0]
               }
               // upload 在 .ant-upload .ant-btn 上设置 border-color
-              if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.image) {
+              if (column.type === FormTypes.upload || column.type === FormTypes.file || column.type === FormTypes.fileView || column.type === FormTypes.image) {
                 element = element.getElementsByClassName('ant-upload')[0].getElementsByClassName('ant-btn')[0]
               }
               element.style.borderColor = borderColor

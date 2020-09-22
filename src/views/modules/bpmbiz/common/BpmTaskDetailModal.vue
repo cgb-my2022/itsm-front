@@ -9,6 +9,7 @@
     :bodyStyle="bodyStyle"
     style="top: 0px;"
     :footer="null"
+    aria-disabled="true"
     @cancel="handleModalCancel">
     <a-spin :spinning="confirmLoading">
       <!--<a-affix offset-top="1">

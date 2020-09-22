@@ -2,186 +2,184 @@
   <div style="background: #ffffff;margin-right: 10px">
     <!-- 步骤条 -->
     <a-spin :spinning="loading">
-      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-      当前任务办理环节：
-      <a-select style="width:300px" :defaultValue="currTask.id">
-        <a-select-option :value="currTask.id">{{ currTask.taskName }}</a-select-option>
-      </a-select>
-    </div>-->
-    <a-card>
-      <a-steps progressDot :current="stepIndex" style="padding: 10px" size="default">
-        <template v-if="resultObj.bpmLogListCount >3">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        当前任务办理环节：
+        <a-select style="width:300px" :defaultValue="currTask.id">
+          <a-select-option :value="currTask.id">{{ currTask.taskName }}</a-select-option>
+        </a-select>
+      </div>
+      <a-card>
+        <a-steps progressDot :current="stepIndex" style="padding: 10px" size="default">
+          <template v-if="resultObj.bpmLogListCount >3">
+            <a-step>
+              <template slot="title">
+                <div class="task-title">...</div>
+              </template>
+            </a-step>
+          </template>
+          <template v-for="(item,index) in resultObj.bpmLogStepList">
+            <a-step>
+              <template slot="title">
+                <div class="task-title">{{ item.taskName }}</div>
+              </template>
+              <template slot="description">
+                <div class="task-date"> <span><j-ellipsis :value="'处理时间：'+ item.opTime"></j-ellipsis></span></div>
+                <div class="task-user">操作人：{{ item.opUserName }}</div>
+              </template>
+            </a-step>
+          </template>
+          <a-step v-if="resultObj.taskName&&resultObj.taskName!=''">
+            <template slot="title">
+              <div class="task-title">{{ resultObj.taskName }}</div>
+            </template>
+            <template slot="description">
+              <div class="task-date"> <span style="color: #ff6d75;"><j-ellipsis :value="'处理时间：'+ resultObj.taskNameStartTime"></j-ellipsis></span></div>
+              <div class="task-user">操作人：{{ resultObj.taskAssigneeName }}</div>
+            </template>
+          </a-step>
           <a-step>
             <template slot="title">
               <div class="task-title">...</div>
             </template>
           </a-step>
-        </template>
-        <template v-for="(item,index) in resultObj.bpmLogStepList">
-          <a-step>
+          <!--<a-step>
             <template slot="title">
-              <div class="task-title">{{ item.taskName }}</div>
+              <div class="task-title"></div>
             </template>
-            <template slot="description">
-              <div class="task-date"> <span><j-ellipsis :value="'处理时间：'+ item.opTime"></j-ellipsis></span></div>
-              <div class="task-user">操作人：{{ item.opUserName }}</div>
-            </template>
-          </a-step>
-        </template>
-        <a-step v-if="resultObj.taskName&&resultObj.taskName!=''">
-          <template slot="title">
-            <div class="task-title">{{ resultObj.taskName }}</div>
-          </template>
-          <template slot="description">
-            <div class="task-date"> <span style="color: #ff6d75;"><j-ellipsis :value="'处理时间：'+ resultObj.taskNameStartTime"></j-ellipsis></span></div>
-            <div class="task-user">操作人：{{ resultObj.taskAssigneeName }}</div>
-          </template>
-        </a-step>
-        <a-step>
-          <template slot="title">
-            <div class="task-title">...</div>
-          </template>
-        </a-step>
-        <!--<a-step>
-          <template slot="title">
-            <div class="task-title"></div>
-          </template>
-        </a-step>-->
-      </a-steps>
-    </a-card>
-    <!-- 意见 -->
-    <a-card title="意见信息" :bodyStyle="{padding:'0 20px'}" size="default" style="margin-top:20px">
-      <a-list itemLayout="vertical">
-        <template v-for="(item,index) in resultObj.bpmLogList">
-          <a-list-item >
-            <a-list-item-meta :description="item.remarks">
-              <a slot="title">{{ item.opUserName }}<span style="color: #ff6d75;">[{{ item.taskName }}]</span> {{ item.opTime }}</a>
-              <a-avatar slot="avatar" :size="36" icon="user" style="background-color: #51cbff;"></a-avatar>
-            </a-list-item-meta>
-            <template v-for="(file,index) in item.bpmFiles">
-              <div class="ant-upload-list ant-upload-list-text">
-                <div class="ant-upload-list-item ant-upload-list-item-done">
-                  <div class="ant-upload-list-item-info">
+          </a-step>-->
+        </a-steps>
+      </a-card>
+      <!-- 意见 -->
+      <a-card title="意见信息" :bodyStyle="{padding:'0 20px'}" size="default" style="margin-top:20px">
+        <a-list itemLayout="vertical">
+          <template v-for="(item,index) in resultObj.bpmLogList">
+            <a-list-item >
+              <a-list-item-meta :description="item.remarks">
+                <a slot="title">{{ item.opUserName }}<span style="color: #ff6d75;">[{{ item.taskName }}]</span> {{ item.opTime }}</a>
+                <a-avatar slot="avatar" :size="36" icon="user" style="background-color: #51cbff;"></a-avatar>
+              </a-list-item-meta>
+              <template v-for="(file,index) in item.bpmFiles">
+                <div class="ant-upload-list ant-upload-list-text">
+                  <div class="ant-upload-list-item ant-upload-list-item-done">
+                    <div class="ant-upload-list-item-info">
                 <span>
                     <a-icon type="paper-clip" />
                     <a target="_blank" rel="noopener noreferrer" :title="file.fileName" :href="getFileDownloadUrl(file.filePath)" class="ant-upload-list-item-name">{{ file.fileName }}</a>
                 </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </template>
+              </template>
+            </a-list-item>
+          </template>
+          <a-list-item>
+
           </a-list-item>
-        </template>
-        <a-list-item>
-
-        </a-list-item>
-        <a-list-item>
-          <div style="width: 100%;">
-            <div style="margin-bottom: 5px">
-              处理意见：
-              <a-select style="width: 300px" placeholder="常用审批语" @change="handleChangeSelect">
-                <a-icon slot="suffixIcon" type="smile" />
-                <a-select-option v-for="(item, key) in remarksDictOptions" :key="key" :value="item.value">{{ item.text }}</a-select-option>
-              </a-select>
+          <a-list-item>
+            <div style="width: 100%;">
+              <div style="margin-bottom: 5px">
+                处理意见：
+                <a-select style="width: 300px" placeholder="常用审批语" @change="handleChangeSelect">
+                  <a-icon slot="suffixIcon" type="smile" />
+                  <a-select-option v-for="(item, key) in remarksDictOptions" :key="key" :value="item.value">{{ item.text }}</a-select-option>
+                </a-select>
+              </div>
+              <a-textarea rows="3" v-model="model.reason" />
             </div>
-            <a-textarea rows="3" v-model="model.reason" />
-          </div>
-        </a-list-item>
-        <a-list-item>
-          <j-upload v-model="fileList" :returnUrl='false'></j-upload>
-          <!--
-          <a-upload
-            name="file"
-            :multiple="false"
-            :action="url.upload"
-            :headers="headers" @change="handleChange">
+          </a-list-item>
+          <a-list-item>
+            <j-upload v-model="fileList" :returnUrl='false'></j-upload>
+            <!--
+            <a-upload
+              name="file"
+              :multiple="false"
+              :action="url.upload"
+              :headers="headers" @change="handleChange">
 
-            <a-button>
-              <a-icon type="upload"/>
-              <span>添加文件</span>
-            </a-button>
+              <a-button>
+                <a-icon type="upload"/>
+                <span>添加文件</span>
+              </a-button>
 
-          </a-upload>
-          -->
-        </a-list-item>
-        <a-list-item v-show="false">
-          <a-row>
-            <a-col :span="24">
-              <a-radio-group  v-model="model.processModel">
-                <a-radio :checked="true" :value="1">单分支模式</a-radio>
-                <a-radio :value="2">多分支模式</a-radio>
-                <a-radio :value="3" v-if="resultObj.histListSize>0">驳回</a-radio>
-              </a-radio-group>
-              <span :hidden="this.model.processModel!==2">
+            </a-upload>
+            -->
+          </a-list-item>
+          <a-list-item v-show="false">
+            <a-row>
+              <a-col :span="24">
+                <a-radio-group  v-model="model.processModel">
+                  <a-radio :checked="true" :value="1">单分支模式</a-radio>
+                  <a-radio :value="2">多分支模式</a-radio>
+                  <a-radio :value="3" v-if="resultObj.histListSize>0">驳回</a-radio>
+                </a-radio-group>
+                <span :hidden="this.model.processModel!==2">
                 <span style="color: red;">多分支模式默认执行所有分支：</span>
-                <!--<a-checkbox-group v-model="transition" >-->
+                  <!--<a-checkbox-group v-model="transition" >-->
                 <template v-for="(item,index) in resultObj.transitionList">
                   <a-checkbox :checked="true" :value="item.nextnode">{{ item.Transition }}</a-checkbox>
                 </template>
-                <!-- </a-checkbox-group>-->
+                  <!-- </a-checkbox-group>-->
               </span>
-              <span :hidden="this.model.processModel!==3" v-if="resultObj.histListSize>0">
+                <span :hidden="this.model.processModel!==3" v-if="resultObj.histListSize>0">
                 <a-select v-model="model.rejectModelNode" style="width:150px">
                   <template v-for="(item,index) in resultObj.histListNode">
                     <a-select-option :value="item.TASK_DEF_KEY_">{{ item.NAME_ }}</a-select-option>
                   </template>
                 </a-select>
               </span>
-            </a-col>
-          </a-row>
-        </a-list-item>
-        <!--<a-list-item>
-          <a-checkbox :checked="checkedNext" @change="handleCheckedNextChange">指定下一步操作人（指定下一步会签人员）</a-checkbox>
-          <a-checkbox :checked="checkedCc" @change="handleCheckedCcChange">是否抄送</a-checkbox>
-        </a-list-item>
-        <a-list-item style="line-height: 32px" :hidden="!checkedNext">
-          <span>指定下一步操作人（指定下一步会签人员）：</span>
-          &lt;!&ndash;<a-input style="width: 200px;" v-model="model.nextUserName"></a-input>&ndash;&gt;
-          <a-select style="width: 300px;"
-            mode="multiple"
-            placeholder="点击选择按钮"
-            :value="hqUserList"
-          >
-            &lt;!&ndash;<a-select-option v-for="(item,index) in hqUserSelectList" :key="item.name">
-              {{ item.name }}
-            </a-select-option>&ndash;&gt;
-          </a-select>
-          <a-button type="primary" @click="handleHqUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
-          <a-button type="primary" @click="hqUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
-          <span>（如果不指定则按照系统默认）</span>
+              </a-col>
+            </a-row>
+          </a-list-item>
+          <a-list-item>
+            <a-checkbox :checked="checkedNext" @change="handleCheckedNextChange">指定下一步操作人（指定下一步会签人员）</a-checkbox>
+            <a-checkbox :checked="checkedCc" @change="handleCheckedCcChange">是否抄送</a-checkbox>
+          </a-list-item>
+          <a-list-item style="line-height: 32px" :hidden="!checkedNext">
+            <span>指定下一步操作人（指定下一步会签人员）：</span>
+            <!--<a-input style="width: 200px;" v-model="model.nextUserName"></a-input>-->
+            <a-select style="width: 300px;"
+                      mode="multiple"
+                      placeholder="点击选择按钮"
+                      :value="hqUserList"
+            >
+              <!--<a-select-option v-for="(item,index) in hqUserSelectList" :key="item.name">
+                {{ item.name }}
+              </a-select-option>-->
+            </a-select>
+            <a-button type="primary" @click="handleHqUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
+            <a-button type="primary" @click="hqUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
+            <span>（如果不指定则按照系统默认）</span>
 
-        </a-list-item>
-        <a-list-item style="line-height: 32px" :hidden="!checkedCc">
-          <span>抄送给：</span>
-          &lt;!&ndash;<a-input style="width: 200px;" v-model="model.ccUserRealNames"></a-input>&ndash;&gt;
-          <a-select style="width: 300px;"
-                    mode="multiple"
-                    placeholder="点击选择按钮"
-                    :value="ccUserList"
-          >
-            &lt;!&ndash;<a-select-option v-for="(item,index) in ccUserSelectList" :key="item.name">
-              {{ item.name }}
-            </a-select-option>&ndash;&gt;
-          </a-select>
-          <a-button type="primary" @click="handleCcUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
-          <a-button type="primary" @click="ccUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
-        </a-list-item>-->
-      </a-list>
-      <!-- 流转按钮 -->
-      <div style="margin-top:20px;text-align:center">
-        <!--<template v-if="model.processModel==1">
-          <template v-for="(item,index) in resultObj.transitionList">
-            <a-button type="primary" @click="handleProcessComplete(item.nextnode)">{{ item.Transition }}</a-button>
+          </a-list-item>
+          <a-list-item style="line-height: 32px" :hidden="!checkedCc">
+            <span>抄送给：</span>
+            <!--<a-input style="width: 200px;" v-model="model.ccUserRealNames"></a-input>-->
+            <a-select style="width: 300px;"
+                      mode="multiple"
+                      placeholder="点击选择按钮"
+                      :value="ccUserList"
+            >
+              <!--<a-select-option v-for="(item,index) in ccUserSelectList" :key="item.name">
+                {{ item.name }}
+              </a-select-option>-->
+            </a-select>
+            <a-button type="primary" @click="handleCcUserSelect" icon="search" style="margin-left: 8px">选择</a-button>
+            <a-button type="primary" @click="ccUserSelectReset" icon="reload" style="margin-left: 8px">清空</a-button>
+          </a-list-item>
+        </a-list>
+        <!-- 流转按钮 -->
+        <div style="margin-top:20px;text-align:center">
+          <template v-if="model.processModel==1">
+            <template v-for="(item,index) in resultObj.transitionList">
+              <a-button type="primary" @click="handleProcessComplete(item.nextnode)">{{ item.Transition }}</a-button>
+            </template>
           </template>
-        </template>
-        <template v-else>
-          <a-button type="primary" @click="handleManyProcessComplete()">确认提交</a-button>
-        </template>-->
-        <a-button type="primary" @click="handleProcessComplete(2)">同意</a-button>
-        <a-button type="danger" @click="handleProcessComplete(6)">驳回</a-button>
-      </div>
-      <br>
-    </a-card>
+          <template v-else>
+            <a-button type="primary" @click="handleManyProcessComplete()">确认提交</a-button>
+          </template>
+        </div>
+        <br>
+      </a-card>
       <biz-select-user-modal ref="selectHqUserModal" @selectFinished="selectHqUserOK"></biz-select-user-modal>
       <biz-select-user-modal ref="selectCcUserModal" @selectFinished="selectCcUserOK"></biz-select-user-modal>
     </a-spin>
@@ -191,7 +189,7 @@
 <script>
   import Vue from 'vue'
   import { ACCESS_TOKEN } from '@/store/mutation-types'
-  import { getAction,httpAction,getFileAccessHttpUrl,putAction } from '@/api/manage'
+  import { getAction,httpAction,getFileAccessHttpUrl } from '@/api/manage'
   import AListItem from "ant-design-vue/es/list/Item";
   import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
   import BizSelectUserModal from "../BizSelectUserModal.vue";
@@ -211,8 +209,7 @@
         url: {
           getProcessTaskTransInfo: '/act/task/getProcessTaskTransInfo',
           processComplete:'/act/task/processComplete',
-          upload:window._CONFIG['domianURL']+"/sys/common/upload",
-          updateStatus:window._CONFIG['domianURL']+"/system/serviceOrder/updateServiceOrderStatus"
+          upload:window._CONFIG['domianURL']+"/sys/common/upload"
         },
         headers: {},
         resultObj:{},
@@ -234,10 +231,6 @@
           ccUserIds:"",
           ccUserRealNames:"",
           fileList:"",
-        },
-        serviceOrderModel: {
-          id: '',
-          orderStatus: ''
         },
         bodyStyle:{
           padding: "10px"
@@ -341,57 +334,7 @@
           this.loading = false;
         })
       },
-      //flag 2:同意 6：拒绝
-      handleProcessComplete (flag) {
-        const that = this;
-        if(!this.model.reason || this.model.reason.length==0){
-          this.$message.warning("请填写处理意见");
-          return
-        }
-        var content = "";
-        if(flag===1){
-          content = "确认同意吗?"
-        }else {
-          content = "确认拒绝吗?"
-        }
-        console.log("流程办理数据：",this.model);
-        var method = 'post';
-        this.$confirm({
-          title:"提示",
-          content:content,
-          onOk: function(){
-
-            that.loading = true;
-            that.model.fileList = JSON.stringify(that.fileList)
-            that.serviceOrderModel.orderStatus = flag
-            that.serviceOrderModel.id = that.formData.dataId
-            putAction(that.url.updateStatus, that.serviceOrderModel).then((res)=>{
-              if(res.success){
-                httpAction(that.url.processComplete,that.model,method).then((res)=>{
-                  if(res.success){
-                    that.$message.success(res.message);
-                    that.$emit('complete');
-                  }else{
-                    that.$message.warning(res.message);
-                  }
-                }).finally(() => {
-                  that.loading = false;
-                  that.close();
-                })
-              }else{
-                that.$message.warning(res.message);
-                that.loading = false;
-                that.close();
-              }
-            })
-
-
-
-          }
-        });
-
-      },
-     /* handleProcessComplete (nextnode) {
+      handleProcessComplete (nextnode) {
         const that = this;
         if(!this.model.reason || this.model.reason.length==0){
           this.$message.warning("请填写处理意见");
@@ -422,7 +365,7 @@
           }
         });
 
-      },*/
+      },
       handleManyProcessComplete(){
           if(this.model.processModel==3){
             if(!this.model.rejectModelNode || this.model.rejectModelNode.length==0){

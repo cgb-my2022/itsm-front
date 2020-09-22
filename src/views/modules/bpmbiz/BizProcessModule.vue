@@ -14,7 +14,6 @@
         :loading="loading"
         :dataSource="dataSource"
         :columns="columns"
-         :scroll="{ x: 750 }"
         size="small">
         <!-- 字符串超长截取省略号显示-->
         <span slot="remarks" slot-scope="text, record">
@@ -69,32 +68,26 @@
           },
           {
             title: '名称',
-            dataIndex: 'name',
-            width:100
+            dataIndex: 'name'
           }, {
             title: '流程实例ID',
-            dataIndex: 'processInstanceId',
-            width:100
+            dataIndex: 'processInstanceId'
           }, {
             title: '开始时间',
-            dataIndex: 'startTime',
-            width:120
+            dataIndex: 'startTime'
           }, {
             title: '结束时间',
-            dataIndex: 'endTime',
-            width:120
+            dataIndex: 'endTime'
           }, {
             title: '负责人',
-            dataIndex: 'assigneeName',
-            width:80
+            dataIndex: 'assigneeName'
           }, {
             title: '处理结果',
-            dataIndex: 'deleteReason',
-            width:80
+            dataIndex: 'deleteReason'
           },{
             title: '处理意见',
             fixed: 'right',
-            width: 100,
+            width: 350,
             dataIndex: 'remarks',
             scopedSlots: { customRender: 'remarks' }
           }
@@ -154,4 +147,5 @@
 </script>
 
 <style scoped>
+
 </style>

@@ -8,6 +8,7 @@ const FormTypes = {
   datetime: 'datetime',
   upload: 'upload',
   file: 'file',
+  fileView: 'fileView',
   image: 'image',
   popup:'popup',
   list_multi:"list_multi",

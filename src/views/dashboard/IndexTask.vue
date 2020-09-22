@@ -8,11 +8,11 @@
       <a-card-grid @click="toServiceOrderList" style="width:30%;text-align:center;cursor: pointer" :hoverable="true">
         <a-icon type="clock-circle" /><br><span>历史事件</span>
       </a-card-grid>
-      <a-card-grid style="width:40%;text-align:center">
-        <a-icon type="user" /><br><span>个人信息维护</span>
+      <a-card-grid  @click="toUserCenter" style="width:40%;text-align:center;cursor: pointer" :hoverable="true">
+        <a-icon type="user"/><br><span>个人信息维护</span>
       </a-card-grid>
-      <serviceOrder-modal ref="modalForm" @ok="myUnfinished"></serviceOrder-modal>
-      <bpm-task-detail-modal :path="path" :formData="formData" ref="taskDealModal" />
+      <staff-service-order-modal ref="modalForm" @ok="myUnfinished"></staff-service-order-modal>
+      <service-task-detail-modal :path="path" :formData="formData" ref="taskDealModal"></service-task-detail-modal>
     </a-card>
 
     <a-spin :spinning="loading">
@@ -20,8 +20,8 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/daiban.png"/>
-              我的待办【{{ dataSource1.length }}】
+              <a-icon type="check-circle" />
+              我的待办【{{ dataSource1Size }}】
             </div>
 
             <div slot="extra">
@@ -63,8 +63,8 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/guaz.png"/>
-              常用请求【{{ dataSource4.length }}】
+              <a-icon type="container" />
+              常用请求【{{ dataSource4Size }}】
             </div>
             <a-table
               :class="'my-index-table tytable4'"
@@ -93,11 +93,11 @@
         <a-col :sm="24" :lg="12">
           <a-card>
             <div slot="title" class="index-md-title">
-              <img src="../../assets/duban.png"/>
+              <a-icon type="bulb" />
               知识库【{{ dataSource3.length }}】
             </div>
             <a-table
-              :class="'my-index-table tytable3'"
+              :class="'my-index-table '"
               ref="table3"
               size="small"
               rowKey="id"
@@ -112,7 +112,7 @@
                 <a-icon type="bulb" theme="twoTone" style="font-size:22px" :twoToneColor="getTipColor(record)"/>
               </template>
 
-              <span slot="action" slot-scope="text, record">
+              <span slot="action" >
                 <a @click="handleData">办理</a>
               </span>
 
@@ -128,91 +128,31 @@
 
 <script>
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import ServiceOrderModal from '../modules/extbpm/joa/modules/ServiceOrderModal'
-  import BpmTaskDetailModal from '@/views/modules/bpmbiz/common/BpmTaskDetailModal'
+  import StaffServiceOrderModal from '../modules/service/staff/modules/StaffServiceOrderModal'
+  import ServiceTaskDetailModal from '../modules/service/common/ServiceTaskDetailModal'
   import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
-  // import noDataPng from '@/assets/nodata.png'
-  // import JEllipsis from '@/components/jeecg/JEllipsis'
-  // import { timeFix } from "@/utils/util"
   import { mapGetters } from 'vuex'
   import { getAction } from '@/api/manage'
-
- /* const tempSs1=[{
-    id:"001",
-    orderNo:"电[1]1267102",
-    orderTitle:"药品出问题了",
-    restDay:1
-  },{
-    id:"002",
-    orderNo:"电[4]5967102",
-    orderTitle:"吃了xxx医院的药，病情越来越严重",
-    restDay:0
-  },{
-    id:"003",
-    orderNo:"电[3]5988987",
-    orderTitle:"今天去超市买鸡蛋，鸡蛋都是坏的",
-    restDay:7
-  },{
-    id:"004",
-    orderNo:"电[2]5213491",
-    orderTitle:"xx宝实体店高价售卖xx",
-    restDay:5
-  },{
-    id:"005",
-    orderNo:"电[1]1603491",
-    orderTitle:"以红利相诱，答应退保后扣一年费用",
-    restDay:0
-  }]
-
-  const tempSs2=[{
-    id:"001",
-    orderTitle:"我要投诉这个大超市",
-    orderNo:"电[1]10299456",
-    restDay:6
-  },{
-    id:"002",
-    orderTitle:"xxx医院乱开药方,售卖假药",
-    orderNo:"电[2]20235691",
-    restDay:0
-  },{
-    id:"003",
-    orderTitle:"我想问问这家店是干啥的",
-    orderNo:"电[3]495867322",
-    restDay:7
-  },{
-    id:"004",
-    orderTitle:"我要举报朝阳区奥森公园酒店",
-    orderNo:"电[2]1193849",
-    restDay:3
-  },{
-    id:"005",
-    orderTitle:"我今天吃饭吃到一个石头子",
-    orderNo:"电[4]56782344",
-    restDay:9
-  }] */
-
-/*  //4-7天
-  const tip_green = "rgba(0, 255, 0, 1)"
-  //1-3天
-  const tip_yellow = "rgba(255, 255, 0, 1)"
-  //超期
-  const tip_red = "rgba(255, 0, 0, 1)" */
 
   export default {
     name: 'IndexTask',
     mixins: [JeecgListMixin],
-    components: { ServiceOrderModal, BpmTaskDetailModal },
+    components: { StaffServiceOrderModal, ServiceTaskDetailModal },
     data() {
       return {
         loading: false,
         textMaxLength: 8,
         formData: {},
         path: '',
-        flowCode: 'dev_service_order_001',
+        flowCode: 'onl_service_order',
         dataSource1: [],
+        dataSource1Size: 0,
         dataSource2: [],
+        dataSource2Size: 0,
         dataSource3: [],
+        dataSource32Size: 0,
         dataSource4: [],
+        dataSource4Size: 0,
         columns: [
          /* {
             title: '',
@@ -253,7 +193,7 @@
             dataIndex: 'orderStatus',
             customRender: (text) => {
               // 字典值翻译通用方法
-              return filterDictTextByCache('order_status', text);
+              return filterDictTextByCache('service_order_status', text);
             }
           },
           {
@@ -283,46 +223,21 @@
       showDetailServiceOrder(record) {
         this.formData = record;
         this.formData.dataId = record.id;
-        this.path = 'modules/extbpm/joa/modules/ServiceOrderForm';
+        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
         this.$refs.taskDealModal.deal();
       },
       toServiceOrderList() {
-        this.$router.replace('/joa/ServiceOrderList')
+        this.$router.replace('/service/StaffServiceOrderList')
       },
-      /*getTipColor(rd) {
-        let num = rd.restDay
-        if (num <= 0) {
-          return tip_red
-        } else if (num >= 1 && num < 4) {
-          return tip_yellow
-        } else if (num >= 4) {
-          return tip_green
-        }
-      },*/
+      toUserCenter(){
+        this.$router.replace('/account/center')
+      },
       goPage() {
         this.$message.success('请根据具体业务跳转页面')
         // this.$router.push({ path: '/comp/mytask' })
       },
       mock() {
-        /* this.dataSource1=tempSs1
-        this.dataSource2=tempSs2
-        this.dataSource3=tempSs1
-        this.dataSource4=[]
-        this.ifNullDataSource(this.dataSource4,'.tytable4') */
       },
-
-     /* ifNullDataSource(ds, tb) {
-        this.$nextTick(() => {
-          if (!ds || ds.length == 0) {
-            var tmp = document.createElement('img');
-            tmp.src = noDataPng
-            tmp.width = 300
-            let tbclass = `${tb} .ant-table-placeholder`
-            document.querySelector(tbclass).innerHTML = ''
-            document.querySelector(tbclass).appendChild(tmp)
-          }
-        })
-      }, */
       handleData() {
         this.$message.success('办理完成')
       },
@@ -331,7 +246,12 @@
         };
         getAction(this.url.myUnfinished, params).then((res) => {
           if (res.success) {
-            this.dataSource1 = res.result;
+            this.dataSource1Size = res.result.length;
+            if (this.dataSource1Size <= 5) {
+              this.dataSource1 = res.result;
+            }else {
+              this.dataSource1 = res.result.slice(0, 5);
+            }
            // this.ipagination.total = res.result.total;
           }
           if (res.code === 510) {
@@ -389,22 +309,11 @@
 
   .index-container-ty .ant-table-thead > tr > th,
   .index-container-ty .ant-table-tbody > tr > td{
-    border-bottom: 1px solid #90aeff;
+    border-bottom: 1px solid ;
   }
-
-  .index-container-ty .ant-table-small > .ant-table-content > .ant-table-fixed-left > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-thead > tr > th,
-  .index-container-ty .ant-table-small > .ant-table-content > .ant-table-fixed-right > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-thead > tr > th{
-    border-bottom: 1px solid #90aeff;
-  }
-
   .index-container-ty  .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-thead > tr > th{
-    border-bottom: 1px solid #90aeff;
+    border-bottom: 1px solid ;
   }
-
-  .index-container-ty .ant-table-small{
-    border: 1px solid #90aeff;
-  }
-
   .index-container-ty .ant-table-placeholder {
     padding: 0
   }

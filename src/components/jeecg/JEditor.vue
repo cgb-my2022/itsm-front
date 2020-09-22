@@ -87,7 +87,7 @@
       }
     },
     mounted() {
-      tinymce.init({})
+      //tinymce.init({})
     },
     methods: {
 

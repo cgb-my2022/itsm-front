@@ -1,139 +1,156 @@
 <template>
   <div class="page-header-index-wide page-header-wrapper-grid-content-main">
 
-    <a-row :gutter="24">
-      <a-col :md="24" :lg="7">
-        <a-card :bordered="false">
-          <div class="account-center-avatarHolder">
-            <div class="avatar">
-              <img :src="getAvatar()"/>
-            </div>
-            <div class="username">{{ nickname() }}</div>
-            <div class="bio">海纳百川，有容乃大</div>
-          </div>
-          <div class="account-center-detail">
-            <p>
+    <a-card :bordered="false" width="750px">
+      <div class="account-center-avatarHolder">
+        <div class="avatar">
+          <img :src="getAvatar()"/>
+        </div>
+        <div class="username">{{ nickname() }}</div>
+        <!--<div class="bio">海纳百川，有容乃大</div>-->
+      </div>
+      <div class="account-center-detail">
+        <!-- <p>
               <i class="title"></i>交互专家
-            </p>
-            <p>
-              <i class="group"></i>蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED
-            </p>
-            <p>
+            </p>-->
+        <p style="text-align: center">
+          <a-icon type="cluster" style="margin-right: 5px;"/><label>{{ userInfo().myDeptParentNames }}</label>
+        </p>
+        <!--<p>
               <i class="address"></i><span>浙江省</span><span>杭州市</span>
-            </p>
-          </div>
-          <a-divider />
+            </p>-->
+        <a-divider :dashed="true" />
 
-          <div class="account-center-tags">
-            <div class="tagsTitle">标签</div>
-            <div>
-              <template v-for="(tag, index) in tags">
-                <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
-                  <a-tag :key="tag" :closable="index !== 0" :afterClose="() => handleTagClose(tag)">
-                    {{ `${tag.slice(0, 20)}...` }}
-                  </a-tag>
-                </a-tooltip>
-                <a-tag v-else :key="tag" :closable="index !== 0" :afterClose="() => handleTagClose(tag)">{{ tag }}</a-tag>
-              </template>
+        <p>
+          <a-form :form="form" @submit="handleSubmit">
+            <a-form-item label="手机号" v-bind="formItemLayout">
               <a-input
-                v-if="tagInputVisible"
-                ref="tagInput"
-                type="text"
-                size="small"
-                :style="{ width: '78px' }"
-                :value="tagInputValue"
-                @change="handleInputChange"
-                @blur="handleTagInputConfirm"
-                @keyup.enter="handleTagInputConfirm"
+                v-decorator="['phone',{initialValue:userInfo().phone,rules: [
+                  { required: true, message: '请输入手机号' },
+                ]}]"
+                placeholder="请输入手机号"></a-input>
+            </a-form-item>
+            <a-form-item label="工作地点部门" v-bind="formItemLayout">
+              <a-cascader
+                v-decorator="['workplaceDepartids',{initialValue: defaultWorkplaceDeparts,rules: [
+                  { type: 'array', required: true, message: '请选择工作地点部门' },
+                ],},]"
+                :options="departTree"
+                :showSearch="true"
+                :fieldNames="{ label: 'title', value: 'id', children: 'children' }"
+                :show-search="{ filter }"
+                placeholder="请选择部门"
+                @change="onChange"
               />
-              <a-tag v-else @click="showTagInput" style="background: #fff; borderStyle: dashed;">
-                <a-icon type="plus" /> New Tag
-              </a-tag>
-            </div>
-          </div>
-          <a-divider :dashed="true" />
+            </a-form-item>
+            <a-form-item label="详细工作地点" v-bind="formItemLayout">
+              <a-input v-decorator="['workplaceDetail',{initialValue:userInfo().workplaceDetail}]" placeholder="请输入详细工作地点"></a-input>
+            </a-form-item>
+            <a-form-item v-bind="tailFormItemLayout">
+              <a-button type="primary" html-type="submit">
+                保存
+              </a-button>
+            </a-form-item>
+          </a-form>
 
-          <div class="account-center-team">
-            <div class="teamTitle">团队</div>
-            <a-spin :spinning="teamSpinning">
-              <div class="members">
-                <a-row>
-                  <a-col :span="12" v-for="(item, index) in teams" :key="index">
-                    <a>
-                      <a-avatar size="small" :src="item.avatar" />
-                      <span class="member">{{ item.name }}</span>
-                    </a>
-                  </a-col>
-                </a-row>
-              </div>
-            </a-spin>
-          </div>
-        </a-card>
-      </a-col>
-      <a-col :md="24" :lg="17">
-        <a-card
-          style="width:100%"
-          :bordered="false"
-          :tabList="tabListNoTitle"
-          :activeTabKey="noTitleKey"
-          @tabChange="key => handleTabChange(key, 'noTitleKey')"
-        >
-          <article-page v-if="noTitleKey === 'article'"></article-page>
-          <app-page v-else-if="noTitleKey === 'app'"></app-page>
-          <project-page v-else-if="noTitleKey === 'project'"></project-page>
-        </a-card>
-      </a-col>
-    </a-row>
+        </p>
+      </div>
 
+    </a-card>
 
   </div>
 </template>
 
 <script>
+  import { putAction, getFileAccessHttpUrl } from '@/api/manage'
   import PageLayout from '@/components/page/PageLayout'
-  import RouteView from "@/components/layouts/RouteView"
-  import { AppPage, ArticlePage, ProjectPage } from './page'
+  import RouteView from '@/components/layouts/RouteView'
+  import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import { mapGetters } from 'vuex'
-  import { getFileAccessHttpUrl } from '@/api/manage';
+
+  import { queryIdTree, queryDepartTreeList } from '@/api/api'
+  import AFormItem from 'ant-design-vue/es/form/FormItem'
+
+  import Vue from 'vue'
+  import { USER_INFO } from '@/store/mutation-types'
+  import store from '@/store/'
 
   export default {
+    mixins: [JEditableTableMixin],
     components: {
+      AFormItem,
       RouteView,
       PageLayout,
-      AppPage,
-      ArticlePage,
-      ProjectPage
+      putAction
     },
     data() {
       return {
-        tags: ['很有想法的', '专注设计', '辣~', '大长腿', '川妹子', '海纳百川'],
-
+        defaultWorkplaceDeparts: [],
         tagInputVisible: false,
         tagInputValue: '',
-
+        departTree: [],
         teams: [],
         teamSpinning: true,
-
-        tabListNoTitle: [{
-            key: 'article',
-            tab: '文章(8)',
-          }, {
-            key: 'app',
-            tab: '应用(8)',
-          }, {
-            key: 'project',
-            tab: '项目(8)',
+        formItemLayout: {
+          labelCol: {
+            xs: { span: 24 },
+            sm: { span: 8 }
+          },
+          wrapperCol: {
+            xs: { span: 24 },
+            sm: { span: 16 }
           }
-        ],
-        noTitleKey: 'app',
+        },
+        tailFormItemLayout: {
+          wrapperCol: {
+            xs: {
+              span: 24,
+              offset: 0
+            },
+            sm: {
+              span: 16,
+              offset: 8
+            }
+          }
+        },
+        noTitleKey: 'app'
       }
     },
     mounted () {
       this.getTeams()
     },
+    created() {
+      this.queryDepartTree();
+      this.defaultWorkplaceDeparts = JSON.parse(this.userInfo().workplaceDeptParentIdes);
+    },
     methods: {
-      ...mapGetters(["nickname", "avatar"]),
-      getAvatar(){
+      ...mapGetters(['nickname', 'avatar', 'userInfo']),
+      queryDepartTree() {
+        queryDepartTreeList().then((res) => {
+          if (res.success) {
+            this.departTree = res.result;
+          }
+        })
+      },
+      onChange(value, selectedOptions) {
+        console.log(value, selectedOptions);
+      },
+      filter(inputValue, path) {
+        return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+      },
+      loadTreeData() {
+        var that = this;
+        queryIdTree().then((res) => {
+          if (res.success) {
+            that.departTree = [];
+            for (let i = 0; i < res.result.length; i++) {
+              let temp = res.result[i];
+              that.departTree.push(temp);
+            }
+          }
+        })
+      },
+      getAvatar() {
           return getFileAccessHttpUrl(this.avatar());
       },
       getTeams() {
@@ -176,8 +193,32 @@
           tagInputVisible: false,
           tagInputValue: ''
         })
+      },
+      handleSubmit(e) {
+        e.preventDefault();
+        this.form.validateFieldsAndScroll((err, values) => {
+          if (!err) {
+            console.log('Received values of form: ', values);
+            let url = '/sys/user/updateWorkInfo';
+            let that = this;
+            putAction(url, values).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                let userInfo = that.userInfo();
+                userInfo.workplaceDepartid = res.result.workplaceDepartid;
+                userInfo.workplaceDeptParentIdes = res.result.workplaceDeptParentIdes;
+                userInfo.workplaceDetail = res.result.workplaceDetail;
+                Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000);
+                store.commit('SET_INFO', userInfo);
+              } else {
+                that.$message.warning(res.message);
+              }
+            })
+          }
+        });
       }
-    },
+
+    }
   }
 </script>
 
@@ -222,20 +263,12 @@
         position: relative;
       }
 
-      i {
-        position: absolute;
-        height: 14px;
-        width: 14px;
-        left: 0;
-        top: 4px;
-        background: url(https://gw.alipayobjects.com/zos/rmsportal/pBjWzVAHnOOtAUvZmZfy.svg)
-      }
-
       .title {
         background-position: 0 0;
       }
       .group {
         background-position: 0 -22px;
+        text-align: center;
       }
       .address {
         background-position: 0 -44px;

@@ -44,12 +44,12 @@
             <span>个人中心</span>
           </router-link>
         </a-menu-item>
-        <a-menu-item key="1">
+        <!--<a-menu-item key="1">
           <router-link :to="{ name: 'account-settings-base' }">
             <a-icon type="setting"/>
             <span>账户设置</span>
           </router-link>
-        </a-menu-item>
+        </a-menu-item>-->
         <a-menu-item key="3"  @click="systemSetting">
            <a-icon type="tool"/>
            <span>系统设置</span>
