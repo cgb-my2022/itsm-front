@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          ITMS 是旭阳自主研发运维管理系统
+          ITSM 是旭阳自主研发运维服务管理系统
         </div>
       </div>
 
