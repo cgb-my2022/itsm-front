@@ -415,12 +415,15 @@
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
             formData.userIdentity=this.identity;
+            //删除临时存储的orgCode
+            delete formData.orgCode;
             //如果是上级择传入departIds,否则为空
             if(this.identity==="2"){
               formData.departIds=this.departIds.join(",");
             }else{
               formData.departIds="";
             }
+
             // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
             let obj;
             if(!this.model.id){

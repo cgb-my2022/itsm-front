@@ -2,19 +2,26 @@
   <div class="index-container-ty">
     <a-divider type="vertical" />
     <a-card title="" style="margin-bottom: 5px">
-      <a-card-grid @click="handleSubmit('提交工单')" style="width:30%;text-align:center;cursor: pointer">
-        <a-icon type="plus" /><br><span>提交工单</span>
-      </a-card-grid>
-      <a-card-grid @click="toServiceOrderList" style="width:30%;text-align:center;cursor: pointer" :hoverable="true">
-        <a-icon type="clock-circle" /><br><span>历史事件</span>
-      </a-card-grid>
-      <a-card-grid  @click="toUserCenter" style="width:40%;text-align:center;cursor: pointer" :hoverable="true">
-        <a-icon type="user"/><br><span>个人信息维护</span>
-      </a-card-grid>
-      <staff-service-order-modal ref="modalForm" @ok="myUnfinished"></staff-service-order-modal>
-      <service-task-detail-modal :path="path" :formData="formData" ref="taskDealModal"></service-task-detail-modal>
+      <a-row type="flex">
+        <a-col :flex="5">
+          <a-card-grid @click="handleSubmit('提交工单')" style="width:100%;height:100%;text-align:center;cursor: pointer">
+            <a-icon type="plus" /><br><span>提交工单</span>
+          </a-card-grid>
+        </a-col>
+        <a-col :flex="5" >
+          <a-card-grid @click="toServiceOrderList" style="width:100%;height:100%;text-align:center;cursor: pointer" :hoverable="true">
+            <a-icon type="clock-circle" /><br><span>历史事件</span>
+          </a-card-grid>
+        </a-col>
+        <a-col :flex="5" >
+          <a-card-grid  @click="toUserCenter" style="width:100%;height:100%;text-align:center;cursor: pointer" :hoverable="true">
+            <a-icon type="user"/><br><span>个人信息维护</span>
+          </a-card-grid>
+        </a-col>
+      </a-row>
     </a-card>
-
+    <staff-service-order-modal ref="modalForm" @ok="myUnfinished"></staff-service-order-modal>
+    <service-task-detail-modal :path="path" :formData="formData" ref="taskDealModal"></service-task-detail-modal>
     <a-spin :spinning="loading">
       <a-row type="flex" justify="start" :gutter="3">
         <a-col :sm="24" :lg="12">

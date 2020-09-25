@@ -18,7 +18,7 @@
         @click="toggle"/>
 
       <span v-if="device === 'desktop'">欢迎进入 运维管理系统</span>
-      <span v-else>Jeecg-Boot</span>
+      <span v-else>RISUN ITSM</span>
 
       <user-menu :theme="theme"/>
     </div>
