@@ -59,11 +59,11 @@
               <j-dict-select-tag type="list" v-decorator="['businessType', validatorRules.businessType]" :trigger-change="true" dictCode="SERVICE_ORDER_BUSINESS_TYPE" placeholder="请选择业务类型"/>
             </a-form-item>
           </a-col>
-          <a-col :xs="24" :sm="12">
+         <!-- <a-col :xs="24" :sm="12">
             <a-form-item label="问题类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-dict-select-tag type="list" v-decorator="['problemType', validatorRules.problemType]" :trigger-change="true" dictCode="problem_type" placeholder="请选择问题类别"/>
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <!--<a-col :span="24">
             <a-form-item label="设备信息" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-textarea v-decorator="['deviceInfo']" rows="4" placeholder="请输入设备信息"/>

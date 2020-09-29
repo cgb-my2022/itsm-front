@@ -1,54 +1,46 @@
 <template>
   <div class="index-container-ty">
-    <a-divider type="vertical" />
-    <a-card title="" style="margin-bottom: 5px">
+    <div style="background-color:white;margin-bottom: 5px">
       <a-row type="flex">
         <a-col :flex="5">
-          <a-card-grid @click="handleSubmit('提交工单')" style="width:100%;height:100%;text-align:center;cursor: pointer">
-            <a-icon type="plus" /><br><span>提交工单</span>
+         <!-- <div class="tu" @click="handleSubmit('提交工单')" style="cursor: pointer">-->
+          <a-card-grid class="tubg" style="cursor: pointer" @click="handleSubmit('提交工单')" >
+              <div><a-icon type="form" style="margin-right: 5px"/>提交工单</div>
           </a-card-grid>
+          <!--</div>-->
         </a-col>
         <a-col :flex="5" >
-          <a-card-grid @click="toServiceOrderList" style="width:100%;height:100%;text-align:center;cursor: pointer" :hoverable="true">
-            <a-icon type="clock-circle" /><br><span>历史事件</span>
-          </a-card-grid>
+            <a-card-grid class="tubg"@click="toServiceOrderList" style="cursor: pointer">
+            <div >
+              <a-icon type="clock-circle" style="margin-right: 5px"/><span>历史事件</span>
+            </div>
+            </a-card-grid>
         </a-col>
         <a-col :flex="5" >
-          <a-card-grid  @click="toUserCenter" style="width:100%;height:100%;text-align:center;cursor: pointer" :hoverable="true">
-            <a-icon type="user"/><br><span>个人信息维护</span>
-          </a-card-grid>
+
+            <a-card-grid class="tubg" @click="toUserCenter" style="cursor: pointer">
+              <div > <a-icon type="user" style="margin-right: 5px"/><span>个人信息维护</span> </div>
+            </a-card-grid>
         </a-col>
       </a-row>
-    </a-card>
+    </div>
     <staff-service-order-modal ref="modalForm" @ok="myUnfinished"></staff-service-order-modal>
     <service-task-detail-modal :path="path" :formData="formData" ref="taskDealModal"></service-task-detail-modal>
-    <a-spin :spinning="loading">
       <a-row type="flex" justify="start" :gutter="3">
-        <a-col :sm="24" :lg="12">
-          <a-card>
-            <div slot="title" class="index-md-title">
-              <a-icon type="check-circle" />
-              我的待办【{{ dataSource1Size }}】
-            </div>
+        <a-col style="padding-top: 10px;" :sm="24" :lg="12">
+          <div class="card-head">
+            <p class="card-head-p1">
+              <span class="card-head-p1-span1">新的待办</span> <span class="card-head-p1-span2">({{ dataSource1Size }})</span>
+            </p>
+            <p class="card-head-p2" @click="toServiceOrderList">
+              更多 <a-icon type="double-right" />
+            </p>
+          </div>
+         <div class="card-tb">
 
-            <div slot="extra">
-              <span style="cursor: pointer" @click="toServiceOrderList" slot="footer" >更多 <a-icon type="double-right" /></span>
-            </div>
-
-            <a-table
-              :class="'my-index-table tytable1'"
-              ref="table1"
-              size="small"
-              rowKey="id"
-              :columns="columns"
-              :dataSource="dataSource1"
-              :pagination="false">
+            <a-table :columns="columns" :data-source="dataSource1" :pagination="false">
               <template slot="ellipsisText" slot-scope="text">
                 <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-              </template>
-
-              <template slot="dayWarnning" slot-scope="text,record">
-                <a-icon type="bulb" theme="twoTone" style="font-size:22px" :twoToneColor="getTipColor(record)"/>
               </template>
 
               <span slot="action" slot-scope="text, record">
@@ -56,79 +48,71 @@
                   <a @click="startProcess(record)">提交流程</a>
                   <a-divider type="vertical"/>
                 </template>
-                <a @click="showDetailServiceOrder(record)">详情</a>
+                <a @click="showDetailServiceOrder(record)">查看</a>
               </span>
-
             </a-table>
-          </a-card>
+            </div>
         </a-col>
 
         <!-- <a-col :span="24">
           <div style="height: 5px;"></div>
         </a-col>-->
 
-        <a-col :sm="24" :lg="12">
-          <a-card>
-            <div slot="title" class="index-md-title">
-              <a-icon type="container" />
-              常用请求【{{ dataSource4Size }}】
-            </div>
-            <a-table
-              :class="'my-index-table tytable4'"
-              ref="table4"
-              size="small"
-              rowKey="id"
-              :columns="columns"
-              :dataSource="dataSource4"
-              :pagination="false">
-              <template slot="ellipsisText" slot-scope="text">
-                <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-              </template>
+        <a-col style="padding-top: 10px;" :sm="24" :lg="12">
+          <div class="card-head">
+            <p class="card-head-p1">
+              <span class="card-head-p1-span1">常用请求</span> <span class="card-head-p1-span2">({{ dataSource2Size }})</span>
+            </p>
+            <!--<p class="card-head-p2" @click="toServiceOrderList">
+              更多 <a-icon type="double-right" />
+            </p>-->
+          </div>
+          <div class="card-tb">
 
-              <template slot="dayWarnning" slot-scope="text,record">
-                <a-icon type="bulb" theme="twoTone" style="font-size:22px" :twoToneColor="getTipColor(record)"/>
+            <a-table :columns="columns" :data-source="dataSource2" :pagination="false">
+              <!--<template slot="ellipsisText" slot-scope="text">
+                <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
               </template>
 
               <span slot="action" slot-scope="text, record">
-                <a @click="handleData">办理</a>
-              </span>
-
+                <template v-if="record.bpmStatus === '1'">
+                  <a @click="startProcess(record)">提交流程</a>
+                  <a-divider type="vertical"/>
+                </template>
+                <a @click="showDetailServiceOrder(record)">查看</a>
+              </span>-->
             </a-table>
-          </a-card>
+          </div>
         </a-col>
 
-        <a-col :sm="24" :lg="12">
-          <a-card>
-            <div slot="title" class="index-md-title">
-              <a-icon type="bulb" />
-              知识库【{{ dataSource3.length }}】
-            </div>
-            <a-table
-              :class="'my-index-table '"
-              ref="table3"
-              size="small"
-              rowKey="id"
-              :columns="columns"
-              :dataSource="dataSource3"
-              :pagination="false">
-              <template slot="ellipsisText" slot-scope="text">
+        <a-col style="padding-top: 10px;" :sm="24" :lg="24">
+          <div class="card-head">
+            <p class="card-head-p1">
+              <span class="card-head-p1-span1">知识库</span> <span class="card-head-p1-span2">({{ dataSource2Size }})</span>
+            </p>
+            <!--<p class="card-head-p2" @click="toServiceOrderList">
+              更多 <a-icon type="double-right" />
+            </p>-->
+          </div>
+          <div class="card-tb">
+
+            <a-table :columns="columns" :data-source="dataSource3" :pagination="false">
+              <!--<template slot="ellipsisText" slot-scope="text">
                 <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
               </template>
 
-              <template slot="dayWarnning" slot-scope="text,record">
-                <a-icon type="bulb" theme="twoTone" style="font-size:22px" :twoToneColor="getTipColor(record)"/>
-              </template>
-
-              <span slot="action" >
-                <a @click="handleData">办理</a>
-              </span>
-
+              <span slot="action" slot-scope="text, record">
+                <template v-if="record.bpmStatus === '1'">
+                  <a @click="startProcess(record)">提交流程</a>
+                  <a-divider type="vertical"/>
+                </template>
+                <a @click="showDetailServiceOrder(record)">查看</a>
+              </span>-->
             </a-table>
-          </a-card>
+          </div>
         </a-col>
 
       </a-row>
-    </a-spin>
 
   </div>
 </template>
@@ -270,62 +254,52 @@
     }
   }
 </script>
-
 <style>
-  .my-index-table{height:270px}
-  .my-index-table table{font-size: 14px !important;}
-
-  .index-container-ty .ant-card-head-title{padding-top: 6px;padding-bottom: 6px;}
-  .index-container-ty .ant-card-extra{padding:0}
-  /*.index-container-ty .ant-card-extra a{color:#fff}*/
-  .index-container-ty .ant-card-extra a:hover{color:#152ede}
-  .index-container-ty .ant-card-head-wrapper,.index-container-ty .ant-card-head{
-    line-height:24px;
-    min-height:24px;
-    /*background: #90aeff;*/
-    /*background: #4d79ef;*/
-  }
-  .index-container-ty .ant-card-body{padding: 10px 12px 0px 12px}
-
-  /* .index-container-ty .ant-card-actions{background: #fff}
-   .index-container-ty .ant-card-actions li {margin:2px 0;}
-   .index-container-ty .ant-card-actions > li > span{width: 100%}*/
-
-  .index-container-ty .ant-table-footer{text-align: right;padding:6px 12px 6px 6px;background: #fff;border-top: 2px solid #f7f1f1;}
-
-  .index-md-title{
-    postion:relative;
-    padding-left:24px;
+  .tubg{
+    text-align: center;
+    line-height: 25px;
     width: 100%;
-    /*color: #fff;*/
-    font-size: 21px;
-    font-family: cursive;
+    font-size: 16px;
   }
-  .index-md-title img{
-    position: absolute;
-    height:32px;
-    top: 2px;
-    left:14px;
+  .tubg:hover {
+    background-color: #1890FF;
+    display: block;
+    font-family: bold;
+    opacity: 0.8;
+    color:white;
+    font-size: 16px;
   }
-
-  .index-container-ty .ant-card-body{
-    /*border-left:1px solid #90aeff;
-    /*border-right:1px solid #90aeff;
-    border-bottom:1px solid #90aeff;*/
+  .ant-table-tbody >tr >td{
+    line-height: 10px;
   }
-
-  .index-container-ty .ant-table-thead > tr > th,
-  .index-container-ty .ant-table-tbody > tr > td{
-    border-bottom: 1px solid ;
-  }
-  .index-container-ty  .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-thead > tr > th{
-    border-bottom: 1px solid ;
-  }
-  .index-container-ty .ant-table-placeholder {
-    padding: 0
+  .card-head{
+    background-color: white;
+    line-height:45px;
+    height: 45px;
   }
 
-  .headerContent .title .welcome-text {
-    display: none;
+  .card-head-p1{
+    float: left;
+    margin-left: 22px;
+    margin-bottom: 6px;
+  }
+  .card-head-p2{
+    float: right;
+    margin-right: 22px;
+    margin-bottom: 6px;
+    cursor: pointer
+  }
+  .card-head-p1-span1{
+    font-weight:bold;
+    font-size: 14px;
+    line-height: 40px;
+    margin-right: 5px
+  }
+  .card-head-p1-span2{
+    color: gray;
+    font-size: 12px;
+  }
+  .card-tb{
+    background-color: white;height: 271px;padding-left: 15px;padding-right: 15px;
   }
 </style>
