@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="frontline==true||supportline==true">
+    <template v-if="frontline==true||supportline==true||frontlinesup==true||supportlinesup==true">
       <a-tabs type="card" >
         <template v-if="frontline==true">
         <a-tab-pane tab="一线运维" key="1">
@@ -11,6 +11,16 @@
         <a-tab-pane tab="二线运维" key="2">
           <support-line-index-task ></support-line-index-task>
         </a-tab-pane>
+        </template>
+        <template v-if="frontlinesup==true">
+          <a-tab-pane tab="一线运维主管" key="3">
+            <front-line-sup-index-task ></front-line-sup-index-task>
+          </a-tab-pane>
+        </template>
+        <template v-if="supportlinesup==true">
+          <a-tab-pane tab="二线运维主管" key="4">
+            <support-line-sup-index-task ></support-line-sup-index-task>
+          </a-tab-pane>
         </template>
         <a-tab-pane tab="员工首页" key="0">
           <index-task ></index-task>
@@ -46,7 +56,9 @@
 <script>
   import IndexTask from './IndexTask'
   import FrontLineIndexTask from './FrontLineIndexTask'
+  import FrontLineSupIndexTask from './FrontLineSupIndexTask'
   import SupportLineIndexTask from './SupportLineIndexTask'
+  import SupportLineSupIndexTask from './SupportLineSupIndexTask'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -54,24 +66,35 @@
     components: {
       IndexTask,
       FrontLineIndexTask,
-      SupportLineIndexTask
+      FrontLineSupIndexTask,
+      SupportLineIndexTask,
+      SupportLineSupIndexTask
     },
     data() {
       return {
         frontline: false,
+        frontlinesup: false,
         supportline: false,
+        supportlinesup: false,
         indexStyle: 0,
       }
     },
     created() {
       let roles = this.userInfo().roles;
       for (let j = 0; j < roles.length; j++) {
+
         if (roles[j] === 'FRONTLINE_PERSONNEL') {
           this.frontline = true;
           this.indexStyle = 1;
         } else if (roles[j] === 'SUPPORT_PERSONNEL') {
           this.supportline = true;
           this.indexStyle = 2;
+        } else if (roles[j] === 'FRONTLINE_SUP') {
+          this.frontlinesup = true;
+          this.indexStyle = 3;
+        } else if (roles[j] === 'SUPPORTLINE_SUP') {
+          this.supportlinesup = true;
+          this.indexStyle = 4;
         }
       }
     },

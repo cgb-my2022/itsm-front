@@ -64,6 +64,7 @@
         title: "添加已有用户",
         names: [],
         visible: false,
+        currentRoleId: '',
         placement: 'right',
         description: '',
         // 查询条件
@@ -159,7 +160,6 @@
       }
     },
     created() {
-      this.loadData();
     },
     methods: {
       searchQuery() {
@@ -186,7 +186,9 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
+        this.selectedRowKeys = [];
         var params = this.getQueryParams();//查询条件
+        params.roleId = this.currentRoleId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource1 = res.result.records;

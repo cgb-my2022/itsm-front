@@ -18,7 +18,7 @@
         @click="toggle"/>
 
       <span v-if="device === 'desktop'">欢迎进入 运维管理系统</span>
-      <span v-else>RISUN ITSM</span>
+      <span v-else>{{ nickname() }}</span>
 
       <user-menu :theme="theme"/>
     </div>
@@ -50,6 +50,7 @@
   import UserMenu from '../tools/UserMenu'
   import SMenu from '../menu/'
   import Logo from '../tools/Logo'
+  import { mapGetters } from 'vuex'
 
   import { mixin } from '@/utils/mixin.js'
 
@@ -90,7 +91,7 @@
     data() {
       return {
         headerBarFixed: false,
-        //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+        // update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
         topMenuStyle: {
           headerIndexLeft: {},
           topNavHeader: {},
@@ -113,16 +114,17 @@
         }
       }
     },
-    //update-end--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+    // update-end--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
     mounted() {
       window.addEventListener('scroll', this.handleScroll)
-      //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+      // update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
       if (this.mode === 'topmenu') {
         this.buildTopMenuStyle()
       }
-      //update-end--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+      // update-end--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
     },
     methods: {
+      ...mapGetters(['nickname']),
       handleScroll() {
         if (this.autoHideHeader) {
           let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
@@ -138,7 +140,7 @@
       toggle() {
         this.$emit('toggle')
       },
-      //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+      // update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
       buildTopMenuStyle() {
         if (this.mode === 'topmenu') {
           if (this.device === 'mobile') {
@@ -156,7 +158,7 @@
           }
         }
       }
-      //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+      // update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
     }
   }
 </script>

@@ -39,7 +39,7 @@
                 :dataSource="dataSource1"
                 :loading="loading"
                 :rowSelection="{selectedRowKeys: selectedRowKeys,onSelect:onSelect,onChange: onSelectChange,type: type}"
-                @change="handleTableChange">
+                >
 
                <span slot="username" slot-scope="text, record">
                   <j-ellipsis :value="text" :length="15"/>

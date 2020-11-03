@@ -485,21 +485,25 @@
           params.userIdList.push(data[a])
         }
         console.log(params)
-        postAction(this.url.addUserRole, params).then((res) => {
-          if (res.success) {
-            this.loadData2()
-            this.$message.success(res.message)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        if (params.userIdList.length > 0) {
+          postAction(this.url.addUserRole, params).then((res) => {
+            if (res.success) {
+              this.loadData2()
+              this.$message.success(res.message)
+            } else {
+              this.$message.warning(res.message)
+            }
+          })
+        }
       },
 
       handleAddUserRole() {
         if (this.currentRoleId == '') {
           this.$message.error('请选择一个角色!')
         } else {
-          this.$refs.selectUserModal.visible = true
+          this.$refs.selectUserModal.visible = true;
+          this.$refs.selectUserModal.currentRoleId = this.currentRoleId;
+          this.$refs.selectUserModal.loadData();
         }
       },
       handleOpen(record) {

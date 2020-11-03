@@ -130,6 +130,7 @@
         dataSource1Size: 0,
         dataSource2: [],
         dataSource2Size: 0,
+        formData: {},
         columns: [
           {
             title: '事件内容',

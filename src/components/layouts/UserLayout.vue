@@ -4,7 +4,7 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
+            <img src="~@/assets/logo2.png" class="logo" alt="logo">
             <span class="title">RISUN ITSM</span>
           </a>
         </div>

@@ -295,18 +295,18 @@
       editAfter() {
         let fieldval = pick(this.model, 'userName', 'realName', 'phoneNo', 'deptName', 'workplaceDepartids', 'workplaceDepartnames', 'workplaceDetail', 'businessType', 'businessName', 'deviceInfo', 'eventContent', 'bpmStatus', 'createTime', 'orderStatus', 'reason', 'solution', 'problemType')
 
-        this.statusName = this.getStatus(this.model.orderStatus);
-        let orderStatus = this.model.orderStatus
-        if (orderStatus === 3 || orderStatus === 4 || orderStatus === 8) {
+        this.statusName = this.getStatus(fieldval.orderStatus);
+        let orderStatusDetail = this.model.orderStatusDetail
+        if (orderStatusDetail === 3 || orderStatusDetail === 4 || orderStatusDetail === 8 ) {
           this.statusName += '(' + this.model.frontlineUserRealname + ')';
-        } else if (orderStatus === 6 || orderStatus === 7 || orderStatus === 9) {
+        } else if (orderStatusDetail === 6 || orderStatusDetail === 7 || orderStatusDetail === 9 ) {
           this.statusName += '(' + this.model.supportUserRealname + ')';
         }
 
         let workplaceDepartids = fieldval.workplaceDepartids;
         fieldval.workplaceDepartids = JSON.parse(workplaceDepartids);
 
-        fieldval.name = fieldval.userName+'('+fieldval.realName+')';
+        fieldval.name = fieldval.userName + '(' + fieldval.realName + ')';
         fieldval.problemTypeName = this.getProblemType(fieldval.problemType);
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)

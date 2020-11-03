@@ -324,19 +324,25 @@
       },
       handleEntruster(data) {
         var that = this;
-        var params = {
-          id: this.formData.id,
-          version: this.formData.version,
-          frontlineUserName: data.username
-        };// 查询条件
+        var params = {};// 查询条件
         console.log('委托', params)
         let url0 = '';
         //一线待转办
-        if(this.formData.orderStatusDetail==11){
+        if(this.formData.orderStatusDetail==10){
           url0 = that.url.delegateFrontUser;
+          params = {
+            id: this.formData.id,
+            version: this.formData.version,
+            frontlineUserName: data.username
+          };
           //二线待转办
-        }else if(this.formData.orderStatusDetail==12){
+        }else if(this.formData.orderStatusDetail==11){
           url0 = that.url.delegateSupportUser;
+          params = {
+            id: this.formData.id,
+            version: this.formData.version,
+            supportUserName: data.username
+          };
         }
         putAction(url0, params).then((res) => {
           if (res.success) {

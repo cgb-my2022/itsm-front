@@ -121,7 +121,7 @@
 
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-deal-modal :path="path" :formData="formData" ref="taskDealModal" @ok="taskOk" />
+    <service-task-deal-modal  :formData="formData" ref="taskDealModal" @ok="taskOk" />
     <service-task-detail-modal :path="path" :formData="formData" ref="taskDeatilModal" />
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
@@ -137,7 +137,6 @@
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import JDate from '@/components/jeecg/JDate.vue'
   import '@/assets/less/TableExpand.less'
-  import { postAction, getAction } from '@/api/manage'
   import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
 
   import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
@@ -265,7 +264,10 @@
         this.$refs.taskDealModal.deal(record);
       },
       // 详情
-      showDetailServiceOrder() {
+      showDetailServiceOrder(record) {
+        this.formData = record;
+        this.formData.dataId = record.id;
+        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
         this.$refs.taskDeatilModal.deal();
       },
       taskOk() {
