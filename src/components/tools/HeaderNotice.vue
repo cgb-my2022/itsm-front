@@ -118,7 +118,7 @@
     },
     mounted() {
       this.loadData();
-       //this.timerFun();
+      //this.timerFun();
       this.initWebSocket();
      // this.heartCheckFun();
     },

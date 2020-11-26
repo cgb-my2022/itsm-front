@@ -181,7 +181,7 @@
           }
         })
 
-        getAction(this.url.ywDealRateByDay, params).then((res) => {
+        getAction(this.url.ywDealRateByMonth, params).then((res) => {
           if (res.success) {
             this.ywDealRateSource = res.result;
           }
