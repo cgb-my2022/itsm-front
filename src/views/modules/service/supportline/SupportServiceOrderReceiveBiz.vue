@@ -234,7 +234,7 @@
           }
         ],
         url: {
-          list: '/system/serviceOrder/supportLinereceiveList',
+          list: '/system/serviceOrder/supportLineList',
           receive: '/system/serviceOrder/supportReceiveOrder'
         },
         dictOptions: {},
@@ -287,6 +287,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record);
       },
       // 详情

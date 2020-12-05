@@ -19,6 +19,11 @@
           挂起原因：{{ model.supportPendingReason }}
         </a-tag>
       </template>
+      <template v-if="model.orderStatusDetail===12||model.orderStatusDetail===13">
+        <a-tag color="red">
+          备注：{{ model.remark }}
+        </a-tag>
+      </template>
       <span id="staffLeaveTitle">服务请求</span>
       <span style="text-align: right;display: block;font-size: 12px;margin-bottom: 3px">编号:{{ model.id }}</span>
       <!--<div class="staffLeaveTableId" style="margin-bottom: 5px">
@@ -293,14 +298,16 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model, 'userName', 'realName', 'phoneNo', 'deptName', 'workplaceDepartids', 'workplaceDepartnames', 'workplaceDetail', 'businessType', 'businessName', 'deviceInfo', 'eventContent', 'bpmStatus', 'createTime', 'orderStatus', 'reason', 'solution', 'problemType')
+        let fieldval = pick(this.model, 'userName', 'realName', 'phoneNo', 'deptName', 'workplaceDepartids', 'workplaceDepartnames', 'workplaceDetail', 'businessType', 'businessName', 'deviceInfo', 'eventContent', 'bpmStatus', 'createTime', 'orderStatus', 'reason', 'solution', 'problemType', 'remark')
 
         this.statusName = this.getStatus(fieldval.orderStatus);
         let orderStatusDetail = this.model.orderStatusDetail
-        if (orderStatusDetail === 3 || orderStatusDetail === 4 || orderStatusDetail === 8 ) {
+        if (orderStatusDetail === 3 || orderStatusDetail === 4 || orderStatusDetail === 12) {
           this.statusName += '(' + this.model.frontlineUserRealname + ')';
-        } else if (orderStatusDetail === 6 || orderStatusDetail === 7 || orderStatusDetail === 9 ) {
+        } else if (orderStatusDetail === 6 || orderStatusDetail === 7 || orderStatusDetail === 13) {
           this.statusName += '(' + this.model.supportUserRealname + ')';
+        }else if (orderStatusDetail === 8 || orderStatusDetail === 9) {
+          this.statusName += '(' + this.model.realName + ')';
         }
 
         let workplaceDepartids = fieldval.workplaceDepartids;

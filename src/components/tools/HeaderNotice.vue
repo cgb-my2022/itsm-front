@@ -138,6 +138,7 @@
         }, 2000)
       },
       loadData () {
+
         try {
           // 获取系统消息
           getAction(this.url.listCementByUser).then((res) => {
@@ -158,6 +159,29 @@
           this.stopTimer = true;
           console.log('通知异常', err);
         }
+
+        setTimeout(() => {
+          try {
+            // 获取系统消息
+            getAction(this.url.listCementByUser).then((res) => {
+              if (res.success) {
+                this.announcement1 = res.result.anntMsgList;
+                this.msg1Count = res.result.anntMsgTotal;
+                this.msg1Title = '通知(' + res.result.anntMsgTotal + ')';
+                this.announcement2 = res.result.sysMsgList;
+                this.msg2Count = res.result.sysMsgTotal;
+                this.msg2Title = '系统消息(' + res.result.sysMsgTotal + ')';
+              }
+            }).catch(error => {
+              console.log('系统消息通知异常', error);// 这行打印permissionName is undefined
+              this.stopTimer = true;
+              console.log('清理timer');
+            });
+          } catch (err) {
+            this.stopTimer = true;
+            console.log('通知异常', err);
+          }
+        }, 5000)
       },
       fetchNotice () {
         if (this.loadding) {
@@ -222,6 +246,7 @@
         if (data.cmd === 'topic') {
             // 系统通知
           this.loadData();
+
         } else if (data.cmd === 'user') {
             // 用户消息
           this.loadData();

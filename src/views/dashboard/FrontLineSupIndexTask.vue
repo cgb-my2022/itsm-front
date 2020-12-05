@@ -44,7 +44,7 @@
               </span>-->
 
               <span slot="action" slot-scope="text, record">
-                  <a @click="handleProcess(record)">办理</a>
+                  <a @click="handleProcess(record)">指派</a>
               </span>
 
             </a-table>
@@ -167,14 +167,16 @@
       }
     },
     created() {
-      this.mock();
-      this.toDoEvents();
-      this.ongoingEvents();
+      this.loadData();
     },
     mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
+      loadData() {
+        this.mock();
+        this.toDoEvents();
+      },
       showClaimButton(assignee) {
         if (!assignee) {
           return true;
@@ -183,6 +185,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '指派';
         this.$refs.taskDealModal.deal(record);
       },
       getBizProcessNodeInfo(record) {

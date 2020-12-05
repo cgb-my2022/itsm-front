@@ -218,12 +218,12 @@
             dataIndex: 'orderStatus_dictText',
             width: 80
           },
-          {
+          /*{
             title: '工单状态明细',
             align: 'center',
             dataIndex: 'orderStatusDetail_dictText',
             width: 80
-          },
+          },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -287,6 +287,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record);
         /*this.loading = true;
         this.getBizProcessNodeInfo(record);*/

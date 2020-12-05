@@ -3,7 +3,7 @@
   <!-- 弹出框 -->
   <a-modal
     :visible="visible"
-    title="服务请求办理"
+    :title="title"
     width="900px"
     destroyOnClose
     :bodyStyle="bodyStyle"
@@ -13,23 +13,26 @@
     <a-spin :spinning="confirmLoading">
       <div style="margin-top: 5px">
         <!--<template v-if="isComp" >
-          <service-biz-dynamic-link path="modules/service/staff/modules/StaffServiceOrderForm" width="100%" height="100%" :formData="formData"></service-biz-dynamic-link>
-        </template>
-        <template v-else>
-          <iframe :src="iframeUrl" frameborder="0" width="100%" height="100%" scrolling="auto"></iframe>
-        </template>-->
+              <service-biz-dynamic-link path="modules/service/staff/modules/StaffServiceOrderForm" width="100%" height="100%" :formData="formData"></service-biz-dynamic-link>
+            </template>
+            <template v-else>
+              <iframe :src="iframeUrl" frameborder="0" width="100%" height="100%" scrolling="auto"></iframe>
+            </template>-->
         <staff-service-order-form :formData="formData"></staff-service-order-form>
       </div>
-      <a-divider />
+      <!--<a-collapse-panel key="2" header="This is panel header 2" :disabled="false">
+          <p>{{ text }}</p>
+        </a-collapse-panel>-->
+      <!-- <a-divider />-->
       <div style="text-align: center">
         <!--当前任务环节：{{ currTask.taskName }}-->
         <!--<a-select style="width:300px" :defaultValue="currTask.id">
-          <a-select-option :value="currTask.id">{{ currTask.taskName }}</a-select-option>
-        </a-select>-->
+            <a-select-option :value="currTask.id">{{ currTask.taskName }}</a-select-option>
+          </a-select>-->
 
         <a-space :size="8" align="center">
           <!--一线-->
-          <template v-if="formData.orderStatusDetail===3"><!--一线已接单-->
+          <template v-if="formData.orderStatusDetail===3||formData.orderStatusDetail===12"><!--一线已接单-->
             <a-button @click="taskDeal()" type="primary" icon="caret-right">任务办理</a-button>
             <a-button @click="frontPending()" type="primary" icon="lock">暂挂</a-button>
             <a-button @click="toSupportLine()" type="primary" icon="rollback">转二线</a-button>
@@ -39,23 +42,26 @@
           </template>
 
           <!--二线-->
-          <template v-else-if="formData.orderStatusDetail===6"><!--二线已接单-->
+          <template v-else-if="formData.orderStatusDetail===6||formData.orderStatusDetail===13"><!--二线已接单-->
             <a-button @click="taskDeal()" type="primary" icon="caret-right">任务办理</a-button>
             <a-button @click="supportPending()" type="primary" icon="lock">暂挂</a-button>
           </template>
           <template v-else-if="formData.orderStatusDetail===7"><!--一二线暂挂状态-->
             <a-button @click="supportActive()" type="primary" icon="unlock">解挂</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===10"><!--一线待转办状态-->
-            <a-button @click="frontDelegate()" type="primary" icon="unlock">转办</a-button>
+          <template v-else-if="formData.orderStatusDetail===10"><!--一线待指派状态-->
+            <a-button @click="frontDelegate()" type="primary" icon="user">指派</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===11"><!--二线待转办状态-->
-            <a-button @click="supportDelegate()" type="primary" icon="unlock">转办</a-button>
+          <template v-else-if="formData.orderStatusDetail===11"><!--二线待指派状态-->
+            <a-button @click="supportDelegate()" type="primary" icon="user">指派</a-button>
           </template>
-
+          <template v-if="formData.orderStatusDetail===8||formData.orderStatusDetail===9"><!--待确认状态-->
+            <a-button @click="confirmOrder()" type="primary" icon="check-circle">确认</a-button>
+          </template>
         </a-space>
         <!-- <span style="color: red" v-if="currTask.suspendFlag">当前流程已挂起，需要进行解挂，再进行办理！</span>-->
       </div>
+
     </a-spin>
     <service-biz-task-opt-modal ref="bpmBizTaskOptModal" :formData="formData" @ok="completeProcess"></service-biz-task-opt-modal>
 
@@ -72,7 +78,7 @@
         placeholder="请输入转处理原因"
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
-  </a-modal>
+    </a-modal>
     <a-modal
       title="暂挂"
       :visible="visible3"
@@ -99,27 +105,56 @@
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>
+    <a-modal
+      title="确认"
+      :visible="visible5"
+      :confirm-loading="confirmLoading5"
+      @cancel="handleCancel5"
+      @ok="handleOk5"
+    >
+      <div style="width:80%;display: inline-block;margin-top: 5px">
+        <a-textarea
+          v-model="model.remark"
+          placeholder="请输入备注"
+          :auto-size="{ minRows: 4, maxRows: 8 }"
+        />
+      </div>
+      <div style="margin-top: 5px;margin-bottom: 25px">
+        <a-radio-group v-model="confirmAction" >
+          <a-radio value="1">
+            <span style="color: #1121ff;">已完成</span>
+          </a-radio>
+          <a-radio value="2">
+            <span style="color: red;">重新激活</span>
+          </a-radio>
+        </a-radio-group>
+        <!--<a-button type="primary" @click="resolve()"  icon="check-circle">已解决</a-button>
+        <a-button @click="unResolve()" type="danger" icon="stop">激活</a-button>-->
+      </div>
+    </a-modal>
   </a-modal>
 </template>
 
 <script>
 
-  import { putAction } from '@/api/manage'
+  import { putAction, postAction } from '@/api/manage'
   import { isURL } from '@/utils/validate'
   import ServiceBizTaskOptModal from './ServiceBizTaskOptModal.vue';
   import StaffServiceOrderForm from '../staff/modules/StaffServiceOrderForm';
   import Vue from 'vue'
   import { ACCESS_TOKEN } from '@/store/mutation-types'
-  import BizServiceTaskSelectEntrusterModal from "./BizServiceTaskSelectEntrusterModal.vue";
+  import BizServiceTaskSelectEntrusterModal from './BizServiceTaskSelectEntrusterModal.vue';
+  import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
     name: 'ServiceTaskDealModal',
     components: {
+      ATextarea,
       StaffServiceOrderForm,
       ServiceBizTaskOptModal,
       BizServiceTaskSelectEntrusterModal
     },
-    //props: ['path', 'formData'],
+    // props: ['path', 'formData'],
     computed: {
       isComp: function () {
         console.log('isComp组件名称：', this.path);
@@ -137,21 +172,25 @@
     },
     data() {
       return {
+        confirmAction: '1',
         ModalText: '',
         model: {
           id: '',
           transferReason: '',
           frontPendingReason: '',
-          supportPendingReason: ''
+          supportPendingReason: '',
+          remark: ''
         },
         formData: {},
+        visible5: false,
         visible4: false,
         visible3: false,
         visible2: false,
         loading: false,
-        title: '流程',
+        title: '',
         visible: false,
         confirmLoading: false,
+        confirmLoading5: false,
         confirmLoading4: false,
         confirmLoading3: false,
         currTask: {},
@@ -166,19 +205,22 @@
          // taskEntrust: '/act/task/taskEntrust',
           delegateFrontUser: '/system/serviceOrder/delegateFrontUser',
           delegateSupportUser: '/system/serviceOrder/delegateSupportUser',
-          //suspend: '/act/processInstance/suspend',
+          // suspend: '/act/processInstance/suspend',
           frontLinePending: '/system/serviceOrder/frontLinePending',
           supportLinePending: '/system/serviceOrder/supportLinePending',
-          //restart: '/act/processInstance/restart',
+          // restart: '/act/processInstance/restart',
           frontLineUnlock: '/system/serviceOrder/frontLineUnlock',
           supportLineUnlock: '/system/serviceOrder/supportLineUnlock',
-          transferSupport: '/system/serviceOrder/transferSupport'
+          transferSupport: '/system/serviceOrder/transferSupport',
+          unresolve: '/system/serviceOrder/confirmOrderUnresolved',
+          resolve: '/system/serviceOrder/confirmOrderResolved'
         }
       }
     },
     created() {
     },
     methods: {
+
       toSupportLine() {
          this.visible2 = true;
       },
@@ -187,6 +229,9 @@
       },
       supportPending() {
         this.visible4 = true;
+      },
+      confirmOrder() {
+        this.visible5 = true;
       },
       toSupportOk(e) {
         this.model.id = this.formData.id;
@@ -214,15 +259,13 @@
           that.visible = false;
           that.$emit('ok');
         })
-
-
       },
       handleCancel(e) {
         console.log('Clicked cancel button');
         this.visible2 = false;
       },
 
-      //暂挂
+      // 暂挂
       handleOk3(e) {
         this.model.id = this.formData.id;
         let that = this;
@@ -277,6 +320,13 @@
           that.$emit('ok');
         })
       },
+      handleOk5(e) {
+        if (this.confirmAction === '1') {
+          this.resolve();
+        } else if (this.confirmAction === '2') {
+          this.unResolve();
+        }
+      },
       handleCancel3(e) {
         console.log('Clicked cancel button');
         this.visible3 = false;
@@ -284,6 +334,10 @@
       handleCancel4(e) {
         console.log('Clicked cancel button');
         this.visible4 = false;
+      },
+      handleCancel5(e) {
+        console.log('Clicked cancel button');
+        this.visible5 = false;
       },
       // 关闭模态框
       handleModalCancel() {
@@ -327,16 +381,16 @@
         var params = {};// 查询条件
         console.log('委托', params)
         let url0 = '';
-        //一线待转办
-        if(this.formData.orderStatusDetail==10){
+        // 一线待转办
+        if (this.formData.orderStatusDetail == 10) {
           url0 = that.url.delegateFrontUser;
           params = {
             id: this.formData.id,
             version: this.formData.version,
             frontlineUserName: data.username
           };
-          //二线待转办
-        }else if(this.formData.orderStatusDetail==11){
+          // 二线待转办
+        } else if (this.formData.orderStatusDetail == 11) {
           url0 = that.url.delegateSupportUser;
           params = {
             id: this.formData.id,
@@ -375,7 +429,7 @@
           }
         });
       },
-      /*handleSuspend() {
+      /* handleSuspend() {
         var that = this;
         var params = { 'processInstanceId': this.currTask.procInstId };
         this.$confirm({
@@ -395,7 +449,7 @@
             })
           }
         });
-      },*/
+      }, */
       // 激活
      /* handleActive() {
         var that = this;
@@ -417,7 +471,7 @@
             })
           }
         });
-      }*/
+      } */
       frontActive() {
         var that = this;
         var params = { 'id': this.formData.id, version: this.formData.version };
@@ -460,15 +514,55 @@
           }
         });
       },
-      //一线转办
-      frontDelegate(){
+      // 一线转办
+      frontDelegate() {
         this.$refs.selectEntrusterModal.select(1, this.formData.workplaceCompanyId);
-        this.$refs.selectEntrusterModal.title="选择办理人";
+        this.$refs.selectEntrusterModal.title = '选择办理人';
       },
-      //二线转办
-      supportDelegate(){
+      // 二线转办
+      supportDelegate() {
         this.$refs.selectEntrusterModal.select(2);
-        this.$refs.selectEntrusterModal.title="选择办理人";
+        this.$refs.selectEntrusterModal.title = '选择办理人';
+      },
+
+      // 未解决
+      unResolve(e) {
+        this.model.id = this.formData.id;
+        let that = this;
+        var params = { id: this.model.id, version: this.formData.version, remark: this.model.remark };
+
+        postAction(that.url.unresolve, params).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+          } else {
+            that.$message.warning(res.message);
+          }
+          that.visible = false;
+          that.$emit('ok');
+        }).finally(() => {
+          that.visible = false;
+          that.$emit('ok');
+        })
+      },
+
+      // 已解决
+      resolve(e) {
+        this.model.id = this.formData.id;
+        let that = this;
+        var params = { id: this.model.id, version: this.formData.version, remark: this.model.remark };
+
+        postAction(that.url.resolve, params).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+          } else {
+            that.$message.warning(res.message);
+          }
+          that.visible = false;
+          that.$emit('ok');
+        }).finally(() => {
+          that.visible = false;
+          that.$emit('ok');
+        })
       }
     }
 

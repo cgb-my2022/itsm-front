@@ -183,14 +183,17 @@
       }
     },
     created() {
-      this.mock();
-      this.toDoEvents();
-      this.ongoingEvents();
+      this.loadData();
     },
     mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
+      loadData(){
+        this.mock();
+        this.toDoEvents();
+        this.ongoingEvents();
+      },
       showClaimButton(assignee) {
         if (!assignee) {
           return true;
@@ -199,6 +202,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record);
       },
       getBizProcessNodeInfo(record) {

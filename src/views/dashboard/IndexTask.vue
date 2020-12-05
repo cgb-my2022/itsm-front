@@ -24,8 +24,9 @@
         </a-col>
       </a-row>
     </div>
-    <staff-service-order-modal ref="modalForm" @ok="myUnfinished"></staff-service-order-modal>
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDealModal"></service-task-detail-modal>
+    <staff-service-order-modal ref="modalForm" @ok="loadData()"></staff-service-order-modal>
+    <service-task-deal-modal   :path="path" :formData="formData" ref="taskDealModal" @ok="loadData()" />
+    <service-task-detail-modal  :path="path" :formData="formData" ref="taskDetailModal" />
       <a-row type="flex" justify="start" :gutter="3">
         <a-col style="padding-top: 10px;" :sm="24" :lg="12">
           <div class="card-head">
@@ -44,8 +45,8 @@
               </template>
 
               <span slot="action" slot-scope="text, record">
-                <template v-if="record.bpmStatus === '1'">
-                  <a @click="startProcess(record)">提交流程</a>
+                <template v-if="record.orderStatus===6">
+                  <a @click="handleProcess(record)">确认</a>
                   <a-divider type="vertical"/>
                 </template>
                 <a @click="showDetailServiceOrder(record)">查看</a>
@@ -121,6 +122,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import StaffServiceOrderModal from '../modules/service/staff/modules/StaffServiceOrderModal'
   import ServiceTaskDetailModal from '../modules/service/common/ServiceTaskDetailModal'
+  import ServiceTaskDealModal from '../modules/service/common/ServiceTaskDealModal'
   import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
   import { mapGetters } from 'vuex'
   import { getAction } from '@/api/manage'
@@ -128,7 +130,7 @@
   export default {
     name: 'IndexTask',
     mixins: [JeecgListMixin],
-    components: { StaffServiceOrderModal, ServiceTaskDetailModal },
+    components: { StaffServiceOrderModal, ServiceTaskDetailModal, ServiceTaskDealModal },
     data() {
       return {
         loading: false,
@@ -203,19 +205,27 @@
       }
     },
     created() {
-      this.mock();
-      this.myUnfinished();
     },
     mounted() {
+      this.loadData();
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
+      // 办理
+      handleProcess(record) {
+        this.$refs.taskDealModal.title = '确认服务请求';
+        this.$refs.taskDealModal.deal(record);
+      },
+      loadData() {
+        this.mock();
+        this.myUnfinished();
+      },
       // 详情
       showDetailServiceOrder(record) {
         this.formData = record;
         this.formData.dataId = record.id;
         this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDealModal.deal();
+        this.$refs.taskDetailModal.deal();
       },
       toServiceOrderList() {
         this.$router.replace('/service/StaffServiceOrderList')

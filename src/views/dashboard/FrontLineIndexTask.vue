@@ -102,7 +102,7 @@
       </a-row>
     </a-spin>
     <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
-    <service-task-deal-modal :path="path" :formData="formData" ref="taskDealModal" @ok="taskOk" />
+    <service-task-deal-modal  :path="path" :formData="formData" ref="taskDealModal" @ok="taskOk" />
     <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal" />
   </div>
 </template>
@@ -168,20 +168,24 @@
         ],
         url: {
           receiveList: '/system/serviceOrder/frontLinereceiveList',
+          frontLineOnDoList: '/system/serviceOrder/frontLineOnDoList',
           list: '/system/serviceOrder/frontLinereceiveList',
           receive: '/system/serviceOrder/receiveOrder'
         }
       }
     },
     created() {
-      this.mock();
-      this.toDoEvents();
-      this.ongoingEvents();
+      this.loadData();
     },
     mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
+      loadData() {
+        this.mock();
+        this.toDoEvents();
+        this.ongoingEvents();
+      },
       showClaimButton(assignee) {
         if (!assignee) {
           return true;
@@ -190,6 +194,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record);
       },
       getBizProcessNodeInfo(record) {
@@ -279,17 +284,10 @@
       ongoingEvents() {
         this.dataSource2 = [];
         var params = {
-          orderStatusDetail: 3
         };
-        getAction(this.url.receiveList, params).then((res) => {
+        getAction(this.url.frontLineOnDoList, params).then((res) => {
           if (res.success) {
-            console.log(res);
-            this.dataSource2Size = res.result.total;
-            if (this.dataSource2Size <= 5) {
-              this.dataSource2 = res.result.records;
-            } else {
-              this.dataSource2 = res.result.records.slice(0, 5);
-            }
+            this.dataSource2 = res.result.records;
           }
           if (res.code === 510) {
             this.$message.warning(res.message)

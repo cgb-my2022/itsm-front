@@ -187,21 +187,24 @@
           }
         ],
         url: {
-          receiveList: '/system/serviceOrder/supportLinereceiveList',
-          list: '/system/serviceOrder/supportLinereceiveList',
+          supportLineOnDoList: '/system/serviceOrder/supportLineOnDoList',
+          supportLinereceiveList: '/system/serviceOrder/supportLinereceiveList',
           receive: '/system/serviceOrder/supportReceiveOrder'
         }
       }
     },
     created() {
-      this.mock();
-      this.toDoEvents();
-      this.ongoingEvents();
+      this.loadData();
     },
     mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
+      loadData() {
+        this.mock();
+        this.toDoEvents();
+        this.ongoingEvents();
+      },
       showClaimButton(assignee) {
         if (!assignee) {
           return true;
@@ -210,6 +213,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record);
       },
       getBizProcessNodeInfo(record) {
@@ -291,20 +295,11 @@
         this.dataSource1 = [];
         //待办
         var params = {
-          orderStatusDetail: 5
         };
-        getAction(this.url.receiveList, params).then((res) => {
+        getAction(this.url.supportLinereceiveList, params).then((res) => {
           if (res.success) {
-            console.log(res);
             this.dataSource1Size = res.result.total;
-            if (this.dataSource1Size <= 5) {
-              this.dataSource1 = res.result.records;
-            }else {
-              this.dataSource1 = res.result.records.slice(0, 5);
-            }
-          }
-          if (res.code === 510) {
-            this.$message.warning(res.message)
+            this.dataSource1 = res.result.records;
           }
           this.loading = false;
         })
@@ -314,20 +309,11 @@
       ongoingEvents() {
         this.dataSource2 = [];
         var params = {
-          orderStatusDetail: 6
         };
-        getAction(this.url.receiveList, params).then((res) => {
+        getAction(this.url.supportLineOnDoList, params).then((res) => {
           if (res.success) {
-            console.log(res);
             this.dataSource2Size = res.result.total;
-            if (this.dataSource2Size <= 5) {
-              this.dataSource2 = res.result.records;
-            } else {
-              this.dataSource2 = res.result.records.slice(0, 5);
-            }
-          }
-          if (res.code === 510) {
-            this.$message.warning(res.message)
+            this.dataSource2 = res.result.records;
           }
           this.loading = false;
         })

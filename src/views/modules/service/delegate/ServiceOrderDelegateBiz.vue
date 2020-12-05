@@ -100,7 +100,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template v-if="record.orderStatusDetail==10||record.orderStatusDetail==11">
-              <a  @click="handleProcess(record)">办理</a>
+              <a  @click="handleProcess(record)">指派</a>
           </template>
           <a-dropdown>
           <a class="ant-dropdown-link">
@@ -215,13 +215,13 @@
             fixed: 'right',
             width: 80
           },
-          {
+          /*{
             title: '工单状态明细',
             align: 'center',
             dataIndex: 'orderStatusDetail_dictText',
             fixed: 'right',
             width: 80
-          },
+          },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -261,6 +261,7 @@
       },
       // 办理
       handleProcess(record) {
+        this.$refs.taskDealModal.title = '指派';
         this.$refs.taskDealModal.deal(record);
       },
       // 详情

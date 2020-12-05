@@ -63,10 +63,10 @@
     </a-list-item>-->
     <!-- 流转按钮 -->
     <div style="margin-top:20px;text-align:center">
-      <template v-if="formData.orderStatusDetail===3">
+      <template v-if="formData.orderStatusDetail===3||formData.orderStatusDetail===12">
         <a-button type="primary" @click="handlefrontProcessResolved()">已解决</a-button>
       </template>
-      <template v-if="formData.orderStatusDetail===6">
+      <template v-if="formData.orderStatusDetail===6||formData.orderStatusDetail===13">
         <a-button type="primary" @click="handlesupportProcessResolved()">已解决</a-button>
       </template>
 

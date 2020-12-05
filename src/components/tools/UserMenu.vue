@@ -15,8 +15,8 @@
       :footer="null"
       @cancel="searchMenuVisible=false">
       <a-select
-        autoFocus="true"
-        defaultActiveFirstOption="false"
+        :autoFocus="true"
+        :defaultActiveFirstOption="false"
         class="search-input"
         showSearch
         :showArrow="false"

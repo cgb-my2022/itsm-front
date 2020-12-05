@@ -83,6 +83,7 @@
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
+              <a-menu-item><a @click="triggerJob(record)">执行</a></a-menu-item>
               <a-menu-item><a @click="handleEdit(record)">编辑</a></a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -190,6 +191,7 @@
           deleteBatch: "/sys/quartzJob/deleteBatch",
           pause: "/sys/quartzJob/pause",
           resume: "/sys/quartzJob/resume",
+          trigger: "/sys/quartzJob/trigger",
           exportXlsUrl: "sys/quartzJob/exportXls",
           importExcelUrl: "sys/quartzJob/importExcel",
         },
@@ -244,6 +246,25 @@
           content:"是否启动选中任务?",
           onOk: function(){
             getAction(that.url.resume,{jobClassName:record.jobClassName}).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.loadData();
+                that.onClearSelected();
+              }else{
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        });
+      },
+      triggerJob: function(record){
+        var that = this;
+        //恢复定时任务
+        this.$confirm({
+          title:"确认执行",
+          content:"是否触发选中任务?",
+          onOk: function(){
+            getAction(that.url.trigger,{jobClassName:record.jobClassName}).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.loadData();

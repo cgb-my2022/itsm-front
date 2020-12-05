@@ -92,8 +92,12 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <template v-if="record.bpmStatus === '1'">
+          <!--<template v-if="record.bpmStatus === '1'">
             <a @click="startProcess(record)">提交流程</a>
+            <a-divider type="vertical"/>
+          </template>-->
+          <template v-if="record.orderStatus === 6">
+            <a @click="confirmProcess(record)">确认</a>
             <a-divider type="vertical"/>
           </template>
           <!--<a-dropdown>
@@ -155,7 +159,7 @@
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
     <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal"></service-task-detail-modal>
-
+    <service-task-deal-modal  :formData="formData" ref="taskDealModal" @ok="taskOk" />
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
@@ -164,7 +168,7 @@
 </template>
 
 <script>
-
+  import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import StaffServiceOrderModal from './modules/StaffServiceOrderModal'
   import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
@@ -182,7 +186,8 @@
       JDate,
       StaffServiceOrderModal,
       ServiceProcessInstPicModal,
-      ServiceTaskDetailModal
+      ServiceTaskDetailModal,
+      ServiceTaskDealModal
     },
     data () {
       return {
@@ -332,6 +337,11 @@
         this.$refs.extActProcessInstPicModal.preview(flowCode, dataId);
         this.$refs.extActProcessInstPicModal.title = '流程图';
       },
+      // 确认
+      confirmProcess(record) {
+        this.$refs.taskDealModal.title = '确认';
+        this.$refs.taskDealModal.deal(record);
+      },
       // 流程作废
       invalidProcess(record) {
         var that = this;
@@ -374,6 +384,11 @@
       taskNotify(record) {
         this.$refs.taskNotifyModal.notify(record);
         this.$refs.taskNotifyModal.title = '催办提醒';
+      },
+
+      taskOk() {
+        console.log('流程办理完成')
+        this.loadData()
       }
     }
   }
