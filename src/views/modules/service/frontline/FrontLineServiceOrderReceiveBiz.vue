@@ -234,7 +234,7 @@
           }
         ],
         url: {
-          list: '/system/serviceOrder/frontLinereceiveList',
+          list: '/system/serviceOrder/frontLineList',
           receive: '/system/serviceOrder/receiveOrder'
         },
         dictOptions: {},
