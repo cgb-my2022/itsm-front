@@ -14,8 +14,6 @@
   </div>
 </template>
 <script>
-  // import md5 from "md5"
-  import api from '@/api'
   import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
   import { mapActions } from 'vuex'
   import { timeFix } from '@/utils/util'
@@ -34,11 +32,12 @@
       state: ''
     },
     created () {
+      localStorage.clear();
       let that = this;
       let token = that.GetQueryString(location.href, 'token');
       if (token) {
         that.ThirdLogin(token).then(res => {
-          that.loginSuccess()
+          that.loginSuccess();
         })
       } else {
         let code = that.GetQueryString(location.href, 'code');
@@ -48,12 +47,18 @@
             if (response.success) {
               token = response.result
               that.ThirdLogin(token).then(res => {
-                that.loginSuccess()
+                setTimeout(() => {
+                  that.loginSuccess();
+                }, 3000)
               })
             } else {
               that.requestFailed(response.message);
             }
           })
+        } else {
+          setTimeout(() => {
+            this.$router.push({ path: '/' })
+          }, 2000);
         }
       }
 

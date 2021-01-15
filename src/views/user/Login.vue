@@ -227,7 +227,7 @@
       this.getRouterData();
       this.handleChangeCheckCode();
 
-      let that = this;
+  /*    let that = this;
       let token = this.$route.query.token
       if (token) {
         that.ThirdLogin(token).then(res => {
@@ -237,7 +237,7 @@
             that.requestFailed(res);
           }
         })
-      }
+      }*/
 
       // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
       // this.getEncrypte();

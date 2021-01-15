@@ -37,7 +37,9 @@ const err = (error) => {
           // store.dispatch('Logout').then(() => {
           //     window.location.reload()
           // })
-          Modal.error({
+          Vue.ls.remove(ACCESS_TOKEN)
+          notification.error({ message: '登录已过期', description:'很抱歉，登录已过期，请重新登录',duration: 4})
+          /*Modal.error({
             title: '登录已过期',
             content: '很抱歉，登录已过期，请重新登录',
             okText: '重新登录',
@@ -48,7 +50,7 @@ const err = (error) => {
                 window.location.reload()
               })
             }
-          })
+          })*/
           // update-end- --- author:scott ------ date:20190225 ---- for:Token失效采用弹框模式，不直接跳转----
         }
         break
