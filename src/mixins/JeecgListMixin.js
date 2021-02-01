@@ -31,8 +31,8 @@ export const JeecgListMixin = {
       },
       /* 排序参数 */
       isorter: {
-        column: 'createTime',
-        order: 'desc'
+       /* column: 'createTime',
+        order: 'desc'*/
       },
       /* 筛选参数 */
       filters: {},

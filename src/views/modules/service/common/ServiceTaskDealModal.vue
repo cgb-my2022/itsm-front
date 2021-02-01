@@ -516,7 +516,8 @@
       },
       // 一线转办
       frontDelegate() {
-        this.$refs.selectEntrusterModal.select(1, this.formData.workplaceCompanyId);
+        console.log(this.formData)
+        this.$refs.selectEntrusterModal.select(1);
         this.$refs.selectEntrusterModal.title = '选择办理人';
       },
       // 二线转办

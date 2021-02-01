@@ -260,7 +260,6 @@
         this.dataSource1 = [];
         //待办
         var params = {
-          orderStatusDetail: 2
         };
         getAction(this.url.receiveList, params).then((res) => {
           if (res.success) {
@@ -287,6 +286,7 @@
         };
         getAction(this.url.frontLineOnDoList, params).then((res) => {
           if (res.success) {
+            this.dataSource2Size = res.result.total;
             this.dataSource2 = res.result.records;
           }
           if (res.code === 510) {

@@ -65,13 +65,12 @@
         this.userInfo = data;
       },
 
-      select(flag, companyCode) {
+      select(flag) {
         this.visible = true;
         this.serviceParam.flag = flag;
-        this.serviceParam.companyCode = companyCode;
       },
       handleSelect: function() {
-        this.$refs.selectSingleUserModal.select(this.serviceParam.flag, this.serviceParam.companyCode);
+        this.$refs.selectSingleUserModal.select(this.serviceParam.flag);
       },
       hqUserSelectReset() {
         // this.hqUserSelectList = {};

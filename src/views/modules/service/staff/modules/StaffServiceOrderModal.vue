@@ -12,7 +12,11 @@
       <!-- 主表单区域 -->
       <a-form :form="form">
         <a-row>
-
+          <a-col :xs="24" :sm="12">
+            <a-button type="primary"> <a-icon type="user" />代理</a-button>
+          </a-col>
+        </a-row>
+        <a-row>
           <a-col :xs="24" :sm="12">
             <a-form-item label="用户名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="['userName',{initialValue:userInfo().username}]" :disabled="true" placeholder="请输入用户名称"></a-input>
@@ -93,7 +97,6 @@
         </a-tab-pane>
 
       </a-tabs>
-
     </a-spin>
   </a-modal>
 </template>
@@ -106,12 +109,14 @@
   import JDictSelectTag from '@/components/dict/JDictSelectTag'
   import { mapGetters } from 'vuex'
   import { queryIdTree, queryDepartTreeList } from '@/api/api'
+  import ARow from 'ant-design-vue/es/grid/Row'
 
   export default {
     name: 'ServiceOrderModal',
     mixins: [JEditableTableMixin],
     components: {
-      JDictSelectTag
+      ARow,
+      JDictSelectTag,
     },
     data() {
       return {

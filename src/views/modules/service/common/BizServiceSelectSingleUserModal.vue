@@ -175,18 +175,15 @@
           this.$emit("selectFinished",this.dataSource2[0]);
           this.visible = false;
       },
-      select(flag, companyCode) {
+      select(flag) {
         this.visible = true;
-        this.loadData(flag, companyCode);
+        this.loadData(flag);
       },
-      loadData (flag, companyCode){
+      loadData (flag){
 
         var params = this.getQueryParams();//查询条件
         if(flag){
           params.flag = flag;
-        }
-        if(companyCode){
-          params.companyCode = companyCode;
         }
         getAction(this.url.list,params).then((res)=>{
           if(res.success){

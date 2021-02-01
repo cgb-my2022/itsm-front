@@ -12,22 +12,28 @@
     <!--部门树-->
     <template>
       <a-form :form="form">
-      <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
-      <a-tree
+      <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门">
+        <a-tree
+          v-model="checkedKeys"
+          checkable
+          :tree-data="departTree"
+          @check="onCheck"
+        />
+     <!-- <a-tree
         multiple
         treeCheckable="tree"
         checkable
         @expand="onExpand"
-        :expandedKeys="expandedKeysss"
+        :expanded-keys="expandedKeysss"
         :checkedKeys="checkedKeys"
         allowClear="true"
-        :checkStrictly="true"
+        :checkStrictly="false"
         @check="onCheck"
         :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
         :treeData="departTree"
         placeholder="请选择上级部门"
         >
-      </a-tree>
+      </a-tree>-->
       </a-form-item>
       </a-form>
     </template>
@@ -46,6 +52,8 @@
     },
     data () {
       return {
+        autoExpandParent: true,
+        selectedKeys: [],
         checkedKeys:[], // 存储选中的部门id
         expandedKeysss:[],//展开的节点
         userId:"", // 存储用户id
@@ -129,18 +137,14 @@
       handleCancel () {
         this.close()
       },
-
       // 选择部门时作用的API
       onCheck(checkedKeys, info){
         this.departList = [];
-        this.checkedKeys = checkedKeys.checked;
         let checkedNodes = info.checkedNodes;
         for (let i = 0; i < checkedNodes.length; i++) {
-          let de = checkedNodes[i].data.props;
-          let depart = {key:"",value:"",title:""};
-          depart.key = de.value;
-          depart.value = de.value;
-          depart.title = de.title;
+          let depart = {};
+          depart.key = checkedNodes[i].key;
+          depart.title = checkedNodes[i].data.props.title;
           this.departList.push(depart);
         }
         console.log('onCheck', checkedKeys, info);
@@ -149,26 +153,8 @@
         queryIdTree().then((res)=>{
           if(res.success){
             this.departTree = res.result;
-            if(this.checkedKeys&&this.checkedKeys.length >0){
-              let treekey=[];
-              let arr=res.result;
-              if(arr&&arr.length>0){
-                arr.forEach(item => {
-                  treekey.push(item.key);
-             /*     if(item.children&&item.children.length>0){
-                    item.children.forEach(item1 => {
-                      treekey.push(item1.key);
-                    })
-                  }*/
-                })
-                this.expandedKeysss = treekey
-              }
-            }
           }
         })
-      },
-      onExpand(expandedKeys){
-        this.expandedKeysss = expandedKeys;
       },
       modalFormOk(){
 

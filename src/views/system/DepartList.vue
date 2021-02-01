@@ -78,7 +78,7 @@
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
-                label="机构名称">
+                label="机构名称1">
                 <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
               </a-form-item>
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
@@ -86,38 +86,37 @@
                   style="width:100%"
                   :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
                   :treeData="treeData"
-                  :disabled="disable"
                   v-model="model.parentId"
                   placeholder="无">
                 </a-tree-select>
               </a-form-item>
-              <a-form-item
+              <!--<a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="机构编码">
                 <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
-              </a-form-item>
+              </a-form-item>-->
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="机构类型">
-                <template v-if="orgCategoryDisabled">
-                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                    <a-radio value="1">
-                      公司
-                    </a-radio>
-                  </a-radio-group>
-                </template>
-                <template v-else>
-                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                    <a-radio value="2">
-                      部门
-                    </a-radio>
-                    <a-radio value="3">
-                      岗位
-                    </a-radio>
-                  </a-radio-group>
-                </template>
+                <!-- <template v-if="orgCategoryDisabled">-->
+                <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                  <a-radio value="1">
+                    公司
+                  </a-radio>
+                </a-radio-group>
+                <!-- </template>
+                 <template v-else>-->
+                <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                  <a-radio value="2">
+                    部门
+                  </a-radio>
+                  <!--<a-radio value="3">
+                    岗位
+                  </a-radio>-->
+                </a-radio-group>
+                <!-- </template>-->
               </a-form-item>
               <a-form-item
                 :labelCol="labelCol"
@@ -552,7 +551,7 @@
           }
         }
       },
-     // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
+      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
       expandAll () {
         this.iExpandedKeys = this.allTreeKeys
       },
