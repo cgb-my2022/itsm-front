@@ -35,6 +35,7 @@
           <template v-if="formData.orderStatusDetail===3||formData.orderStatusDetail===12"><!--一线已接单-->
             <a-button @click="taskDeal()" type="primary" icon="caret-right">任务办理</a-button>
             <a-button @click="frontPending()" type="primary" icon="lock">暂挂</a-button>
+            <a-button @click="frontDelegate()" type="primary" icon="user">转办</a-button>
             <a-button @click="toSupportLine()" type="primary" icon="rollback">转二线</a-button>
           </template>
           <template v-else-if="formData.orderStatusDetail===4"><!--一线暂挂状态-->
@@ -49,11 +50,11 @@
           <template v-else-if="formData.orderStatusDetail===7"><!--一二线暂挂状态-->
             <a-button @click="supportActive()" type="primary" icon="unlock">解挂</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===10"><!--一线待指派状态-->
-            <a-button @click="frontDelegate()" type="primary" icon="user">指派</a-button>
+          <template v-else-if="formData.orderStatusDetail===10"><!--一线待转办状态-->
+            <a-button @click="frontDelegate()" type="primary" icon="user">转办</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===11"><!--二线待指派状态-->
-            <a-button @click="supportDelegate()" type="primary" icon="user">指派</a-button>
+          <template v-else-if="formData.orderStatusDetail===11"><!--二线待转办状态-->
+            <a-button @click="supportDelegate()" type="primary" icon="user">转办</a-button>
           </template>
           <template v-if="formData.orderStatusDetail===8||formData.orderStatusDetail===9"><!--待确认状态-->
             <a-button @click="confirmOrder()" type="primary" icon="check-circle">确认</a-button>
@@ -64,8 +65,10 @@
 
     </a-spin>
     <service-biz-task-opt-modal ref="bpmBizTaskOptModal" :formData="formData" @ok="completeProcess"></service-biz-task-opt-modal>
-
-    <biz-service-task-select-entruster-modal ref="selectEntrusterModal" @selectFinished="handleEntruster"></biz-service-task-select-entruster-modal>
+    <!--一运维转办-->
+    <biz-service-task-select-entruster-modal ref="delegate" @selectFinished="handleDelegate"></biz-service-task-select-entruster-modal>
+    <!--主管转办-->
+    <biz-service-task-select-entruster-modal ref="supDelegate" @selectFinished="handleEntruster"></biz-service-task-select-entruster-modal>
     <a-modal
       title="转二线处理"
       :visible="visible2"
@@ -73,6 +76,12 @@
       @ok="toSupportOk()"
       @cancel="handleCancel"
     >
+      <a-form-item label="业务类型：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+        <j-dict-select-tag
+          type="list"
+          v-model="model.businessType"
+          dictCode="SERVICE_ORDER_BUSINESS_TYPE" />
+      </a-form-item>
       <a-textarea
         v-model="model.transferReason"
         placeholder="请输入转处理原因"
@@ -179,7 +188,8 @@
           transferReason: '',
           frontPendingReason: '',
           supportPendingReason: '',
-          remark: ''
+          remark: '',
+          businessType: 1
         },
         formData: {},
         visible5: false,
@@ -204,7 +214,9 @@
           claim: '/act/task/claim',
          // taskEntrust: '/act/task/taskEntrust',
           delegateFrontUser: '/system/serviceOrder/delegateFrontUser',
+          nextDelegateFrontUser: '/system/serviceOrder/nextDelegateFrontUser',
           delegateSupportUser: '/system/serviceOrder/delegateSupportUser',
+          nextDelegateSupportUser: '/system/serviceOrder/nextDelegateSupportUser',
           // suspend: '/act/processInstance/suspend',
           frontLinePending: '/system/serviceOrder/frontLinePending',
           supportLinePending: '/system/serviceOrder/supportLinePending',
@@ -222,6 +234,7 @@
     methods: {
 
       toSupportLine() {
+        this.model.businessType = this.formData.businessType;
          this.visible2 = true;
       },
       frontPending() {
@@ -242,7 +255,7 @@
         }
         this.ModalText = '转办二线中...';
         this.confirmLoading = true;
-        var params = { id: this.model.id, version: this.formData.version, transferReason: this.model.transferReason };
+        var params = { id: this.model.id, version: this.formData.version, transferReason: this.model.transferReason, businessType: this.model.businessType };
 
         putAction(that.url.transferSupport, params).then((res) => {
           that.visible2 = false;
@@ -376,13 +389,44 @@
           }
         });
       },
+      handleDelegate(data) {
+        var that = this;
+        var params = {};// 查询条件
+        let url0 = '';
+        // 一线已接单
+        if (this.formData.orderStatusDetail == 3) {
+          url0 = that.url.delegateFrontUser;
+          params = {
+            id: this.formData.id,
+            version: this.formData.version,
+            businessType: data.businessType,
+            frontlineUserName: data.username
+          };
+          // 二线已接单
+        } else if (this.formData.orderStatusDetail == 6) {
+          url0 = that.url.delegateSupportUser;
+          params = {
+            id: this.formData.id,
+            version: this.formData.version,
+            businessType: data.businessType,
+            supportUserName: data.username
+          };
+        }
+        putAction(url0, params).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.completeProcess();
+          } else {
+            that.$message.warning(res.message);
+          }
+        })
+      },
       handleEntruster(data) {
         var that = this;
         var params = {};// 查询条件
-        console.log('委托', params)
         let url0 = '';
         // 一线待转办
-        if (this.formData.orderStatusDetail == 10) {
+        if (this.formData.orderStatusDetail == 10||this.formData.orderStatusDetail == 3||this.formData.orderStatusDetail == 12) {
           url0 = that.url.delegateFrontUser;
           params = {
             id: this.formData.id,
@@ -390,7 +434,7 @@
             frontlineUserName: data.username
           };
           // 二线待转办
-        } else if (this.formData.orderStatusDetail == 11) {
+        } else if (this.formData.orderStatusDetail == 11||this.formData.orderStatusDetail == 6||this.formData.orderStatusDetail == 13) {
           url0 = that.url.delegateSupportUser;
           params = {
             id: this.formData.id,
@@ -516,14 +560,13 @@
       },
       // 一线转办
       frontDelegate() {
-        console.log(this.formData)
-        this.$refs.selectEntrusterModal.select(1);
-        this.$refs.selectEntrusterModal.title = '选择办理人';
+        this.$refs.supDelegate.select(1, this.formData.businessType);
+        this.$refs.supDelegate.title = '选择办理人';
       },
       // 二线转办
       supportDelegate() {
-        this.$refs.selectEntrusterModal.select(2);
-        this.$refs.selectEntrusterModal.title = '选择办理人';
+        this.$refs.supDelegate.select(2, this.formData.businessType);
+        this.$refs.supDelegate.title = '选择办理人';
       },
 
       // 未解决

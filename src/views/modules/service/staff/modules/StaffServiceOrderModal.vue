@@ -11,26 +11,31 @@
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
       <a-form :form="form">
+        <!--<a-row>
+          <a-col :xs="24" :sm="12">
+            <a-button type="primary" @click="handleSelectUser()"> <a-icon type="user" />代理</a-button>
+          </a-col>
+        </a-row>-->
         <a-row>
           <a-col :xs="24" :sm="12">
-            <a-button type="primary"> <a-icon type="user" />代理</a-button>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :xs="24" :sm="12">
-            <a-form-item label="用户名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['userName',{initialValue:userInfo().username}]" :disabled="true" placeholder="请输入用户名称"></a-input>
+            <div style="display: flex;">
+            <a-button type="primary" @click="handleSelectUser()" icon="user">代理</a-button>
+            <a-form-item label="账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['userName',{initialValue:userInfo().username}]" :disabled="true" placeholder="请输入账号"></a-input>
             </a-form-item>
+            </div>
           </a-col>
-          <a-col :xs="24" :sm="12">
-            <a-form-item label="真实姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['realName',{initialValue:userInfo().realname}]" :disabled="true" placeholder="请输入用户名称"></a-input>
-            </a-form-item>
-          </a-col>
+
           <a-col :xs="24" :sm="12">
             <a-form-item label="电话号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['phoneNo',{initialValue:userInfo().phone}]" :disabled="true" placeholder="请输入电话号码"></a-input>
+              <a-input v-decorator="['phoneNo',{initialValue:userInfo().phone,rules:[{ required: true, message: '请输入电话号码！' }]}]" placeholder="请输入电话号码"></a-input>
             </a-form-item>
+
+          </a-col>
+          <a-col :xs="24" :sm="12">
+              <a-form-item label="真实姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input v-decorator="['realName',{initialValue:userInfo().realname}]" :disabled="true" placeholder="请输入账号"></a-input>
+              </a-form-item>
           </a-col>
           <a-col :xs="24" :sm="12">
             <a-form-item label="所属部门名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -63,9 +68,9 @@
               <j-dict-select-tag type="list" v-decorator="['businessType', validatorRules.businessType]" :trigger-change="true" dictCode="SERVICE_ORDER_BUSINESS_TYPE" placeholder="请选择业务类型"/>
             </a-form-item>
           </a-col>
-         <!-- <a-col :xs="24" :sm="12">
-            <a-form-item label="问题类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['problemType', validatorRules.problemType]" :trigger-change="true" dictCode="problem_type" placeholder="请选择问题类别"/>
+          <!-- <a-col :xs="24" :sm="12">
+            <a-form-item label="业务类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['problemType', validatorRules.problemType]" :trigger-change="true" dictCode="problem_type" placeholder="请选择业务类型"/>
             </a-form-item>
           </a-col>-->
           <!--<a-col :span="24">
@@ -98,6 +103,7 @@
 
       </a-tabs>
     </a-spin>
+    <biz-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-select-single-user-modal>
   </a-modal>
 </template>
 
@@ -110,6 +116,8 @@
   import { mapGetters } from 'vuex'
   import { queryIdTree, queryDepartTreeList } from '@/api/api'
   import ARow from 'ant-design-vue/es/grid/Row'
+  import BizSelectSingleUserModal from './BizSelectSingleUserModal.vue';
+  import {  postAction } from '@/api/manage'
 
   export default {
     name: 'ServiceOrderModal',
@@ -117,6 +125,7 @@
     components: {
       ARow,
       JDictSelectTag,
+      BizSelectSingleUserModal
     },
     data() {
       return {
@@ -153,9 +162,14 @@
               { required: true, message: '请选择业务类型!' }
             ]
           },
+          phoneNo: {
+            rules: [
+              { required: true, message: '请输入电话号码！' }
+            ]
+          },
           problemType: {
             rules: [
-              { required: true, message: '请选择问题类别!' }
+              { required: true, message: '请选择业务类型!' }
             ]
           },
           eventContent: {
@@ -185,6 +199,7 @@
           ]
         },
         url: {
+          userInfo: '/sys/user/userInfo',
           add: '/system/serviceOrder/addAndSubmit',
           edit: '/system/serviceOrder/edit',
           startProcess: '/process/extActProcess/startMutilProcess',
@@ -200,12 +215,37 @@
     },
     methods: {
       ...mapGetters(['userInfo']),
+      add() {
+        this.visible = true;
+        this.form.resetFields();
+        this.defaultWorkplaceDeparts = JSON.parse(this.userInfo().workplaceDeptParentIdes);
+      },
+      handleSelectUser() {
+        this.$refs.selectSingleUserModal.select(0);
+      },
+      selectUserOK: function(data) {
+        var params = '&username=' + data.username;
+        postAction(this.url.userInfo, params).then((res) => {
+          this.defaultWorkplaceDeparts = JSON.parse(res.result.workplaceDeptParentIdes);
+          this.form.setFieldsValue({
+            realName: data.realname ,
+            deptName: res.result.myDeptParentNames ,
+            workplaceDetail: res.result.workplaceDetail,
+            sysOrgCode: res.result.orgCode,
+            userName: data.username,
+            workplaceDepartids: this.defaultWorkplaceDeparts
+          })
+
+        }).finally(() => {
+        })
+      },
       handleOkConfirm: function() {
         let that = this;
         this.$confirm({
           title: '提示',
           content: '确认提交流程吗?',
           onOk: function() {
+
             that.handleOk();
           }
         });

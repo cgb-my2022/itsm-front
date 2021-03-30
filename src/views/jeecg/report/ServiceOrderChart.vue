@@ -15,7 +15,7 @@
       <a-tab-pane tab="完成状态" key="4">
         <service-order-completion-chart></service-order-completion-chart>
       </a-tab-pane>
-      <a-tab-pane tab="问题汇总" key="5">
+      <a-tab-pane tab="业务汇总" key="5">
         <service-order-problem-chart></service-order-problem-chart>
       </a-tab-pane>
     </a-tabs>

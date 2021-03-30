@@ -44,7 +44,7 @@
               </span>-->
 
               <span slot="action" slot-scope="text, record">
-                  <a @click="handleProcess(record)">指派</a>
+                  <a @click="handleProcess(record)">转办</a>
               </span>
 
             </a-table>
@@ -185,7 +185,7 @@
       },
       // 办理
       handleProcess(record) {
-        this.$refs.taskDealModal.title = '指派';
+        this.$refs.taskDealModal.title = '转办';
         this.$refs.taskDealModal.deal(record);
       },
       getBizProcessNodeInfo(record) {

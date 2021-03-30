@@ -37,7 +37,7 @@
       <j-form-container :disabled="true">
         <table border="1px" id="staffLeaveTable">
           <tr>
-            <td class="firstTr">用户名称</td>
+            <td class="firstTr">账号</td>
             <td class="firstTr">
               <a-form-item
                 :labelCol="labelCol"
@@ -64,24 +64,14 @@
             </tr>
           <tr>
             <td class="firstTr">业务类型</td>
-            <td class="firstTr">
+            <td class="firstTr" colspan="5">
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol">
                 <a-input class="text" v-decorator="[ 'businessName', {}]" />
               </a-form-item>
             </td>
-            <td class="firstTr">问题类别</td>
-            <td class="firstTr">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol">
-                <a-input class="text" v-decorator="[ 'problemTypeName', {}]" />
-              </a-form-item>
-            </td>
-
           </tr>
-
           <tr>
             <td class="firstTr">所属部门名称</td>
             <td class="firstTr" colspan="5">

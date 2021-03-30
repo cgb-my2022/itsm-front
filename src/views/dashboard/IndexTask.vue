@@ -217,7 +217,6 @@
         this.$refs.taskDealModal.deal(record);
       },
       loadData() {
-        this.mock();
         this.myUnfinished();
       },
       // 详情

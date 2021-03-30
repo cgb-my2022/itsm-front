@@ -20,7 +20,7 @@
         </a-form>
       </a-col>
     </a-row>
-    <a-card title="问题汇总" >
+    <a-card title="业务汇总" >
       <a-row type="flex">
         <a-col :flex="5">
           <div>
@@ -97,7 +97,7 @@
         ],
         problemTypeColumns: [
           {
-            title: '问题类别',
+            title: '业务类型',
             dataIndex: 'item',
             key: 'item'
           },

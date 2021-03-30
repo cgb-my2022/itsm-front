@@ -258,6 +258,10 @@
               } else {
                 that.$message.warning(res.message);
               }
+              that.selectedDepartKeys = [];
+              that.checkedDepartKeys = [];
+              that.checkedDepartNames = [];
+              that.checkedDepartNameString = '';
               that.visible = false;
               that.$emit('ok');
             }).finally(() => {
@@ -268,6 +272,10 @@
         })
       },
       handleCancel () {
+        this.selectedDepartKeys = [];
+        this.checkedDepartKeys = [];
+        this.checkedDepartNames = [];
+        this.checkedDepartNameString = '';
         this.close()
       },
       handleConfirmBlur  (e) {

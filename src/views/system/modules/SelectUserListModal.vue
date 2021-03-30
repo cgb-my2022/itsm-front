@@ -101,7 +101,7 @@
           fixed:'left',
           width:200
         },{
-          title: '用户名称',
+          title: '账号',
           align:"center",
           dataIndex: 'realname',
         },{

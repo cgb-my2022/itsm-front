@@ -287,7 +287,7 @@
           width: 120
         },
           {
-            title: '用户名称',
+            title: '账号',
             align: 'center',
             width: 100,
             dataIndex: 'realname'

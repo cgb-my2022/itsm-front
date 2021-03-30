@@ -22,8 +22,8 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="用户名称">
-                <a-input placeholder="请输入用户名称" v-model="queryParam.userName"></a-input>
+              <a-form-item label="账号">
+                <a-input placeholder="请输入账号" v-model="queryParam.userName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -100,7 +100,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template v-if="record.orderStatusDetail==10||record.orderStatusDetail==11">
-              <a  @click="handleProcess(record)">指派</a>
+              <a  @click="handleProcess(record)">转办</a>
           </template>
           <a-dropdown>
           <a class="ant-dropdown-link">
@@ -166,7 +166,7 @@
             width: 160
           },
           {
-            title: '用户名称',
+            title: '账号',
             align: 'center',
             dataIndex: 'userName'
           },
@@ -261,7 +261,7 @@
       },
       // 办理
       handleProcess(record) {
-        this.$refs.taskDealModal.title = '指派';
+        this.$refs.taskDealModal.title = '转办';
         this.$refs.taskDealModal.deal(record);
       },
       // 详情

@@ -11,7 +11,7 @@
             </a-form-item>
           </a-col>
           <!--<a-col :md="8" :sm="8">-->
-          <!--<a-form-item label="用户名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">-->
+          <!--<a-form-item label="账号" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">-->
           <!--<a-input placeholder="请输入名称查询" v-model="queryParam.realname"></a-input>-->
           <!--</a-form-item>-->
           <!--</a-col>-->
@@ -130,7 +130,7 @@
             dataIndex: 'username'
           },
           {
-            title: '用户名称',
+            title: '账号',
             align: "center",
             dataIndex: 'realname'
           },

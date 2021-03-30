@@ -8,15 +8,15 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item ref="problemType" label="问题类别：" prop="problemType">
+      <a-form-model-item ref="businessType" label="业务类型：" prop="businessType">
         <j-dict-select-tag
           type="list"
-          v-model="serviceOrderModel.problemType"
+          v-model="serviceOrderModel.businessType"
           @blur="
           () => {
-            $refs.problemType.onFieldBlur();
+            $refs.businessType.onFieldBlur();
           }"
-           dictCode="problem_type" />
+           dictCode="SERVICE_ORDER_BUSINESS_TYPE" />
       </a-form-model-item>
         <a-form-model-item ref="reason" label="问题原因：" prop="reason">
         <a-textarea
@@ -116,7 +116,7 @@
             { max: 500, message: '最多500个字符', trigger: 'blur' }
           ],
           problemType: [
-            { required: true, message: '请选择问题类别', trigger: 'blur' },
+            { required: true, message: '请选择业务类型', trigger: 'blur' },
           ],
         },
         remnant: 500,
@@ -131,7 +131,7 @@
         serviceOrderModel: {
           id: '',
           version: 1,
-          problemType: 1,
+          businessType: 1,
           reason: '',
           solution: ''
         },
@@ -250,7 +250,7 @@
       /*this.currTask = this.formData.bizTaskList[0];
       this.model.taskId = this.currTask.id;
       this.getProcessTaskTransInfo(this.formData); */
-      this.serviceOrderModel.problemType = this.formData.problemType;
+      this.serviceOrderModel.businessType = this.formData.businessType;
       this.initDictConfig();
     }
   }

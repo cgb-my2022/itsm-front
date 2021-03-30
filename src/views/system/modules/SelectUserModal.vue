@@ -88,7 +88,7 @@
             dataIndex: 'username'
           },
           {
-            title: '用户名称',
+            title: '账号',
             align: "center",
             width: 100,
             dataIndex: 'realname'
@@ -120,7 +120,7 @@
 
           },
           {
-            title: '用户名称',
+            title: '账号',
             align: "center",
             dataIndex: 'realname',
           },

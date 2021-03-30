@@ -207,7 +207,7 @@
               validator: this.compareToFirstPassword,
             }],
           },
-          realname:{rules: [{ required: true, message: '请输入用户名称!' }]},
+          realname:{rules: [{ required: true, message: '请输入账号!' }]},
           phone:{rules: [{validator: this.validatePhone}]},
           email:{
             rules: [{

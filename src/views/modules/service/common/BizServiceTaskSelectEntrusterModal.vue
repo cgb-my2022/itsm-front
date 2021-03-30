@@ -9,6 +9,12 @@
     cancelText="关闭">
 
     <div>
+      <a-form-item label="业务类型：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+        <j-dict-select-tag
+          type="list"
+          v-model="model.businessType"
+          dictCode="SERVICE_ORDER_BUSINESS_TYPE" />
+      </a-form-item>
       <a-form-item label="用户名：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
         <a-input-search placeholder="点击选择用户" @search="handleSelect" v-model="model.userName">
           <a-button slot="enterButton" icon="search">选择</a-button>
@@ -40,7 +46,8 @@
         title: '',
         visible: false,
         model: {
-          userName: ''
+          userName: '',
+          businessType: 1
         },
         userInfo: {},
         serviceParam: {
@@ -57,7 +64,8 @@
         this.visible = false;
       },
       handleOk() {
-        this.$emit('selectFinished', this.userInfo);
+        alert(this.model.businessType)
+        this.$emit('selectFinished', this.model);
         this.visible = false;
       },
       selectUserOK: function(data) {
@@ -65,9 +73,10 @@
         this.userInfo = data;
       },
 
-      select(flag) {
+      select(flag, businessType) {
         this.visible = true;
         this.serviceParam.flag = flag;
+        this.model.businessType = businessType;
       },
       handleSelect: function() {
         this.$refs.selectSingleUserModal.select(this.serviceParam.flag);
