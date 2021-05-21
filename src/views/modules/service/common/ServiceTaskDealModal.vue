@@ -427,7 +427,7 @@
         let url0 = '';
         // 一线待转办
         if (this.formData.orderStatusDetail == 10||this.formData.orderStatusDetail == 3||this.formData.orderStatusDetail == 12) {
-          url0 = that.url.delegateFrontUser;
+          url0 = that.url.nextDelegateFrontUser;
           params = {
             id: this.formData.id,
             version: this.formData.version,

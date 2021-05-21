@@ -64,8 +64,8 @@
         this.visible = false;
       },
       handleOk() {
-        alert(this.model.businessType)
-        this.$emit('selectFinished', this.model);
+        this.userInfo.businessType = this.model.businessType;
+        this.$emit('selectFinished', this.userInfo);
         this.visible = false;
       },
       selectUserOK: function(data) {
