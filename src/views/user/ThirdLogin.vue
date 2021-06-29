@@ -7,7 +7,7 @@
 </style>
 <template>
   <div>
-    <a-spin tip="企业微信登陆中...">
+    <a-spin tip="登陆中...">
       <div class="spin-content">
       </div>
     </a-spin>

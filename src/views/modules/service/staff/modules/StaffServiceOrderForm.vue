@@ -122,7 +122,7 @@
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol">
-                <a-textarea class="text" v-decorator="[ 'eventContent', {}]" />
+                <a-textarea class="text" :autosize="true" v-decorator="[ 'eventContent', {}]" />
               </a-form-item>
             </td>
           </tr>
@@ -133,7 +133,7 @@
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol">
-                <a-textarea class="text" v-decorator="[ 'reason', {}]" />
+                <a-textarea class="text"  v-decorator="[ 'reason', {}]" />
               </a-form-item>
             </td>
           </tr>

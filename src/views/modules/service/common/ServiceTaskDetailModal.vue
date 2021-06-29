@@ -5,7 +5,7 @@
     width="1000px"
     destroyOnClose
     :bodyStyle="bodyStyle"
-    style="top: 0px;"
+    style="top: 0px;min-height: 500px;"
     :footer="null"
     aria-disabled="true"
     @cancel="handleModalCancel">
