@@ -14,7 +14,7 @@ v-decorator用法：
 
 - 从数据库表获取字典数据，dictCode格式说明: 表名,文本字段,取值字段
 ```html
-<j-dict-select-tag v-model="queryParam.username" placeholder="请选择用户名称" 
+<j-dict-select-tag v-model="queryParam.username" placeholder="请选择账号"
                    dictCode="sys_user,realname,id"/>
 ```
 
@@ -33,9 +33,9 @@ v-decorator用法：
       //初始化字典配置
       this.initDictConfig();
 ```
-      
+
 - 第三步: 实现initDictConfig方法，加载列表所需要的字典(列表上有多个字典项，就执行多次initDictOptions方法)
-      
+
 ```html
       initDictConfig() {
         //初始化字典 - 性别
@@ -46,7 +46,7 @@ v-decorator用法：
         });
       },
 ```
-      
+
 - 第四步: 实现字段的customRender方法
 ```html
      customRender: (text, record, index) => {
