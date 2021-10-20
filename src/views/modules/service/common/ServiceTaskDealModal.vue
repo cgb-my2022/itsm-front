@@ -41,21 +41,22 @@
           <template v-else-if="formData.orderStatusDetail===4"><!--一线暂挂状态-->
             <a-button @click="frontActive()" type="primary" icon="unlock">解挂</a-button>
           </template>
-
+          <template v-if="formData.orderStatusDetail===10"><!--一线经理待转办-->
+            <a-button @click="frontSupDelegate()" type="primary" icon="user">转办</a-button>
+          </template>
           <!--二线-->
           <template v-else-if="formData.orderStatusDetail===6||formData.orderStatusDetail===13"><!--二线已接单-->
             <a-button @click="taskDeal()" type="primary" icon="caret-right">任务办理</a-button>
             <a-button @click="supportPending()" type="primary" icon="lock">暂挂</a-button>
+            <a-button @click="supportDelegate()" type="primary" icon="user">转办</a-button>
           </template>
           <template v-else-if="formData.orderStatusDetail===7"><!--一二线暂挂状态-->
             <a-button @click="supportActive()" type="primary" icon="unlock">解挂</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===10"><!--一线待转办状态-->
-            <a-button @click="frontDelegate()" type="primary" icon="user">转办</a-button>
+           <template v-if="formData.orderStatusDetail===11"><!--一线经理待转办-->
+            <a-button @click="supportSupDelegate()" type="primary" icon="user">转办</a-button>
           </template>
-          <template v-else-if="formData.orderStatusDetail===11"><!--二线待转办状态-->
-            <a-button @click="supportDelegate()" type="primary" icon="user">转办</a-button>
-          </template>
+          
           <template v-if="formData.orderStatusDetail===8||formData.orderStatusDetail===9"><!--待确认状态-->
             <a-button @click="confirmOrder()" type="primary" icon="check-circle">确认</a-button>
           </template>
@@ -65,8 +66,8 @@
 
     </a-spin>
     <service-biz-task-opt-modal ref="bpmBizTaskOptModal" :formData="formData" @ok="completeProcess"></service-biz-task-opt-modal>
-    <!--一运维转办-->
-    <biz-service-task-select-entruster-modal ref="delegate" @selectFinished="handleDelegate"></biz-service-task-select-entruster-modal>
+    <!--运维转办-->
+    <biz-service-task-select-entruster-modal ref="ywdelegate" @selectFinished="handleDelegate"></biz-service-task-select-entruster-modal>
     <!--主管转办-->
     <biz-service-task-select-entruster-modal ref="supDelegate" @selectFinished="handleEntruster"></biz-service-task-select-entruster-modal>
     <a-modal
@@ -560,11 +561,22 @@
       },
       // 一线转办
       frontDelegate() {
-        this.$refs.supDelegate.select(1, this.formData.businessType);
-        this.$refs.supDelegate.title = '选择办理人';
+        this.$refs.ywdelegate.select(1, this.formData.businessType);
+        this.$refs.ywdelegate.title = '选择办理人';
       },
       // 二线转办
       supportDelegate() {
+        this.$refs.ywdelegate.select(2, this.formData.businessType);
+        this.$refs.ywdelegate.title = '选择办理人';
+      },
+
+        // 一线主管转办
+      frontSupDelegate() {
+        this.$refs.supDelegate.select(1, this.formData.businessType);
+        this.$refs.supDelegate.title = '选择办理人';
+      },
+      // 二线主管转办
+      supportSupDelegate() {
         this.$refs.supDelegate.select(2, this.formData.businessType);
         this.$refs.supDelegate.title = '选择办理人';
       },
