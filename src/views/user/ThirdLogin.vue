@@ -38,6 +38,8 @@
       if (token) {
         that.ThirdLogin(token).then(res => {
           that.loginSuccess();
+        }).catch(err => {
+          that.requestFailed(err.message);
         })
       } else {
         let code = that.GetQueryString(location.href, 'code');
