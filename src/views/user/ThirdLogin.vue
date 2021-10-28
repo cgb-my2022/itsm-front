@@ -52,6 +52,8 @@
                 setTimeout(() => {
                   that.loginSuccess();
                 }, 3000)
+              }).catch(err => {
+                that.requestFailed(err.message);
               })
             } else {
               that.requestFailed(response.message);

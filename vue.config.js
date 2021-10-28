@@ -85,5 +85,5 @@ module.exports = {
     }
   },
 
-  lintOnSave: undefined
+  lintOnSave: false
 }
