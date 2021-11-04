@@ -1,3 +1,6 @@
+// 所有地址
+import './config'
+
 import Vue from 'vue'
 import App from './App.vue'
 import Storage from 'vue-ls'
