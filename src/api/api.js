@@ -135,6 +135,14 @@ export const transitRESTful = {
 //查询会议室
 const getMettingRoomList = (params)=>getAction("/metting/eoaMettingRoom/list",params);
 
+// 服务目录管理 
+export const getServiceCat = (params) => getAction("/sys/serviceCat/treeList", params); //服务目录管理-树形列表
+export const addServiceCat = (params) => postAction("/sys/serviceCat/add", params)     //服务目录管理-新增
+export const putServiceCat = (params) => putAction("/sys/serviceCat/edit", params)     //服务目录管理-更新
+export const getServiceInfo = (params) => getAction("/sys/serviceCat/info", params);   //服务目录管理-详情
+export const delServiceInfo = (params) => deleteAction("/sys/serviceCat/delete", params);   //服务目录管理-删除(多个逗号分割)
+export const getServiceProcess = (params) => getAction("/sys/serviceCat/processList", params);  //获取关联业务流程
+
 export {
   // imgView,
   // doMian,
