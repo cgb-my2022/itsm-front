@@ -7,6 +7,7 @@
     "dev": "vue-cli-service serve --mode development --open",
     "dev-ywl": "vue-cli-service serve --mode ywl --open",
     "dev-zy": "vue-cli-service serve --mode zy --open",
+    "dev-lsf": "vue-cli-service serve --mode lsf --open",
     "build:test": "vue-cli-service build --mode test",
     "build:prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
@@ -28,6 +29,7 @@
     "clipboard": "^2.0.4",
     "codemirror": "^5.58.0",
     "dayjs": "^1.8.0",
+    "element-ui": "^2.15.6",
     "enquire.js": "^2.1.6",
     "js-cookie": "^2.2.0",
     "lodash.get": "^4.4.2",
