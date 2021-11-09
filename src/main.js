@@ -20,6 +20,9 @@ import Print from 'vue-print-nb-jeecg'
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
 
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
 import {
   ACCESS_TOKEN,
   DEFAULT_COLOR,
@@ -57,7 +60,7 @@ Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
 Vue.use(VueAreaLinkage);
-
+Vue.use(ElementUI);
 new Vue({
   router,
   store,
