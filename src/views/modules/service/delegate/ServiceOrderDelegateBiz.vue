@@ -254,6 +254,14 @@
     computed: {
       importExcelUrl: function() {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+      setRealname() {
+        return function(arr, status) {
+          if(arr.indexOf(status) != -1) {
+            return true
+          }
+          return false
+        }
       }
     },
     created() {

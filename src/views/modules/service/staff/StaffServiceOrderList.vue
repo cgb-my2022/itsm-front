@@ -122,6 +122,12 @@
           <template v-if="record.orderStatus === 6">
             <a @click="confirmProcess(record)">确认</a>
             <a-divider type="vertical"/>
+            <a @click="cancelProcess(record)" style="color:orange;">返回</a>
+            <a-divider type="vertical"/>
+          </template>
+          <template v-if="record.orderStatus === 7 && record.commentStatus === 0">
+            <a @click="bindEvaluation(record)">评价</a>
+            <a-divider type="vertical"/>
           </template>
           <!--<a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
@@ -179,16 +185,24 @@
       </a-table>
     </div>
 
+    <!-- 快速发起 -->
     <staff-service-order-modal ref="modalForm" @closeLoad="taskOk"></staff-service-order-modal>
+    <!-- 服务目录 -->
+    <staff-service-catalog ref="serviceCatalog" @closeLoad="taskOk"></staff-service-catalog>
+    <!-- 流程图 -->
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
+    <!-- 详情 -->
     <service-task-detail-modal ref="taskDetailModal"></service-task-detail-modal>
+    <!-- 办理 -->
     <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <!-- 评价 -->
+    <staff-service-evaluation ref="serviceEvaluation" @closeLoad="taskOk"></staff-service-evaluation>
+    <!-- 退回 -->
+    <staff-service-back ref="serviceBack" @closeLoad="taskOk"></staff-service-back>
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
     <!--<process-module/>-->
-    <!-- 服务目录 -->
-    <staff-service-catalog ref="serviceCatalog" @closeLoad="taskOk"></staff-service-catalog>
   </a-card>
 </template>
 
@@ -204,7 +218,8 @@
   import { postAction, putAction } from '@/api/manage'
   import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
   import StaffServiceCatalog from './modules/StaffServiceCatalog'
-
+  import StaffServiceEvaluation from './modules/StaffServiceEvaluation'
+  import StaffServiceBack from './modules/StaffServiceBack'
   export default {
     name: 'StaffServiceOrderList',
     mixins: [JeecgListMixin, ServiceMixin],
@@ -215,7 +230,9 @@
       ServiceProcessInstPicModal,
       ServiceTaskDetailModal,
       ServiceTaskDealModal,
-      StaffServiceCatalog
+      StaffServiceCatalog,
+      StaffServiceEvaluation,
+      StaffServiceBack
     },
     data () {
       return {
@@ -269,7 +286,7 @@
             dataIndex: 'action',
             align: 'center',
             fixed: 'right',
-            width: 140,
+            width: 180,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -280,6 +297,7 @@
           exportXlsUrl: '/system/serviceOrder/exportXls',
           importExcelUrl: 'system/serviceOrder/importExcel',
           startProcess: '/process/extActProcess/startMutilProcess',
+          resolve: '/system/serviceOrder/confirmOrderResolved',
           updateOrderStatus: window._CONFIG['domianURL'] + '/system/serviceOrder/updateServiceOrderStatus'
         },
         dictOptions: {},
@@ -358,10 +376,42 @@
         this.$refs.extActProcessInstPicModal.preview(flowCode, dataId);
         this.$refs.extActProcessInstPicModal.title = '流程图';
       },
+      // 返回
+      cancelProcess(record) {
+        this.$refs.serviceBack.deal(record)
+      },
+      // 评价 
+      bindEvaluation(record) {
+        this.$refs.serviceEvaluation.deal(record.id)
+      },
       // 确认
       confirmProcess(record) {
-        this.$refs.taskDealModal.title = '确认';
-        this.$refs.taskDealModal.deal(record);
+        // this.$refs.taskDealModal.title = '确认';
+        // this.$refs.taskDealModal.deal(record);
+        const that = this;
+        that.$confirm({
+          title: "确认",
+          content: "确认问题已经解决了吗?",
+          okText: "确定",
+          cancelText: "取消",
+          type: "warning",
+          onOk: async () => {
+            var params = { 
+              id: record.id, 
+              version: record.version
+            };
+            postAction(that.url.resolve, params).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.loadData()
+                that.bindEvaluation(record)
+              } else {
+                that.$message.warning(res.message);
+              }
+            })
+          },
+          onCancel() {},
+        });
       },
       // 流程作废
       invalidProcess(record) {

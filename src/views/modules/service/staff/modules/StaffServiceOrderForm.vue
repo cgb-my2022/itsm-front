@@ -34,7 +34,7 @@
       </div>
       <!-- 信息展示 -->
       <template v-if="tabIndex === 0">
-        <j-form-container :disabled="true">
+        <j-form-container>
           <table border="1px" id="staffLeaveTable">
             <tr>
               <td class="firstTr">请求人</td>
@@ -148,7 +148,7 @@
               <td class="firstTr">处理时间</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.comfirmTime" />
+                  <span>{{formData.serviceOrder.comfirmTime}}</span>
                 </a-form-item>
               </td>
             </tr>
@@ -164,7 +164,7 @@
               <td class="firstTr">解决方案</td>
               <td class="firstTr" colspan="4">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.solution" />
+                  <a-textarea class="text" v-model="formData.serviceOrder.solution" />
                 </a-form-item>
               </td>
             </tr>
@@ -187,9 +187,9 @@
             <tr>
               <td class="firstTr">服务满意度</td>
               <td class="firstTr" colspan="5">
-                <span>
+                <span v-if="formData.orderEvaluation">
                   <a-rate v-model="value" style="color: red;"/>
-                  <span class="ant-rate-text">5分</span>
+                  <span class="ant-rate-text">{{formData.orderEvaluation.orderScore}}分</span>
                 </span>
               </td>
             </tr>
@@ -197,7 +197,7 @@
               <td class="firstTr">评价留言</td>
               <td class="firstTr" colspan="5">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.solution" />
+                  <a-textarea v-if="formData.orderEvaluation" class="text" v-model="formData.orderEvaluation.content" />
                 </a-form-item>
               </td>
             </tr>
@@ -279,7 +279,7 @@ export default {
         dataSource: [],
         columns: [
           {
-            title: '',
+            title: '附件下载地址',
             key: 'attachUrl',
             type: FormTypes.fileView,
             token: true,
