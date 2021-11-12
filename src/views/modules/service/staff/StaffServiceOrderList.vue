@@ -6,33 +6,35 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="业务类型">
-              <j-dict-select-tag placeholder="请选择业务类型" v-model="queryParam.businessType" dictCode="SERVICE_ORDER_BUSINESS_TYPE"/>
+            <a-form-item label="工单状态">
+              <j-dict-select-tag placeholder="请选择工单状态" v-model="queryParam.orderStatus" dictCode="service_order_status"/>
             </a-form-item>
           </a-col>
-          <!--<a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="流程状态">
-              <j-dict-select-tag placeholder="请选择流程状态" v-model="queryParam.bpmStatus" dictCode="bpm_status"/>
-            </a-form-item>
-          </a-col>-->
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="工单状态">
-              <j-dict-select-tag placeholder="请选择流程状态" v-model="queryParam.orderStatus" dictCode="service_order_status"/>
+            <a-form-item label="选择业务">
+              <a-cascader 
+                placeholder="请选择"  
+                :field-names="{ label: 'title', value: 'id', children: 'children' }"
+                :show-search="{ filter }"
+                v-model="serviceCatName" 
+                :options="serviceOptions" 
+                change-on-select 
+                @change="serviceChange"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-            <a-col :xl="10" :lg="11" :md="12" :sm="24">
-              <a-form-item label="创建日期">
-                <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.createTime_begin"></j-date>
-                <span class="query-group-split-cust"></span>
-                <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.createTime_end"></j-date>
-              </a-form-item>
-            </a-col>
+          <a-col :xl="10" :lg="11" :md="12" :sm="24">
+            <a-form-item label="创建日期">
+              <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.createTime_begin"></j-date>
+              <span class="query-group-split-cust"></span>
+              <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.createTime_end"></j-date>
+            </a-form-item>
+          </a-col>
           </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
@@ -46,7 +48,8 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleSubmit('请求目录', 'serviceCatalog')" type="primary">请求目录</a-button>
+      <a-button @click="handleSubmit('快速发起', 'modalForm')" type="primary" style="margin-left: 10px">快速发起</a-button>
 
       <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -90,7 +93,27 @@
             下载
           </a-button>
         </template>
-
+        <!-- 工单状态 -->
+        <template slot="status" slot-scope="text, record">
+          <div class="order-status">
+            <p v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></p>
+            <p v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></p>
+            <p v-if="record.orderStatus === 6" class="order-status_round c-red"></p>
+            <p v-if="record.orderStatus === 7" class="order-status_round c-gray"></p>
+            <p>{{text}}</p>
+          </div>
+        </template>
+        <!-- 处理人 -->
+        <template slot="realname" slot-scope="text, record">
+          <span v-if="setRealname([2],record.orderStatusDetail)"></span>
+          <span v-else-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
+          <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
+          <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
+          <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>
+          <span v-else-if="setRealname([6,7,13],record.orderStatusDetail)">{{record.supportUserRealname}}</span>
+          <span v-else></span>
+        </template>
+        <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
           <!--<template v-if="record.bpmStatus === '1'">
             <a @click="startProcess(record)">提交流程</a>
@@ -156,20 +179,23 @@
       </a-table>
     </div>
 
-    <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
+    <staff-service-order-modal ref="modalForm" @closeLoad="taskOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal"></service-task-detail-modal>
-    <service-task-deal-modal  :formData="formData" ref="taskDealModal" @ok="taskOk" />
+    <service-task-detail-modal ref="taskDetailModal"></service-task-detail-modal>
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
     <!--<process-module/>-->
+    <!-- 服务目录 -->
+    <staff-service-catalog ref="serviceCatalog" @closeLoad="taskOk"></staff-service-catalog>
   </a-card>
 </template>
 
 <script>
   import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { ServiceMixin } from './mixins/ServiceMixin'
   import StaffServiceOrderModal from './modules/StaffServiceOrderModal'
   import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
@@ -177,17 +203,19 @@
   import '@/assets/less/TableExpand.less'
   import { postAction, putAction } from '@/api/manage'
   import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
+  import StaffServiceCatalog from './modules/StaffServiceCatalog'
 
   export default {
     name: 'StaffServiceOrderList',
-    mixins: [JeecgListMixin],
+    mixins: [JeecgListMixin, ServiceMixin],
     components: {
       JDictSelectTag,
       JDate,
       StaffServiceOrderModal,
       ServiceProcessInstPicModal,
       ServiceTaskDetailModal,
-      ServiceTaskDealModal
+      ServiceTaskDealModal,
+      StaffServiceCatalog
     },
     data () {
       return {
@@ -196,59 +224,45 @@
         // 表头
         columns: [
           {
-            title: '编号',
-            dataIndex: 'id',
-            align: 'center',
-            width: 160
-          },
-          {
-            title: '账号',
-            align: 'center',
-            dataIndex: 'userName'
-          },
-          {
-            title: '真实姓名',
-            align: 'center',
-            dataIndex: 'realName'
-          },
-          {
-            title: '部门',
-            align: 'center',
-            dataIndex: 'deptName',
-            ellipsis: true
-          },
-          {
-            title: '业务类型',
-            align: 'center',
-            dataIndex: 'businessType_dictText'
-          },
-         /* {
-            title: '设备信息',
-            align: 'center',
-            dataIndex: 'deviceInfo',
-            ellipsis: true
-          },*/
-          {
-            title: '事件内容',
-            align: 'center',
+            title: '请求内容',
             dataIndex: 'eventContent',
-            ellipsis: true
+            ellipsis: true,
+            width: 250,
+            align: 'center',
           },
-          /* {
-            title: '流程状态',
-            align: 'center',
-            dataIndex: 'bpmStatus_dictText'
-          }, */
           {
-            title: '创建日期',
+            title: '所属业务',
             align: 'center',
-            dataIndex: 'createTime'
+            ellipsis: true,
+            width: 250,
+            dataIndex: 'serviceCatFullName'
           },
           {
             title: '工单状态',
             align: 'center',
             dataIndex: 'orderStatus_dictText',
-            width: 80
+            width: 140,
+            scopedSlots: { customRender: 'status' }
+          },
+          {
+            title: '创建人',
+            align: 'center',
+            width: 140,
+            dataIndex: 'createName'
+          },
+          {
+            title: '创建日期',
+            align: 'center',
+            width: 200,
+            sorter: true,
+            dataIndex: 'createTime'
+          },
+          {
+            title: '处理人',
+            align: 'center',
+            width: 140,
+            dataIndex: 'frontlineUserRealname',
+            scopedSlots: { customRender: 'realname' }
           },
           {
             title: '操作',
@@ -272,25 +286,32 @@
         serviceOrderModel: {
           id: '',
           approved: ''
-        },
-        formData: {},
-        path: ''
+        }
       }
     },
     computed: {
       importExcelUrl: function() {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+      setRealname() {
+        return function(arr, status) {
+          if(arr.indexOf(status) != -1) {
+            return true
+          }
+          return false
+        }
       }
+    },
+    mounted() {
+      this.getCatalog()
     },
     methods: {
       initDictConfig() {
       },
       // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       startProcess: function(record) {
         var that = this;
@@ -395,4 +416,27 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less';
+  .order-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .order-status .c-blue {
+    background: blue;
+  }
+  .order-status .c-green {
+    background: green;
+  }
+  .order-status .c-gray {
+    background: gray;
+  }
+  .order-status .c-red {
+    background: red;
+  }
+  .order-status .order-status_round {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
 </style>

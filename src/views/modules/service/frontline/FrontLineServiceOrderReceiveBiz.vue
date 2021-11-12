@@ -10,8 +10,15 @@
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="业务类型">
-              <j-dict-select-tag placeholder="请选择业务类型" v-model="queryParam.businessType" dictCode="SERVICE_ORDER_BUSINESS_TYPE"/>
+            <a-form-item label="选择业务">
+              <a-cascader 
+                placeholder="请选择"  
+                :field-names="{ label: 'title', value: 'id', children: 'children' }"
+                :show-search="{ filter }"
+                v-model="serviceCatName" 
+                :options="serviceOptions" 
+                change-on-select 
+                @change="serviceChange"/>
             </a-form-item>
           </a-col>
           <!-- <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -35,7 +42,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
@@ -92,7 +99,26 @@
             下载
           </a-button>
         </template>
-
+        <!-- 工单状态 -->
+        <template slot="status" slot-scope="text, record">
+          <div class="order-status">
+            <p v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></p>
+            <p v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></p>
+            <p v-if="record.orderStatus === 6" class="order-status_round c-red"></p>
+            <p v-if="record.orderStatus === 7" class="order-status_round c-gray"></p>
+            <p>{{text}}</p>
+          </div>
+        </template>
+         <!-- 处理人 -->
+        <template slot="realname" slot-scope="text, record">
+          <span v-if="setRealname([2],record.orderStatusDetail)"></span>
+          <span v-else-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
+          <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
+          <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
+          <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>
+          <span v-else-if="setRealname([6,7,13],record.orderStatusDetail)">{{record.supportUserRealname}}</span>
+          <span v-else></span>
+        </template>
         <span slot="action" slot-scope="text, record">
           <template v-if="record.orderStatusDetail==2">
               <a  @click="handleClaim(record)">接单</a>
@@ -125,8 +151,8 @@
 
     <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-deal-modal :path="path" :formData="formData" ref="taskDealModal" @ok="taskOk"></service-task-deal-modal>
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDeatilModal"></service-task-detail-modal>
+    <service-task-deal-modal ref="taskDealModal" @ok="taskOk"></service-task-deal-modal>
+    <service-task-detail-modal ref="taskDeatilModal"></service-task-detail-modal>
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
@@ -137,6 +163,7 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
   import StaffServiceOrderModal from '../staff/modules/StaffServiceOrderModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import JDate from '@/components/jeecg/JDate.vue'
@@ -148,7 +175,7 @@
 
   export default {
     name: 'FrontLineServiceOrderList',
-    mixins: [JeecgListMixin],
+    mixins: [JeecgListMixin, ServiceMixin],
     components: {
       JDictSelectTag,
       JDate,
@@ -170,60 +197,47 @@
             width: 160
           },
           {
-            title: '账号',
-            align: 'center',
-            dataIndex: 'userName'
-          },
-          {
-            title: '真实姓名',
-            align: 'center',
-            dataIndex: 'realName'
-          },
-          {
-            title: '部门',
-            align: 'center',
-            dataIndex: 'deptName',
-            ellipsis: true
-          },
-          {
-            title: '业务类型',
-            align: 'center',
-            dataIndex: 'businessType_dictText'
-          },
-          /* {
-            title: '设备信息',
-            align: 'center',
-            dataIndex: 'deviceInfo',
-            ellipsis: true
-          }, */
-          {
-            title: '事件内容',
-            align: 'center',
+            title: '请求内容',
             dataIndex: 'eventContent',
-            ellipsis: true
+            ellipsis: true,
+            align: 'center',
           },
-         /* {
-            title: '流程状态',
-            align: 'center',
-            dataIndex: 'bpmStatus_dictText'
-          }, */
           {
-            title: '创建日期',
+            title: '所属业务',
             align: 'center',
-            dataIndex: 'createTime'
+            ellipsis: true,
+            dataIndex: 'serviceCatFullName'
           },
           {
             title: '工单状态',
             align: 'center',
             dataIndex: 'orderStatus_dictText',
-            width: 80
+            width: 140,
+            scopedSlots: { customRender: 'status' }
           },
-          /*{
-            title: '工单状态明细',
+          {
+            title: '创建人',
             align: 'center',
-            dataIndex: 'orderStatusDetail_dictText',
-            width: 80
-          },*/
+            dataIndex: 'createName'
+          },
+          {
+            title: '创建人所属部门',
+            align: 'center',
+            dataIndex: 'deptName',
+            ellipsis: true
+          },
+          {
+            title: '创建日期',
+            align: 'center',
+            sorter: true,
+            dataIndex: 'createTime'
+          },
+          {
+            title: '处理人',
+            align: 'center',
+            dataIndex: 'frontlineUserRealname',
+            scopedSlots: { customRender: 'realname' }
+          },
           {
             title: '操作',
             dataIndex: 'action',
@@ -237,15 +251,16 @@
           list: '/system/serviceOrder/frontLineList',
           receive: '/system/serviceOrder/receiveOrder'
         },
-        dictOptions: {},
-        path: '',
-        formData: {}
+        dictOptions: {}
       }
     },
     computed: {
       importExcelUrl: function() {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       }
+    },
+    created() {
+      this.getCatalog()
     },
     methods: {
       initDictConfig() {
@@ -288,7 +303,7 @@
       // 办理
       handleProcess(record) {
         this.$refs.taskDealModal.title = '办理';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
         /*this.loading = true;
         this.getBizProcessNodeInfo(record);*/
       },
@@ -297,8 +312,6 @@
         var params = { flowCode: this.flowCode, dataId: record.id };// 查询条件
         getAction(url, params).then((res) => {
           if (res.success) {
-            console.log('获取流程节点信息', res);
-            console.log('表单数据', res.result.records)
             var data = {
               dataId: res.result.dataId,
               orderStatus: record.orderStatus,
@@ -313,8 +326,6 @@
             }
             this.formData = data;
             this.path = res.result.formUrl;
-            console.log('------获取流程节点信息>>', data);
-            console.log('------流程表单地址>>', this.formUrl);
             this.$refs.taskDealModal.deal(data, this.formUrl);
             this.loading = false;
           }
@@ -322,13 +333,10 @@
       },
       // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDeatilModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDeatilModal.deal(record.id, path);
       },
       taskOk() {
-        console.log('流程办理完成')
         this.loadData()
       }
     }

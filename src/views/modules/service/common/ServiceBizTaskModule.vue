@@ -1,5 +1,5 @@
 <template>
-  <div style="background: #ffffff;margin-right: 10px">
+  <div style="background: #ffffff; margin-right: 10px">
     <!-- 步骤条 -->
     <a-spin :spinning="loading">
       <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -10,7 +10,7 @@
     </div>-->
       <a-card>
         <a-steps progressDot :current="stepIndex" style="padding: 10px" size="default">
-          <template v-if="resultObj.bpmLogListCount >3">
+          <template v-if="resultObj.bpmLogListCount > 3">
             <a-step>
               <template slot="title">
                 <div class="task-title">...</div>
@@ -18,22 +18,28 @@
             </a-step>
           </template>
           <template v-for="item in resultObj.bpmLogStepList">
-            <a-step>
+            <a-step :key="item.id">
               <template slot="title">
                 <div class="task-title">{{ item.taskName }}</div>
               </template>
               <template slot="description">
-                <div class="task-date"> <span><j-ellipsis :value="'处理时间：'+ item.opTime"></j-ellipsis></span></div>
+                <div class="task-date">
+                  <span><j-ellipsis :value="'处理时间：' + item.opTime"></j-ellipsis></span>
+                </div>
                 <div class="task-user">操作人：{{ item.opUserName }}</div>
               </template>
             </a-step>
           </template>
-          <a-step v-if="resultObj.taskName&&resultObj.taskName!=''">
+          <a-step v-if="resultObj.taskName && resultObj.taskName != ''">
             <template slot="title">
               <div class="task-title">{{ resultObj.taskName }}</div>
             </template>
             <template slot="description">
-              <div class="task-date"> <span style="color: #ff6d75;"><j-ellipsis :value="'处理时间：'+ resultObj.taskNameStartTime"></j-ellipsis></span></div>
+              <div class="task-date">
+                <span style="color: #ff6d75"
+                  ><j-ellipsis :value="'处理时间：' + resultObj.taskNameStartTime"></j-ellipsis
+                ></span>
+              </div>
               <div class="task-user">操作人：{{ resultObj.taskAssigneeName }}</div>
             </template>
           </a-step>
@@ -42,7 +48,7 @@
               <div class="task-title">...</div>
             </template>
           </a-step>
-        <!--<a-step>
+          <!--<a-step>
           <template slot="title">
             <div class="task-title"></div>
           </template>
@@ -184,162 +190,169 @@
     </a-card>-->
 
       <!-- 填写解决方案 -->
-      <front-line-service-order-solution :formData="formData" @complete="handleDataReload()"></front-line-service-order-solution>
-     <!-- <biz-select-user-modal ref="selectHqUserModal" @selectFinished="selectHqUserOK"></biz-select-user-modal>
--->    </a-spin>
+      <front-line-service-order-solution
+        :formData="formData"
+        @complete="handleDataReload()"
+      ></front-line-service-order-solution>
+      <!-- <biz-select-user-modal ref="selectHqUserModal" @selectFinished="selectHqUserOK"></biz-select-user-modal>
+-->
+    </a-spin>
   </div>
 </template>
 
 <script>
-  import Vue from 'vue'
-  import { ACCESS_TOKEN } from '@/store/mutation-types'
-  import { getAction, httpAction, getFileAccessHttpUrl, putAction } from '@/api/manage'
-  import AListItem from 'ant-design-vue/es/list/Item';
-  import { initDictOptions } from '@/components/dict/JDictSelectUtil'
-  import FrontLineServiceOrderSolution from '../frontline/FrontLineServiceOrderSolution';
-  import JEllipsis from '@/components/jeecg/JEllipsis.vue';
-  import JUpload from '@/components/jeecg/JUpload'
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { getAction, httpAction, getFileAccessHttpUrl, putAction } from '@/api/manage'
+import AListItem from 'ant-design-vue/es/list/Item'
+import { initDictOptions } from '@/components/dict/JDictSelectUtil'
+import FrontLineServiceOrderSolution from '../frontline/FrontLineServiceOrderSolution'
+import JEllipsis from '@/components/jeecg/JEllipsis.vue'
+import JUpload from '@/components/jeecg/JUpload'
 
-  export default {
-    components: {
-      JUpload,
-      JEllipsis,
-      AListItem,
-      FrontLineServiceOrderSolution },
-    name: 'ServiceBizTaskModule',
-    props: ['taskData', 'formData'],
-    data() {
-      return {
-        url: {
-          getProcessTaskTransInfo: '/act/task/getProcessTaskTransInfo',
-          processComplete: '/act/task/processComplete',
-          upload: window._CONFIG['domianURL'] + '/sys/common/upload',
-          updateStatus: window._CONFIG['domianURL'] + '/system/serviceOrder/updateServiceOrderStatus'
-        },
-        headers: {},
-        resultObj: {},
-        checkedNext: false,
-        transition: [],
-        hqUserSelectList: [],
-        ccUserSelectList: [],
-        remarksDictOptions: [],
-        currTask: {},
-        model: {
-          taskId: '',
-          nextnode: '',
-          nextCodeCount: '',
-          reason: '',
-          processModel: 1,
-          rejectModelNode: '',
-          nextUserName: '',
-          nextUserId: '',
-          ccUserIds: '',
-          ccUserRealNames: '',
-          fileList: ''
-        },
-        serviceOrderModel: {
-          id: '',
-          orderStatus: ''
-        },
-        bodyStyle: {
-          padding: '10px'
-        },
-        checkedCc: false,
-        loading: false
+export default {
+  components: {
+    JUpload,
+    JEllipsis,
+    AListItem,
+    FrontLineServiceOrderSolution,
+  },
+  name: 'ServiceBizTaskModule',
+  props: ['taskData', 'formData'],
+  data() {
+    return {
+      url: {
+        getProcessTaskTransInfo: '/act/task/getProcessTaskTransInfo',
+        processComplete: '/act/task/processComplete',
+        upload: window._CONFIG['domianURL'] + '/sys/common/upload',
+        updateStatus: window._CONFIG['domianURL'] + '/system/serviceOrder/updateServiceOrderStatus',
+      },
+      headers: {},
+      resultObj: {},
+      checkedNext: false,
+      transition: [],
+      hqUserSelectList: [],
+      ccUserSelectList: [],
+      remarksDictOptions: [],
+      currTask: {},
+      model: {
+        taskId: '',
+        nextnode: '',
+        nextCodeCount: '',
+        reason: '',
+        processModel: 1,
+        rejectModelNode: '',
+        nextUserName: '',
+        nextUserId: '',
+        ccUserIds: '',
+        ccUserRealNames: '',
+        fileList: '',
+      },
+      serviceOrderModel: {
+        id: '',
+        orderStatus: '',
+      },
+      bodyStyle: {
+        padding: '10px',
+      },
+      checkedCc: false,
+      loading: false,
+    }
+  },
+  computed: {
+    stepIndex: function () {
+      if (this.resultObj.bpmLogListCount > 3) {
+        return this.resultObj.bpmLogStepListCount + 1
       }
+      return this.resultObj.bpmLogStepListCount
     },
-    computed: {
-      stepIndex: function () {
-        if (this.resultObj.bpmLogListCount > 3) {
-          return this.resultObj.bpmLogStepListCount + 1;
+  },
+  methods: {
+    handleChangeSelect(value) {
+      this.model.reason = value
+    },
+    initDictConfig() {
+      // 初始化字典 - 性别
+      initDictOptions('approval_remarks').then((res) => {
+        if (res.success) {
+          this.remarksDictOptions = res.result
         }
-        return this.resultObj.bpmLogStepListCount;
+      })
+    },
+    getFileDownloadUrl: function (path) {
+      return getFileAccessHttpUrl(path)
+    },
+    handleCheckedNextChange(e) {
+      this.checkedNext = e.target.checked
+      this.hqUserSelectReset()
+    },
+    handleCheckedCcChange(e) {
+      this.checkedCc = e.target.checked
+      this.ccUserSelectReset()
+    },
+    getProcessTaskTransInfo(resultObj) {
+      var params = { taskId: resultObj.taskId } // 查询条件
+      this.loading = true
+      getAction(this.url.getProcessTaskTransInfo, params).then((res) => {
+        if (res.success) {
+          console.log('流程流转信息', res)
+          this.resultObj = res.result
+        }
+        this.loading = false
+      })
+    },
+    // flag 2:同意 6：拒绝
+    handleProcessComplete(flag) {
+      const that = this
+      if (!this.model.reason || this.model.reason.length === 0) {
+        this.$message.warning('请填写处理意见')
+        return
       }
-    },
-    methods: {
-      handleChangeSelect (value) {
-        this.model.reason = value;
-      },
-      initDictConfig() {
-        // 初始化字典 - 性别
-        initDictOptions('approval_remarks').then((res) => {
-          if (res.success) {
-            this.remarksDictOptions = res.result;
-          }
-        });
-      },
-      getFileDownloadUrl: function (path) {
-        return getFileAccessHttpUrl(path)
-      },
-      handleCheckedNextChange(e) {
-        this.checkedNext = e.target.checked;
-        this.hqUserSelectReset();
-      },
-      handleCheckedCcChange(e) {
-        this.checkedCc = e.target.checked;
-        this.ccUserSelectReset();
-      },
-      getProcessTaskTransInfo(resultObj) {
-        var params = { taskId: resultObj.taskId };// 查询条件
-        this.loading = true;
-        getAction(this.url.getProcessTaskTransInfo, params).then((res) => {
-          if (res.success) {
-            console.log('流程流转信息', res);
-            this.resultObj = res.result;
-          }
-          this.loading = false;
-        })
-      },
-      // flag 2:同意 6：拒绝
-      handleProcessComplete (flag) {
-        const that = this;
-        if (!this.model.reason || this.model.reason.length === 0) {
-          this.$message.warning('请填写处理意见');
-          return
-        }
-        var content = '';
-        if (flag === 1) {
-          content = '确认同意吗?'
-        } else {
-          content = '确认拒绝吗?'
-        }
-        console.log('流程办理数据：', this.model);
-        var method = 'post';
-        this.$confirm({
-          title: '提示',
-          content: content,
-          onOk: function() {
-            that.loading = true;
-            that.model.fileList = JSON.stringify(that.fileList)
-            that.serviceOrderModel.orderStatus = flag
-            that.serviceOrderModel.id = that.formData.dataId
-            putAction(that.url.updateStatus, that.serviceOrderModel).then((res) => {
-              if (res.success) {
-                httpAction(that.url.processComplete, that.model, method).then((res) => {
+      var content = ''
+      if (flag === 1) {
+        content = '确认同意吗?'
+      } else {
+        content = '确认拒绝吗?'
+      }
+      console.log('流程办理数据：', this.model)
+      var method = 'post'
+      this.$confirm({
+        title: '提示',
+        content: content,
+        onOk: function () {
+          that.loading = true
+          that.model.fileList = JSON.stringify(that.fileList)
+          that.serviceOrderModel.orderStatus = flag
+          that.serviceOrderModel.id = that.formData.dataId
+          putAction(that.url.updateStatus, that.serviceOrderModel).then((res) => {
+            if (res.success) {
+              httpAction(that.url.processComplete, that.model, method)
+                .then((res) => {
                   if (res.success) {
-                    that.$message.success(res.message);
-                    that.$emit('complete');
+                    that.$message.success(res.message)
+                    that.$emit('complete')
                   } else {
-                    that.$message.warning(res.message);
+                    that.$message.warning(res.message)
                   }
-                }).finally(() => {
-                  that.loading = false;
-                  that.close();
                 })
-              } else {
-                that.$message.warning(res.message);
-                that.loading = false;
-                that.close();
-              }
-            })
-          }
-        });
-      },
-      handleDataReload() {
-        const that = this;
-        that.$emit('complete');
-      },
-     /* handleProcessComplete (nextnode) {
+                .finally(() => {
+                  that.loading = false
+                  that.close()
+                })
+            } else {
+              that.$message.warning(res.message)
+              that.loading = false
+              that.close()
+            }
+          })
+        },
+      })
+    },
+    handleDataReload() {
+      const that = this
+      that.$emit('complete')
+    },
+    /* handleProcessComplete (nextnode) {
         const that = this;
         if(!this.model.reason || this.model.reason.length==0){
           this.$message.warning("请填写处理意见");
@@ -371,70 +384,66 @@
         });
 
       }, */
-      handleManyProcessComplete() {
-          if (this.model.processModel === 3) {
-            if (!this.model.rejectModelNode || this.model.rejectModelNode.length === 0) {
-              this.$message.warning('请选择驳回节点');
-              return
-            }
-          }
-          this.handleProcessComplete();
-      },
-      selectHqUserOK: function(data) {
-        this.hqUserSelectList = data;
-      },
-      handleHqUserSelect: function() {
-        this.$refs.selectHqUserModal.add();
-      },
-      hqUserSelectReset() {
-        this.hqUserSelectList = [];
-      },
-      selectCcUserOK: function(data) {
-        this.ccUserSelectList = data;
-      },
-      handleCcUserSelect: function() {
-        this.$refs.selectCcUserModal.add();
-      },
-      ccUserSelectReset() {
-        this.ccUserSelectList = [];
+    handleManyProcessComplete() {
+      if (this.model.processModel === 3) {
+        if (!this.model.rejectModelNode || this.model.rejectModelNode.length === 0) {
+          this.$message.warning('请选择驳回节点')
+          return
+        }
       }
+      this.handleProcessComplete()
     },
-    created() {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = { 'X-Access-Token': token };
-      console.log('任务办理组件数据：', this.taskData);
-      this.currTask = this.taskData.bizTaskList[0];
-      this.model.taskId = this.currTask.id;
-      this.getProcessTaskTransInfo(this.taskData);
-      this.initDictConfig();
-    }
-  }
+    selectHqUserOK: function (data) {
+      this.hqUserSelectList = data
+    },
+    handleHqUserSelect: function () {
+      this.$refs.selectHqUserModal.add()
+    },
+    hqUserSelectReset() {
+      this.hqUserSelectList = []
+    },
+    selectCcUserOK: function (data) {
+      this.ccUserSelectList = data
+    },
+    handleCcUserSelect: function () {
+      this.$refs.selectCcUserModal.add()
+    },
+    ccUserSelectReset() {
+      this.ccUserSelectList = []
+    },
+  },
+  created() {
+    const token = Vue.ls.get(ACCESS_TOKEN)
+    this.headers = { 'X-Access-Token': token }
+    console.log('任务办理组件数据：', this.taskData)
+    this.currTask = this.taskData.bizTaskList[0]
+    this.model.taskId = this.currTask.id
+    this.getProcessTaskTransInfo(this.taskData)
+    this.initDictConfig()
+  },
+}
 </script>
 
 <style scoped>
-  .task-info {
-    margin: 20px 0;
-  }
+.task-info {
+  margin: 20px 0;
+}
 
-  .task-title {
-    font-weight: bold;
-  }
+.task-title {
+  font-weight: bold;
+}
 
-  .task-date {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.task-date {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .task-date span {
-    /*color: #ff6d75;*/
-  }
+.ant-steps-item-description {
+  max-width: 200px !important;
+}
 
-  .ant-steps-item-description {
-    max-width: 200px !important;
-  }
-
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 3px
-  }
+/** Button按钮间距 */
+.ant-btn {
+  margin-left: 3px;
+}
 </style>

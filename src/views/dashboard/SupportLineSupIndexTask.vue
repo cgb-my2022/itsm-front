@@ -155,11 +155,8 @@
             title: '业务类型',
             align: 'center',
             ellipsis: true,
-            dataIndex: 'businessType',
-            customRender: (text) => {
-              // 字典值翻译通用方法
-              return filterDictTextByCache('SERVICE_ORDER_BUSINESS_TYPE', text);
-            }
+            dataIndex: 'serviceCatFullName',
+            ellipsis: true
           },
           {
             title: '工单状态明细',
@@ -203,7 +200,7 @@
       // 办理
       handleProcess(record) {
         this.$refs.taskDealModal.title = '办理';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
       },
       getBizProcessNodeInfo(record) {
         let url = '/process/extActProcessNode/getBizProcessNodeInfo'

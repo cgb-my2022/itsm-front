@@ -173,7 +173,7 @@
             title: '业务类型',
             align: 'center',
             ellipsis: true,
-            dataIndex: 'businessType',
+            dataIndex: 'serviceCatFullName',
             customRender: (text) => {
               // 字典值翻译通用方法
               return filterDictTextByCache('SERVICE_ORDER_BUSINESS_TYPE', text);
@@ -214,7 +214,7 @@
       // 办理
       handleProcess(record) {
         this.$refs.taskDealModal.title = '确认服务请求';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
       },
       loadData() {
         this.myUnfinished();

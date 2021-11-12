@@ -60,7 +60,7 @@ export default {
                     this.initPermission()   
                 } else {
                     this.disabled = false
-                    this.permission = 1
+                    this.permission = newVal.id ? this.rowInfo.permission : 1
                 }
             },
             immediate: true

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-
+  import { getAction } from '@/api/manage'
   import { isURL } from '@/utils/validate'
   import ServiceBizDynamicLink from './ServiceBizDynamicLink.vue';
   import Vue from 'vue'
@@ -29,7 +29,6 @@
     components: {
       ServiceBizDynamicLink
     },
-    props: ['path', 'formData'],
     computed: {
       isComp: function () {
         console.log('isComp组件名称：', this.path);
@@ -58,11 +57,14 @@
           'overflow-y': 'auto'
         },
         iframeUrl: '',
+        path: '',
+        formData: {},
         url: {
           claim: '/act/task/claim',
           taskEntrust: '/act/task/taskEntrust',
           suspend: '/act/processInstance/suspend',
-          restart: '/act/processInstance/restart'
+          restart: '/act/processInstance/restart',
+          moreInfo: '/system/serviceOrder/moreInfo'
         }
       }
     },
@@ -73,8 +75,16 @@
       handleModalCancel() {
         this.visible = false
       },
-      deal() {
-        this.visible = true;
+      deal(id, path) {
+        this.path = path
+        getAction(
+          this.url.moreInfo, { id }
+        ).then(res => {
+          this.visible = true;
+          if (res.code === 200) {
+            this.formData = res.result
+          }
+        })
       },
       completeProcess() {
         this.visible = false;
