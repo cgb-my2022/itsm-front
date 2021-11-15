@@ -40,7 +40,7 @@
               <td class="firstTr">请求人</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.createName" />
+                  <a-input class="text" v-model="formData.serviceOrder.realName" />
                 </a-form-item>
               </td>
               <td class="firstTr">创建时间</td>
@@ -156,7 +156,7 @@
               <td class="firstTr">问题原因</td>
               <td class="firstTr" colspan="4">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.transferReason" />
+                  <a-textarea class="text" v-model="formData.serviceOrder.reason" />
                 </a-form-item>
               </td>
             </tr>

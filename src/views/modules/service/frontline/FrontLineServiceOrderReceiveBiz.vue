@@ -218,7 +218,7 @@
           {
             title: '创建人',
             align: 'center',
-            dataIndex: 'createName'
+            dataIndex: 'realName'
           },
           {
             title: '创建人所属部门',

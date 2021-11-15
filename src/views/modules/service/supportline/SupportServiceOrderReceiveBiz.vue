@@ -210,7 +210,7 @@
             title: '创建人',
             align: 'center',
             width: 140,
-            dataIndex: 'createName'
+            dataIndex: 'realName'
           },
           {
             title: '创建日期',

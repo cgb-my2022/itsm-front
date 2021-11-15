@@ -1,19 +1,19 @@
 <template>
-  <a-card :loading="cardLoading" :bordered="false" style="height: 100%;">
+  <a-card :loading="cardLoading" :bordered="false" style="height: 100%;overflow-x:auto;">
     <h2 class="r-h2">服务目录</h2>
-    <a-spin :spinning="loading">
+    <a-spin :spinning="loading" style="overflow-x:'auto'">
       <a-button type="primary" @click="addRow(1)" icon="plus" style="margin-bottom: 18px;">添加目录</a-button>
       <a-input-search v-model="searchData.catName" @search="getTreeData" style="width:100%;" placeholder="输入目录名称..." allow-clear enterButton/>
       <a-tree
         showLine
         :selectedKeys="selectedKeys"
-        :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
+        :dropdownStyle="{maxHeight:'200px', overflow:'auto'}"
         :expanded-keys.sync="expandedKeys"
         :tree-data="gData"
         @select="handleTreeSelect">
           <template #title="{ key: treeKey, title, catLevel, children }">
             <a-dropdown :trigger="['contextmenu']">
-              <span>{{ title }}</span>
+              <p class="dropdown-span">{{ title }}</p>
               <template #overlay>
                 <a-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, catLevel)">
                   <a-menu-item key="1">

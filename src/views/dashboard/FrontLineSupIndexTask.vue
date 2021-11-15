@@ -95,8 +95,8 @@
       </a-row>
     </a-spin>
     <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
-    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" />
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal" />
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <service-task-detail-modal ref="taskDetailModal" />
   </div>
 </template>
 
@@ -216,10 +216,8 @@
       },
        // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       toServiceOrderDelegate() {
         this.$router.replace('/service/delegate')

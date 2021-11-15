@@ -122,7 +122,7 @@
           <template v-if="record.orderStatus === 6">
             <a @click="confirmProcess(record)">确认</a>
             <a-divider type="vertical"/>
-            <a @click="cancelProcess(record)" style="color:orange;">返回</a>
+            <a @click="cancelProcess(record)" style="color:orange;">退回</a>
             <a-divider type="vertical"/>
           </template>
           <template v-if="record.orderStatus === 7 && record.commentStatus === 0">
@@ -265,7 +265,7 @@
             title: '创建人',
             align: 'center',
             width: 140,
-            dataIndex: 'createName'
+            dataIndex: 'realName'
           },
           {
             title: '创建日期',
@@ -376,7 +376,7 @@
         this.$refs.extActProcessInstPicModal.preview(flowCode, dataId);
         this.$refs.extActProcessInstPicModal.title = '流程图';
       },
-      // 返回
+      // 退回
       cancelProcess(record) {
         this.$refs.serviceBack.deal(record)
       },

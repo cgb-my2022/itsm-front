@@ -40,7 +40,10 @@
                   ><j-ellipsis :value="'处理时间：' + resultObj.taskNameStartTime"></j-ellipsis
                 ></span>
               </div>
-              <div class="task-user">操作人：{{ resultObj.taskAssigneeName }}</div>
+              <div class="task-user">
+                <span>操作人：</span>
+                <span>{{ resultObj.taskAssigneeName }}</span>
+              </div>
             </template>
           </a-step>
           <a-step>

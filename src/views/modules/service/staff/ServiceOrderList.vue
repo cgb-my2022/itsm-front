@@ -179,8 +179,8 @@
 
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal"></service-task-detail-modal>
-    <service-task-deal-modal  :formData="formData" ref="taskDealModal" @ok="taskOk" />
+    <service-task-detail-modal ref="taskDetailModal"></service-task-detail-modal>
+    <service-task-deal-modal  ref="taskDealModal" @closeLoad="taskOk" />
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
@@ -242,7 +242,7 @@
             title: '创建人',
             align: 'center',
             width: 140,
-            dataIndex: 'createName'
+            dataIndex: 'realName'
           },
           {
             title: '创建日期',
@@ -306,10 +306,8 @@
       },
       // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       startProcess: function(record) {
         var that = this;
@@ -359,7 +357,7 @@
       // 确认
       confirmProcess(record) {
         this.$refs.taskDealModal.title = '确认';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
       },
       // 流程作废
       invalidProcess(record) {
