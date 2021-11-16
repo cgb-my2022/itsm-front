@@ -30,7 +30,7 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="请求内容" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-textarea v-decorator="['eventContent', validatorRules.eventContent]" rows="4" placeholder="请输入事件内容"/>
+              <a-textarea v-decorator="['eventContent', validatorRules.eventContent]" rows="4" placeholder="请输入请求内容"/>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -92,6 +92,8 @@
             :loading="serviceOrderAttachTable.loading"
             :columns="serviceOrderAttachTable.columns"
             :dataSource="serviceOrderAttachTable.dataSource"
+            :maxRow="5"
+            :maxFile="10"
             :maxHeight="300"
             :rowNumber="true"
             :rowSelection="true"
@@ -170,7 +172,7 @@
           },
           eventContent: {
             rules: [
-              { required: true, message: '请输入事件内容!' }
+              { required: true, message: '请输入请求内容!' }
             ]
           }
         },
@@ -285,6 +287,7 @@
               return '';
           })
         }).catch(e => {
+          this.$message.warning("请上传文件!")
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
             this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]

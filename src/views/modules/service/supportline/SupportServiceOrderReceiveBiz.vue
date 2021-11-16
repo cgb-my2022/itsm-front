@@ -186,17 +186,21 @@
         // 表头
         columns: [
           {
+            title: '编号',
+            dataIndex: 'id',
+            align: 'center',
+            width: 160
+          },
+          {
             title: '请求内容',
             dataIndex: 'eventContent',
             ellipsis: true,
-            width: 250,
             align: 'center',
           },
           {
             title: '所属业务',
             align: 'center',
             ellipsis: true,
-            width: 250,
             dataIndex: 'serviceCatFullName'
           },
           {
@@ -209,20 +213,23 @@
           {
             title: '创建人',
             align: 'center',
-            width: 140,
             dataIndex: 'realName'
+          },
+          {
+            title: '创建人所属部门',
+            align: 'center',
+            dataIndex: 'deptName',
+            ellipsis: true
           },
           {
             title: '创建日期',
             align: 'center',
-            width: 200,
             sorter: true,
             dataIndex: 'createTime'
           },
           {
             title: '处理人',
             align: 'center',
-            width: 140,
             dataIndex: 'frontlineUserRealname',
             scopedSlots: { customRender: 'realname' }
           },
@@ -231,7 +238,7 @@
             dataIndex: 'action',
             align: 'center',
             fixed: 'right',
-            width: 140,
+            width: 130,
             scopedSlots: { customRender: 'action' }
           }
         ],

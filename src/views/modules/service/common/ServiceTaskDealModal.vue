@@ -82,6 +82,7 @@
       <a-textarea
         v-model="model.frontPendingReason"
         placeholder="请输入暂挂原因"
+        :maxLength="300"
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>
@@ -95,6 +96,7 @@
       <a-textarea
         v-model="model.supportPendingReason"
         placeholder="请输入暂挂原因"
+        :maxLength="300"
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>

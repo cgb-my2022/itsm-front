@@ -20,7 +20,8 @@
                     v-decorator="['serviceCatIds', {
                         rules: [{ required: true, message: '请选择业务!' }]
                     }]"
-                    :options="quickOptions" 
+                    :options="quickOptions"
+                    :disabled="this.rowInfo.orderType==2"
                     change-on-select 
                     @change="catalogChange"/>
                 </a-form-item>
@@ -49,6 +50,7 @@
                     v-decorator="['transferReason', {
                       rules: [{ required: true, message: '请输入转办原因!' }]
                     }]"
+                    :maxLength="300"
                     rows="4" placeholder="请输入转办原因"/>
                   </a-form-item>
                 </a-col>

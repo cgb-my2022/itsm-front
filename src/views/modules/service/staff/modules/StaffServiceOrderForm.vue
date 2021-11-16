@@ -6,16 +6,16 @@
         {{ statusName }}
       </a-tag>
       <template v-if="model.orderStatusDetail === 4">
-        <a-tag color="red"> 挂起原因：{{ model.frontPendingReason }} </a-tag>
+        <a-tag color="red" class="tag-beyond"> 挂起原因：{{ model.frontPendingReason }} </a-tag>
       </template>
       <template v-if="model.orderStatusDetail === 5 || model.orderStatusDetail === 6">
-        <a-tag color="red"> 转二线原因：{{ model.transferReason }} </a-tag>
+        <a-tag color="red" class="tag-beyond"> 转二线原因：{{ model.transferReason }} </a-tag>
       </template>
       <template v-if="model.orderStatusDetail === 7">
-        <a-tag color="red"> 挂起原因：{{ model.supportPendingReason }} </a-tag>
+        <a-tag color="red" class="tag-beyond"> 挂起原因：{{ model.supportPendingReason }} </a-tag>
       </template>
       <template v-if="model.orderStatusDetail === 12 || model.orderStatusDetail === 13">
-        <a-tag color="red"> 备注：{{ model.remark }} </a-tag>
+        <a-tag color="red" class="tag-beyond"> 备注：{{ model.remark }} </a-tag>
       </template>
       <!-- 头部 -->
       <span id="staffLeaveTitle">服务请求</span>
@@ -188,7 +188,7 @@
               <td class="firstTr">服务满意度</td>
               <td class="firstTr" colspan="5">
                 <span v-if="formData.orderEvaluation">
-                  <a-rate v-model="value" style="color: red;"/>
+                  <a-rate disabled v-model="value" style="color: red;"/>
                   <span class="ant-rate-text">{{formData.orderEvaluation.orderScore}}分</span>
                 </span>
               </td>
@@ -414,6 +414,10 @@ export default {
 </script>
 
 <style scoped>
+.tag-beyond {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
 /* 流转记录 */
 .record-null {
   font-size: 16px;

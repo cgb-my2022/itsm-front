@@ -16,6 +16,7 @@
             v-model="serviceOrderModel.serviceCatIds"
             :options="quickOptions"
             change-on-select
+            :disabled="this.rowInfo.orderType==2"
             @change="catalogChange"
           />
         </a-form-model-item>
@@ -29,13 +30,14 @@
                   $refs.eventType.onFieldBlur()
                 }
               "
-              dictCode="SERVICE_EVENT_TYPE"
+              dictCode="ORDER_TYPE"
             />
           </a-form-model-item>
         </template>
         <a-form-model-item ref="reason" label="问题原因" prop="reason">
           <a-textarea
             v-model="serviceOrderModel.reason"
+            :maxLength="300"
             @blur="
               () => {
                 $refs.reason.onFieldBlur()
@@ -46,6 +48,7 @@
         <a-form-model-item ref="solution" label="解决方案" prop="solution">
           <a-textarea
             v-model="serviceOrderModel.solution"
+            :maxLength="300"
             @blur="
               () => {
                 $refs.solution.onFieldBlur()
@@ -61,6 +64,8 @@
               :loading="serviceOrderAttachTable.loading"
               :columns="serviceOrderAttachTable.columns"
               :dataSource="serviceOrderAttachTable.dataSource"
+              :maxRow="5"
+              :maxFile="10"
               :maxHeight="300"
               :rowNumber="true"
               :rowSelection="true"
@@ -195,16 +200,7 @@ export default {
   watch: {
     'serviceOrderModel.serviceCatIds': {
       handler(newVal) {
-        if (newVal.length > 1) {
-          const ncId = newVal[1]
-          if (this.ncList.indexOf(ncId) != -1) {
-            this.showEvent = true
-          } else {
-            this.showEvent = false
-          }
-        } else {
-          this.showEvent = false
-        }
+        this.setNc(newVal)
       },
       immediate: true,
     },
@@ -232,7 +228,20 @@ export default {
           Object.keys(info).forEach(item => {
               this.rowInfo[item] = info[item]
           })
+
       })
+    },
+    setNc(newVal) {
+      if (newVal.length > 1) {
+        const ncId = newVal[1]
+        if (this.ncList.indexOf(ncId) != -1) {
+          this.showEvent = true
+        } else {
+          this.showEvent = false
+        }
+      } else {
+        this.showEvent = false
+      }
     },
     initDictConfig() {
       // 初始化字典 - 性别
@@ -348,6 +357,8 @@ export default {
         })
       }
       this.ncList = ncList
+      this.setNc(this.serviceOrderModel.serviceCatIds)
+      return ncList;
     },
   },
   created() {

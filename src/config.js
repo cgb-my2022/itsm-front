@@ -3,7 +3,7 @@ let casPrefixUrl = "";
 let onlinePreviewDomainURL = ""
 switch (process.env.VUE_APP_CURENV) {
     case "ywl":
-        domianURL = "http://risun-itsm.vaiwan.com/jeecg-boot";
+        domianURL = "http://172.16.100.145:8080/jeecg-boot";
         casPrefixUrl = "http://cas.example.org:8443/cas";
         onlinePreviewDomainURL = "http://fileview.jeecg.com/onlinePreview"
         break;

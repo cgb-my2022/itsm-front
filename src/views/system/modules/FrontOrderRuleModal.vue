@@ -1,11 +1,10 @@
 <template>
   <a-drawer
     :title="title"
-    :maskClosable="true"
+    :maskClosable="false"
     :width="drawerWidth"
     placement="right"
-    :closable="true"
-    @close="handleCancel"
+    @cancel="handleCancel"
     :visible="visible"
     style="height: 100%; overflow: auto; padding-bottom: 53px"
   >
@@ -103,12 +102,12 @@
     </a-spin>
     <depart-window ref="departWindow" @ok="modalFormOk"></depart-window>
 
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
+    <!-- <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-popconfirm title="确定放弃设置？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: 0.8rem">取消</a-button>
       </a-popconfirm>
       <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
-    </div>
+    </div> -->
     <!-- 添加业务 -->
     <add-service ref="addService" @closeLoad="initLoad"></add-service>
   </a-drawer>
@@ -268,7 +267,12 @@ export default {
     // 初始化表单数据
     initLoad() {
       this.loading = true
-      getAction(this.urls[this.operations - 1].list, { orderType: this.orderType }).then((res) => {
+      getAction(
+        this.urls[this.operations - 1].list, 
+        { 
+          orderType: this.orderType,
+          userId: this.userId
+        }).then((res) => {
         this.loading = false
         if (res.code === 200) {
           this.dataSource = res.result

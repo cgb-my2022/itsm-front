@@ -5,6 +5,7 @@
     destroyOnClose
     :bodyStyle="bodyStyle"
     :width="600"
+    :maskClosable="false"
     :confirmLoading="confirmLoading"
     @ok="handleOkConfirm"
     @cancel="handleCancel"
