@@ -118,7 +118,7 @@
               <a  @click="handleClaim(record)">接单</a>
             <a-divider type="vertical" />
           </template>
-          <template v-else-if="record.orderStatusDetail==6">
+          <template v-else-if="record.orderStatusDetail==6 || record.orderStatusDetail==13">
             <a  @click="handleProcess(record)">办理</a>
             <a-divider type="vertical" />
           </template>

@@ -42,7 +42,7 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row v-if="orderStatusDetail != 10 || orderStatusDetail != 11">
+            <a-row v-if="setStatus([10, 11], orderStatusDetail)">
                 <a-col :span="24">
                   <a-form-item label="转办原因" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
                     <a-textarea 
@@ -113,6 +113,16 @@
           orderType: ""
         },
         orderStatusDetail: 0,
+      }
+    },
+    computed: {
+      setStatus() {
+        return function(arr, status) {
+          if(arr.indexOf(status) != -1) {
+            return false
+          }
+          return true
+        }
       }
     },
     created() {
