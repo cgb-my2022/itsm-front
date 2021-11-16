@@ -385,11 +385,11 @@
         };// 查询条件
         let url0 = '';
         // 一线已接单
-        if (this.formData.orderStatusDetail == 3) {
+        if (this.formData.orderStatusDetail == 3 || this.formData.orderStatusDetail == 12) {
           url0 = that.url.delegateFrontUser;
           params.frontlineUserName = data.username
           // 二线已接单
-        } else if (this.formData.orderStatusDetail == 6) {
+        } else if (this.formData.orderStatusDetail == 6 || this.formData.orderStatusDetail == 13) {
           url0 = that.url.delegateSupportUser;
           params.supportUserName = data.username
         }

@@ -30,7 +30,7 @@
                   $refs.eventType.onFieldBlur()
                 }
               "
-              dictCode="ORDER_TYPE"
+              dictCode="SERVICE_EVENT_TYPE"
             />
           </a-form-model-item>
         </template>

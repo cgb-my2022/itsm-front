@@ -374,22 +374,22 @@ export default {
       this.edit({ activitiSync: '1' })
     },
     edit(record, operations = 1) {
+      console.log(record);
       if (this.dictOptions.length === 1) {
         this.initDictData()
       }
       this.operations = operations
-      this.initLoad()
       this.resetScreenSize() // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
-      let that = this
-      that.defaultChecked = false
-      that.form.resetFields()
-      that.userId = record.id
-      that.username = record.username
-      that.realname = record.realname
-      that.visible = true
+      this.defaultChecked = false
+      this.form.resetFields()
+      this.userId = record.id
+      this.username = record.username
+      this.realname = record.realname
       // 调用查询用户对应的部门信息的方法
-      that.checkedDepartKeys = []
-      that.loadRules(that.userId)
+      this.checkedDepartKeys = []
+      // this.loadRules(this.userId)
+      this.initLoad()
+      this.visible = true
     },
     //
     loadRules() {
