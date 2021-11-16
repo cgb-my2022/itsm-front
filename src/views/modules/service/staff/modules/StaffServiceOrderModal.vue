@@ -74,6 +74,7 @@
                 :fieldNames="{ label: 'title', value: 'id', children: 'children' }"
                 :show-search="{ filterDepart }"
                 placeholder="请选择部门"
+                @change="changeValue"
               />
             </a-form-item>
           </a-col>
@@ -215,16 +216,19 @@
     created() {
       this.queryDepartTree();
       this.getCatalog(3)
-      this.defaultWorkplaceDeparts = JSON.parse(this.userInfo.workplaceDeptParentIdes);
     },
     methods: {
       add() {
         const { workplaceDeptParentIdes, username, orgCode } = this.userInfo
         this.visible = true;
         this.form.resetFields();
-        this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes);
+        this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2);
         this.rowInfo.userName = username
         this.rowInfo.sysOrgCode = orgCode
+        console.log(this.defaultWorkplaceDeparts);
+      },
+      changeValue(value) {
+        console.log(value);
       },
       handleSelectUser() {
         this.$refs.selectSingleUserModal.select(0);
@@ -232,7 +236,7 @@
       selectUserOK: function(data) {
         var params = '&username=' + data.username;
         postAction(this.url.userInfo, params).then((res) => {
-          this.defaultWorkplaceDeparts = JSON.parse(res.result.workplaceDeptParentIdes);
+          this.defaultWorkplaceDeparts = JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2);
           this.form.setFieldsValue({
             realName: data.realname ,
             deptName: res.result.myDeptParentNames ,
@@ -300,18 +304,6 @@
         thsAreaCode = this.$refs['cascaderAddr'].currentLabels // 注意2： 获取label值
         alert(thsAreaCode) // 注意3： 最终结果是个一维数组对象
       },
-      loadTreeData() {
-        var that = this;
-        queryIdTree().then((res) => {
-          if (res.success) {
-            that.departTree = [];
-            for (let i = 0; i < res.result.length; i++) {
-              let temp = res.result[i];
-              that.departTree.push(temp);
-            }
-          }
-        })
-      },
       filterDepart(inputValue, path) {
         return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
       },
@@ -352,8 +344,23 @@
       },
       queryDepartTree() {
         queryDepartTreeList().then((res) => {
-          if (res.success) {
-            this.departTree = res.result;
+          if(res.success){
+            const result = res.result
+            let list = []
+            result.forEach((item, index) => {
+              list.push({
+                children: [],
+                id: item.key,
+                title: item.title
+              })
+              item.children.forEach(citem => {
+                list[index].children.push({
+                  id: citem.key,
+                  title: citem.title
+                })
+              })
+            })
+            this.departTree = list
           }
         })
       },

@@ -51,7 +51,8 @@
                       rules: [{ required: true, message: '请输入转办原因!' }]
                     }]"
                     :maxLength="300"
-                    rows="4" placeholder="请输入转办原因"/>
+                    rows="4" 
+                    placeholder="请输入转办原因(有效长度1-300)"/>
                   </a-form-item>
                 </a-col>
             </a-row>

@@ -38,6 +38,7 @@
           <a-textarea
             v-model="serviceOrderModel.reason"
             :maxLength="300"
+            placeholder="请输入问题原因(有效长度1-300)"
             @blur="
               () => {
                 $refs.reason.onFieldBlur()
@@ -49,6 +50,7 @@
           <a-textarea
             v-model="serviceOrderModel.solution"
             :maxLength="300"
+            placeholder="请输入解决方案(有效长度1-300)"
             @blur="
               () => {
                 $refs.solution.onFieldBlur()

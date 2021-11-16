@@ -34,8 +34,9 @@
                     v-decorator="['transferReason', {
                       rules: [{ required: true, message: '请输入转二线处理原因!' }]
                     }]"
+                    placeholder="请输入转二线处理原因(有效长度1-300)"
                     :maxLength="300"
-                    rows="4" placeholder="请输入转办原因"/>
+                    rows="4"/>
                   </a-form-item>
                 </a-col>
             </a-row>

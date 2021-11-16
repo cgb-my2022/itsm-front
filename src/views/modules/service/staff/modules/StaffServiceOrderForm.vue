@@ -438,7 +438,11 @@ export default {
   display: flex;
   line-height: 20px;
 }
+.record-list .record-list_time {
+  width: 130px;
+}
 .record-list .record-list_right {
+  flex: 1;
   margin-left: 20px;
 }
 .record-list .record-list_content {

@@ -25,8 +25,7 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col>
-          <!--  -->
+          </a-col> 
           <a-col v-if="fromData.orderType == 1" :span="24">
             <a-form-model-item ref="catIds" label="负责业务" prop="catIds">
               <a-tree-select
@@ -34,7 +33,7 @@
                 style="width: 100%"
                 :value="fromData.catIds"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                placeholder="Please select"
+                placeholder="请选择"
                 allow-clear
                 multiple
                 :tree-data="quickOptions"
@@ -52,13 +51,13 @@
             </a-form-model-item>
           </a-col>
           <a-col v-if="fromData.orderType == 2" :span="24">
-            <a-form-model-item ref="catIds" label="负责业务" prop="catIds">
+            <a-form-model-item ref="catIds" label="事件类型" prop="catIds">
               <a-tree-select
                 show-search
                 style="width: 100%"
                 :value="fromData.catIds"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                placeholder="Please select"
+                placeholder="请选择"
                 allow-clear
                 multiple
                 :tree-data="categoryOptions"
@@ -81,8 +80,8 @@
                 show-search
                 style="width: 100%"
                 :value="fromData.departIds"
-                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                placeholder="Please select"
+                :dropdown-style="{ maxHeight: '300px', overflow: 'auto' }"
+                placeholder="请选择"
                 allow-clear
                 multiple
                 :tree-data="departTree"
@@ -203,7 +202,6 @@ export default {
             })
             item.children.forEach(citem => {
               list[index].children.push({
-                children: [],
                 key: citem.key,
                 title: citem.title
               })

@@ -83,6 +83,12 @@ export const JeecgListMixin = {
         this.loading = false;
       })
     },
+    //多选搜索过滤
+    searchFilterTreeNode(inputValue, treeNode){
+      return (
+        treeNode.componentOptions.propsData.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      );
+    },
     initDictConfig() {
       console.log('--这是一个假的方法!')
     },
