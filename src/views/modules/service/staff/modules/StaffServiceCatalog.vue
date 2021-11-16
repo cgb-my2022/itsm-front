@@ -127,7 +127,7 @@ export default {
                         phoneNo: phone,    //电话号码
                         deptName: myDeptParentNames,  //部门名称
                         sysOrgCode: orgCode, //所属部门
-                        workplaceDepartids: workplaceDeptParentIdes ? JSON.parse(workplaceDeptParentIdes) : [], //工作地点部门级联id
+                        workplaceDepartids: workplaceDeptParentIdes ? JSON.parse(workplaceDeptParentIdes).slice(0, 2) : [], //工作地点部门级联id
                         workplaceDetail: workplaceDetail  //详细工作地点
                     }
                     const params = Object.assign({}, this.rowInfo, userParams)
