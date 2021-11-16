@@ -121,7 +121,7 @@
                     :ref="refKeys[0]"
                     :loading="serviceOrderAttachTable.loading"
                     :columns="serviceOrderAttachTable.columns"
-                    :dataSource="formData.userAttaches || []"
+                    :dataSource="setFlie(formData.userAttaches)"
                     :maxHeight="300"
                     :rowNumber="true"
                   />
@@ -177,7 +177,7 @@
                     :ref="refKeys[0]"
                     :loading="serviceOrderAttachTable.loading"
                     :columns="serviceOrderAttachTable.columns"
-                    :dataSource="formData.ywAttaches || []"
+                    :dataSource="setFlie(formData.ywAttaches)"
                     :maxHeight="300"
                     :rowNumber="true"
                   />
@@ -302,6 +302,15 @@ export default {
     }
   },
   computed: {
+    setFlie() {
+      return function(list) {
+        let file = []
+        if (list && list.length > 0) {
+          file = list.filter(item => item.attachUrl != null)
+        }
+        return file || []
+      }
+    },
     setRealname() {
       return function (arr, status) {
         if (arr.indexOf(status) != -1) {

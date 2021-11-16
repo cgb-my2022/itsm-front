@@ -13,7 +13,7 @@
         @select="handleTreeSelect">
           <template #title="{ key: treeKey, title, catLevel, children }">
             <a-dropdown :trigger="['contextmenu']">
-              <p class="dropdown-span">{{ title }}</p>
+              <span class="dropdown-span" :title="title">{{ title }}</span>
               <template #overlay>
                 <a-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, catLevel)">
                   <a-menu-item key="1">
@@ -165,5 +165,12 @@
 .r-h2 {
   font-size: 16px;
   margin-bottom: 18px;
+}
+.dropdown-span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 200px;
 }
 </style>
