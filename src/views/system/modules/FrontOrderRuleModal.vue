@@ -1,10 +1,11 @@
 <template>
   <a-drawer
     :title="title"
-    :maskClosable="false"
+    :maskClosable="true"
     :width="drawerWidth"
     placement="right"
-    @cancel="handleCancel"
+    :closable="true"
+    @close="handleCancel"
     :visible="visible"
     style="height: 100%; overflow: auto; padding-bottom: 53px"
   >
