@@ -183,7 +183,7 @@
                     </a-menu-item>
                 </template>
                 <template v-else>
-                    <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
+                    <a-menu-item @click="handlePreviewPic(record)">进度</a-menu-item>
                 </template>
               </template>
               <template v-else>

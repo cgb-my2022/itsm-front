@@ -1,5 +1,5 @@
 <template>
-    <common-list :typeList="2"></common-list>
+    <common-list :typeList="1"></common-list>
 </template>
 
 <script>

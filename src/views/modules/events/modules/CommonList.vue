@@ -17,15 +17,12 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="事件分类">
               <a-tree-select
-                show-search
                 style="width: 100%"
                 :value="catIds"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 placeholder="请选择"
                 allow-clear
-                multiple
                 :tree-data="categoryOptions"
-                tree-checkable
                 tree-default-expand-all
                 :replace-fields="{ title: 'title', value: 'id', key: 'id', children: 'children' }"
                 :filterTreeNode="searchFilterTreeNode"
@@ -69,11 +66,8 @@
       </a-form>
     </div>
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleSubmit('请求目录', 'serviceCatalog')" type="primary">请求目录</a-button>
-      <a-button @click="handleSubmit('快速发起', 'modalForm')" type="primary" style="margin-left: 10px"
-        >快速发起</a-button
-      >
+    <div v-if="typeList === 1" class="table-operator">
+      <a-button @click="handleAdd()" type="primary">新建</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -124,6 +118,8 @@
         </span>
       </a-table>
     </div>
+    <!-- 新建事件工单 -->
+    <add-events :categoryOptions="categoryOptions" ref="addEvents"></add-events>
   </a-card>
 </template>
 
@@ -134,13 +130,21 @@ import JDate from '@/components/jeecg/JDate.vue'
 import '@/assets/less/TableExpand.less'
 import { postAction, putAction } from '@/api/manage'
 import { ajaxGetCategoryItems, getDictItemsFromCache } from '@/api/api'
+import AddEvents from './AddEvents.vue'
 
 export default {
   name: 'StaffServiceOrderList',
+  props: {
+    typeList: {
+      type: Number,
+      default: 1
+    }
+  },
   mixins: [JeecgListMixin],
   components: {
     JDictSelectTag,
     JDate,
+    AddEvents
   },
   data() {
     return {
@@ -213,7 +217,7 @@ export default {
         id: '',
         approved: '',
       },
-      catIds: [],
+      catIds: "",
       categoryOptions: [], //事件类型内容
     }
   },
@@ -234,6 +238,10 @@ export default {
     this.initDictData()
   },
   methods: {
+    // 新建
+    handleAdd() {
+      this.$refs.addEvents.add()
+    },
     // 详情
     bindDetail() {},
     // 进度
@@ -255,7 +263,8 @@ export default {
     },
     // 选项业务
     changeCat(value, label) {
-      this.queryParam.catIds = value.join(',')
+      this.catIds = value
+      this.queryParam.catIds = value
     },
     taskOk() {
       console.log('流程办理完成')
@@ -266,27 +275,4 @@ export default {
 </script>
 <style scoped>
 @import '~@assets/less/common.less';
-.order-status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.order-status .c-blue {
-  background: blue;
-}
-.order-status .c-green {
-  background: green;
-}
-.order-status .c-gray {
-  background: gray;
-}
-.order-status .c-red {
-  background: red;
-}
-.order-status .order-status_round {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
 </style>

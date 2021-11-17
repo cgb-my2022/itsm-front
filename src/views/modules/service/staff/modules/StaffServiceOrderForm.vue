@@ -188,7 +188,7 @@
               <td class="firstTr">服务满意度</td>
               <td class="firstTr" colspan="5">
                 <span v-if="formData.orderEvaluation">
-                  <a-rate disabled v-model="value" style="color: red;"/>
+                  <a-rate disabled v-model="formData.orderEvaluation.orderScore" style="color: red;"/>
                   <span class="ant-rate-text">{{formData.orderEvaluation.orderScore}}分</span>
                 </span>
               </td>
@@ -243,7 +243,6 @@ export default {
   },
   data() {
     return {
-      value: 5,
       tabList: ['信息展示', '流转记录'],
       tabIndex: 0,
       statusName: '',

@@ -11,14 +11,15 @@
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="选择业务">
-              <a-cascader 
-                placeholder="请选择"  
+              <a-cascader
+                placeholder="请选择"
                 :field-names="{ label: 'title', value: 'id', children: 'children' }"
                 :show-search="{ filter }"
-                v-model="serviceCatName" 
-                :options="serviceOptions" 
-                change-on-select 
-                @change="serviceChange"/>
+                v-model="serviceCatName"
+                :options="serviceOptions"
+                change-on-select
+                @change="serviceChange"
+              />
             </a-form-item>
           </a-col>
           <!-- <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -40,12 +41,12 @@
             </a-col>
           </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+            <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
               </a>
             </span>
           </a-col>
@@ -66,7 +67,6 @@
 
     <!-- table区域-begin -->
     <div>
-
       <a-table
         ref="table"
         size="middle"
@@ -78,24 +78,24 @@
         :pagination="ipagination"
         :loading="loading"
         :scroll="{ x: 1500 }"
-        @change="handleTableChange">
-
+        @change="handleTableChange"
+      >
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img
+            v-else
+            :src="getImgView(text)"
+            height="25px"
+            alt=""
+            style="max-width: 80px; font-size: 12px; font-style: italic"
+          />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="uploadFile(text)">
             下载
           </a-button>
         </template>
@@ -103,48 +103,43 @@
         <template slot="status" slot-scope="text, record">
           <div class="order-status">
             <p v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></p>
-            <p v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></p>
+            <p
+              v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5"
+              class="order-status_round c-green"
+            ></p>
             <p v-if="record.orderStatus === 6" class="order-status_round c-red"></p>
             <p v-if="record.orderStatus === 7" class="order-status_round c-gray"></p>
-            <p>{{text}}</p>
+            <p>{{ text }}</p>
           </div>
         </template>
-         <!-- 处理人 -->
+        <!-- 处理人 -->
         <template slot="realname" slot-scope="text, record">
-          <span v-if="setRealname([2],record.orderStatusDetail)"></span>
-          <span v-else-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
-          <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
-          <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
-          <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>
-          <span v-else-if="setRealname([6,7,13],record.orderStatusDetail)">{{record.supportUserRealname}}</span>
+          <span v-if="setRealname([2], record.orderStatusDetail)"></span>
+          <span v-else-if="setRealname([3, 4, 5, 12], record.orderStatusDetail)">{{
+            record.frontlineUserRealname
+          }}</span>
+          <span v-else-if="setRealname([10], record.orderStatusDetail)">{{ record.frontlineDelegateName }}</span>
+          <span v-else-if="setRealname([11], record.orderStatusDetail)">{{ record.supportDelegateName }}</span>
+          <span v-else-if="setRealname([8, 9, 14], record.orderStatusDetail)">{{ record.solRealName }}</span>
+          <span v-else-if="setRealname([6, 7, 13], record.orderStatusDetail)">{{ record.supportUserRealname }}</span>
           <span v-else></span>
         </template>
         <span slot="action" slot-scope="text, record">
-          <template v-if="record.orderStatusDetail==2">
-              <a  @click="handleClaim(record)">接单</a>
+          <template v-if="record.orderStatusDetail == 2">
+            <a @click="handleClaim(record)">接单</a>
             <a-divider type="vertical" />
           </template>
-          <template v-else-if="record.orderStatusDetail==3||record.orderStatusDetail==12">
-            <a  @click="handleProcess(record)">办理</a>
+          <template v-else-if="record.orderStatusDetail == 3 || record.orderStatusDetail == 12">
+            <a @click="handleProcess(record)">办理</a>
             <a-divider type="vertical" />
           </template>
-          <template v-else-if="record.orderStatusDetail==4">
-            <a  @click="handleProcess(record)">解挂</a>
+          <template v-else-if="record.orderStatusDetail == 4">
+            <a @click="handleProcess(record)">解挂</a>
             <a-divider type="vertical" />
           </template>
-          <a-dropdown>
-          <a class="ant-dropdown-link">
-            更多 <a-icon type="down" />
-          </a>
-          <a-menu slot="overlay">
-            <a-menu-item>
-              <a @click="handlePreviewPic(record)">审批进度</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a @click="showDetailServiceOrder(record)">详情</a>
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+          <a @click="showDetailServiceOrder(record)">详情</a>
+          <a-divider type="vertical" />
+          <a @click="handlePreviewPic(record)">进度</a>
         </span>
       </a-table>
     </div>
@@ -161,195 +156,193 @@
 </template>
 
 <script>
+import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+import StaffServiceOrderModal from '../staff/modules/StaffServiceOrderModal'
+import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+import JDate from '@/components/jeecg/JDate.vue'
+import '@/assets/less/TableExpand.less'
+import { postAction, getAction } from '@/api/manage'
+import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal'
+import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
+import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
 
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
-  import StaffServiceOrderModal from '../staff/modules/StaffServiceOrderModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import JDate from '@/components/jeecg/JDate.vue'
-  import '@/assets/less/TableExpand.less'
-  import { postAction, getAction } from '@/api/manage'
-  import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
-  import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
-  import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
-
-  export default {
-    name: 'FrontLineServiceOrderList',
-    mixins: [JeecgListMixin, ServiceMixin],
-    components: {
-      JDictSelectTag,
-      JDate,
-      StaffServiceOrderModal,
-      ServiceProcessInstPicModal,
-      ServiceTaskDealModal,
-      ServiceTaskDetailModal
-    },
-    data () {
-      return {
-        description: '服务工单管理页面',
-        flowCode: 'onl_service_order',
-        // 表头
-        columns: [
-          {
-            title: '编号',
-            dataIndex: 'id',
-            align: 'center',
-            width: 160
-          },
-          {
-            title: '请求内容',
-            dataIndex: 'eventContent',
-            ellipsis: true,
-            align: 'center',
-          },
-          {
-            title: '所属业务',
-            align: 'center',
-            ellipsis: true,
-            dataIndex: 'serviceCatFullName'
-          },
-          {
-            title: '工单状态',
-            align: 'center',
-            dataIndex: 'orderStatus_dictText',
-            width: 140,
-            scopedSlots: { customRender: 'status' }
-          },
-          {
-            title: '创建人',
-            align: 'center',
-            dataIndex: 'realName'
-          },
-          {
-            title: '创建人所属部门',
-            align: 'center',
-            dataIndex: 'deptName',
-            ellipsis: true
-          },
-          {
-            title: '创建日期',
-            align: 'center',
-            sorter: true,
-            dataIndex: 'createTime'
-          },
-          {
-            title: '处理人',
-            align: 'center',
-            dataIndex: 'frontlineUserRealname',
-            scopedSlots: { customRender: 'realname' }
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: 'center',
-            fixed: 'right',
-            width: 130,
-            scopedSlots: { customRender: 'action' }
-          }
-        ],
-        url: {
-          list: '/system/serviceOrder/frontLineList',
-          receive: '/system/serviceOrder/receiveOrder'
+export default {
+  name: 'FrontLineServiceOrderList',
+  mixins: [JeecgListMixin, ServiceMixin],
+  components: {
+    JDictSelectTag,
+    JDate,
+    StaffServiceOrderModal,
+    ServiceProcessInstPicModal,
+    ServiceTaskDealModal,
+    ServiceTaskDetailModal,
+  },
+  data() {
+    return {
+      description: '服务工单管理页面',
+      flowCode: 'onl_service_order',
+      // 表头
+      columns: [
+        {
+          title: '编号',
+          dataIndex: 'id',
+          align: 'center',
+          width: 160,
         },
-        dictOptions: {}
-      }
-    },
-    computed: {
-      importExcelUrl: function() {
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+        {
+          title: '请求内容',
+          dataIndex: 'eventContent',
+          ellipsis: true,
+          align: 'center',
+        },
+        {
+          title: '所属业务',
+          align: 'center',
+          ellipsis: true,
+          dataIndex: 'serviceCatFullName',
+        },
+        {
+          title: '工单状态',
+          align: 'center',
+          dataIndex: 'orderStatus_dictText',
+          width: 140,
+          scopedSlots: { customRender: 'status' },
+        },
+        {
+          title: '创建人',
+          align: 'center',
+          dataIndex: 'realName',
+        },
+        {
+          title: '创建人所属部门',
+          align: 'center',
+          dataIndex: 'deptName',
+          ellipsis: true,
+        },
+        {
+          title: '创建日期',
+          align: 'center',
+          sorter: true,
+          dataIndex: 'createTime',
+        },
+        {
+          title: '处理人',
+          align: 'center',
+          dataIndex: 'frontlineUserRealname',
+          scopedSlots: { customRender: 'realname' },
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: 'center',
+          fixed: 'right',
+          width: 150,
+          scopedSlots: { customRender: 'action' },
+        },
+      ],
+      url: {
+        list: '/system/serviceOrder/frontLineList',
+        receive: '/system/serviceOrder/receiveOrder',
       },
-      setRealname() {
-        return function(arr, status) {
-          if(arr.indexOf(status) != -1) {
-            return true
-          }
-          return false
-        }
-      }
-    },
-    created() {
-      this.getCatalog()
-    },
-    methods: {
-      initDictConfig() {
-      },
-       handlePreviewPic: function(record) {
-        var flowCode = this.flowCode;
-        var dataId = record.id;
-        this.$refs.extActProcessInstPicModal.preview(flowCode, dataId);
-        this.$refs.extActProcessInstPicModal.title = '流程图';
-      },
-      showClaimButton(assignee) {
-        if (!assignee) {
-          return true;
-        }
-        return false;
-      },
-      // 接单
-      handleClaim(record) {
-        var that = this;
-        this.$confirm({
-          title: '确认接单吗',
-          content: '是否接单?',
-          onOk: function() {
-            var param = {
-              id: record.id,
-              version: record.version
-            }
-            postAction(that.url.receive, param).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
-          }
-        });
-      },
-      // 办理
-      handleProcess(record) {
-        this.$refs.taskDealModal.title = '办理';
-        this.$refs.taskDealModal.deal(record.id);
-        /*this.loading = true;
-        this.getBizProcessNodeInfo(record);*/
-      },
-      getBizProcessNodeInfo(record) {
-        let url = '/process/extActProcessNode/getBizProcessNodeInfo'
-        var params = { flowCode: this.flowCode, dataId: record.id };// 查询条件
-        getAction(url, params).then((res) => {
-          if (res.success) {
-            var data = {
-              dataId: res.result.dataId,
-              orderStatus: record.orderStatus,
-              taskId: res.result.taskId,
-              flowCode: this.flowCode,
-              taskDefKey: res.result.taskDefKey,
-              procInsId: res.result.procInsId,
-              tableName: res.result.tableName,
-              permissionList: res.result.permissionList,
-              bizTaskList: res.result.bizTaskList,
-              vars: res.result.records
-            }
-            this.formData = data;
-            this.path = res.result.formUrl;
-            this.$refs.taskDealModal.deal(data, this.formUrl);
-            this.loading = false;
-          }
-        })
-      },
-      // 详情
-      showDetailServiceOrder(record) {
-        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDeatilModal.deal(record.id, path);
-      },
-      taskOk() {
-        this.loadData()
-      }
+      dictOptions: {},
     }
-  }
+  },
+  computed: {
+    importExcelUrl: function () {
+      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+    },
+    setRealname() {
+      return function (arr, status) {
+        if (arr.indexOf(status) != -1) {
+          return true
+        }
+        return false
+      }
+    },
+  },
+  created() {
+    this.getCatalog()
+  },
+  methods: {
+    initDictConfig() {},
+    handlePreviewPic: function (record) {
+      var flowCode = this.flowCode
+      var dataId = record.id
+      this.$refs.extActProcessInstPicModal.preview(flowCode, dataId)
+      this.$refs.extActProcessInstPicModal.title = '流程图'
+    },
+    showClaimButton(assignee) {
+      if (!assignee) {
+        return true
+      }
+      return false
+    },
+    // 接单
+    handleClaim(record) {
+      var that = this
+      this.$confirm({
+        title: '确认接单吗',
+        content: '是否接单?',
+        onOk: function () {
+          var param = {
+            id: record.id,
+            version: record.version,
+          }
+          postAction(that.url.receive, param).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.loadData()
+              that.onClearSelected()
+            } else {
+              that.$message.warning(res.message)
+            }
+          })
+        },
+      })
+    },
+    // 办理
+    handleProcess(record) {
+      this.$refs.taskDealModal.title = '办理'
+      this.$refs.taskDealModal.deal(record.id)
+      /*this.loading = true;
+        this.getBizProcessNodeInfo(record);*/
+    },
+    getBizProcessNodeInfo(record) {
+      let url = '/process/extActProcessNode/getBizProcessNodeInfo'
+      var params = { flowCode: this.flowCode, dataId: record.id } // 查询条件
+      getAction(url, params).then((res) => {
+        if (res.success) {
+          var data = {
+            dataId: res.result.dataId,
+            orderStatus: record.orderStatus,
+            taskId: res.result.taskId,
+            flowCode: this.flowCode,
+            taskDefKey: res.result.taskDefKey,
+            procInsId: res.result.procInsId,
+            tableName: res.result.tableName,
+            permissionList: res.result.permissionList,
+            bizTaskList: res.result.bizTaskList,
+            vars: res.result.records,
+          }
+          this.formData = data
+          this.path = res.result.formUrl
+          this.$refs.taskDealModal.deal(data, this.formUrl)
+          this.loading = false
+        }
+      })
+    },
+    // 详情
+    showDetailServiceOrder(record) {
+      const path = 'modules/service/staff/modules/StaffServiceOrderForm'
+      this.$refs.taskDeatilModal.deal(record.id, path)
+    },
+    taskOk() {
+      this.loadData()
+    },
+  },
+}
 </script>
 <style scoped>
-  @import '~@assets/less/common.less';
+@import '~@assets/less/common.less';
 </style>

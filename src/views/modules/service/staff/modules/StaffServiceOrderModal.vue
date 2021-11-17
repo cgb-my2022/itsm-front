@@ -30,7 +30,11 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="请求内容" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-textarea v-decorator="['eventContent', validatorRules.eventContent]" rows="4" placeholder="请输入请求内容"/>
+              <a-textarea 
+                v-decorator="['eventContent', validatorRules.eventContent]" 
+                rows="4" 
+                :maxLength="300"
+                placeholder="请输入请求内容(有效长度1-300)"/>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -79,7 +83,10 @@
           </a-col>
           <a-col :xs="24" :sm="12">
             <a-form-item label="详细地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['workplaceDetail',{initialValue:userInfo.workplaceDetail}]" placeholder="请输入详细地址"></a-input>
+              <a-input 
+                v-decorator="['workplaceDetail',{initialValue:userInfo.workplaceDetail}]"
+                :maxLength="200" 
+                placeholder="请输入详细地址"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -94,6 +101,7 @@
             :dataSource="serviceOrderAttachTable.dataSource"
             :maxRow="5"
             :maxFile="10"
+            :showAction="false"
             :maxHeight="300"
             :rowNumber="true"
             :rowSelection="true"

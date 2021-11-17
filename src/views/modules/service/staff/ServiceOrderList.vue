@@ -120,7 +120,7 @@
           </template>-->
           <a href="javascript:;" @click="showDetailServiceOrder(record)">详情</a>
             <a-divider type="vertical"/>
-           <a href="javascript:;"  @click="handlePreviewPic(record)">审批进度</a>
+           <a href="javascript:;"  @click="handlePreviewPic(record)">进度</a>
           <!--<a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -132,7 +132,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>-->
           <!--<a-dropdown>
@@ -170,7 +170,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>-->
         </span>

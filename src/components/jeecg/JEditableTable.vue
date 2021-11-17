@@ -407,7 +407,7 @@
                             <span style="color:red;margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
                           </a-tooltip>
 
-                          <template style="width: 30px">
+                          <template v-if="showAction" style="width: 30px">
                             <a-dropdown :trigger="['click']" placement="bottomRight" :getPopupContainer="getParentContainer" style="margin-left: 10px;">
                               <a-tooltip title="操作" :getPopupContainer="getParentContainer">
                                 <a-icon v-if="file.status!=='uploading'" type="setting" style="cursor: pointer;"/>
@@ -865,8 +865,12 @@
       maxFile: {
         type: Number,
         default: 0
+      },
+      // 是否显示上传完成后的操作按钮
+      showAction: {
+        type: Boolean,
+        default: true
       }
-
     },
     data() {
       return {

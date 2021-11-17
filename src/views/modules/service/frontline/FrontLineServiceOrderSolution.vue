@@ -68,6 +68,7 @@
               :dataSource="serviceOrderAttachTable.dataSource"
               :maxRow="5"
               :maxFile="10"
+              :showAction="false"
               :maxHeight="300"
               :rowNumber="true"
               :rowSelection="true"

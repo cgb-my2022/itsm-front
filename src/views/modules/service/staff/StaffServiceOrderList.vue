@@ -19,6 +19,7 @@
                 v-model="serviceCatName" 
                 :options="serviceOptions" 
                 change-on-select 
+                autocomplete="off"
                 @change="serviceChange"/>
             </a-form-item>
           </a-col>
@@ -140,7 +141,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>-->
           <!--<a-dropdown>
@@ -164,23 +165,19 @@
               <a-menu-item @click="showHistory(record)">历史</a-menu-item>
             </a-menu>
           </a-dropdown>-->
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="showDetailServiceOrder(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item v-if="record.bpmStatus === '1'">
-                <a @click="handleEdit(record)">编辑</a>
-              </a-menu-item>
-              <a-menu-item v-if="record.bpmStatus === '1'">
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a href="javascript:;" @click="showDetailServiceOrder(record)">详情</a>
+          <a-divider type="vertical"/>
+          <template v-if="record.bpmStatus === '1'">
+            <a @click="handleEdit(record)">编辑</a>
+            <a-divider type="vertical"/>
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a>删除</a>
+            </a-popconfirm>
+            <a-divider type="vertical"/>
+          </template>
+          <template v-else>
+            <a @click="handlePreviewPic(record)">进度</a>
+          </template>
         </span>
       </a-table>
     </div>
@@ -244,14 +241,12 @@
             title: '请求内容',
             dataIndex: 'eventContent',
             ellipsis: true,
-            width: 250,
             align: 'center',
           },
           {
             title: '所属业务',
             align: 'center',
             ellipsis: true,
-            width: 250,
             dataIndex: 'serviceCatFullName'
           },
           {
@@ -286,7 +281,7 @@
             dataIndex: 'action',
             align: 'center',
             fixed: 'right',
-            width: 180,
+            width: 220,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -466,27 +461,4 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less';
-  .order-status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .order-status .c-blue {
-    background: blue;
-  }
-  .order-status .c-green {
-    background: green;
-  }
-  .order-status .c-gray {
-    background: gray;
-  }
-  .order-status .c-red {
-    background: red;
-  }
-  .order-status .order-status_round {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
 </style>

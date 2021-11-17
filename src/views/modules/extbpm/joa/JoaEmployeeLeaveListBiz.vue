@@ -75,7 +75,7 @@
           <a v-if="showClaimButton(record.assignee)" @click="handleClaim(record)">签收</a>
           <a v-else @click="handleProcess(record)">办理</a>
           <a-divider type="vertical" />
-          <a @click="handlePreviewPic(record)">审批进度</a>
+          <a @click="handlePreviewPic(record)">进度</a>
         </span>
 
       </a-table>
