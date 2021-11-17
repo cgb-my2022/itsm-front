@@ -47,6 +47,12 @@
   import userModal from './UserModal'
   export default {
     name: "DepartWindow",
+    props: {
+      twoType: {
+        type: Number,
+        default: 2
+      }
+    },
     components: {
       userModal,
     },
@@ -114,7 +120,6 @@
                 if(res.success){
                   let formData = {userId:res.result,
                   departIdList:this.departList}
-                  console.log(formData)
                   that.$emit('ok', formData);
                 }
               }).finally(() => {
@@ -125,7 +130,6 @@
             }else {
               let formData = {userId:this.userId,
                 departIdList:this.departList}
-              console.log(formData)
               that.departList = [];
               that.$emit('ok', formData);
               that.confirmLoading = false;
@@ -147,12 +151,30 @@
           depart.title = checkedNodes[i].data.props.title;
           this.departList.push(depart);
         }
-        console.log('onCheck', checkedKeys, info);
       },
       queryDepartTree(){
         queryIdTree().then((res)=>{
           if(res.success){
-            this.departTree = res.result;
+            if (this.twoType === 1) {
+              const result = res.result
+              let list = []
+              result.forEach((item, index) => {
+                list.push({
+                  children: [],
+                  key: item.key,
+                  title: item.title
+                })
+                item.children.forEach(citem => {
+                  list[index].children.push({
+                    key: citem.key,
+                    title: citem.title
+                  })
+                })
+              })
+              this.departTree = list
+            } else {
+              this.departTree = res.result;
+            }
           }
         })
       },

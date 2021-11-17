@@ -74,7 +74,6 @@
                 :fieldNames="{ label: 'title', value: 'id', children: 'children' }"
                 :show-search="{ filterDepart }"
                 placeholder="请选择部门"
-                @change="changeValue"
               />
             </a-form-item>
           </a-col>
@@ -225,10 +224,6 @@
         this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2);
         this.rowInfo.userName = username
         this.rowInfo.sysOrgCode = orgCode
-        console.log(this.defaultWorkplaceDeparts);
-      },
-      changeValue(value) {
-        console.log(value);
       },
       handleSelectUser() {
         this.$refs.selectSingleUserModal.select(0);
