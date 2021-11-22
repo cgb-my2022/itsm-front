@@ -7,6 +7,7 @@ import { getAction, deleteAction, putAction, postAction, httpAction } from '@/ap
 
 // 获取公共属性列表、自定义属性列表
 const defaultProperties = (params)=>getAction("/cmdb/resourceAttr/getResourceAttrInfo",params);
+const getPropertiesGroup = (params)=>getAction("/cmdb/resourceGroup/getResourceAttrGroupInfo",params);
 const addProperties = (params)=>postAction("/cmdb/resourceAttr/newAddResourceAttrInfo",params);
 const delProperties = (params)=>deleteAction("/cmdb/resourceAttr/delResourceAttrInfo",params);
 const delModeProperties = (params)=>deleteAction("/cmdb/resourceAttr/delResourceAttrInfos",params);
@@ -19,5 +20,6 @@ export {
     delProperties,
     delModeProperties,
     editProperties,
-    connecetProperties
+    connecetProperties,
+    getPropertiesGroup
 }

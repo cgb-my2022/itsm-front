@@ -241,7 +241,7 @@ import dateTime from './propertiesComp/dateTime.vue'
 import fileType from './propertiesComp/fileType.vue'
 
 import { mapGetters } from 'vuex'
-import { defaultProperties, addProperties, delProperties, delModeProperties, editProperties, connecetProperties } from '@/api/properties'
+import { getPropertiesGroup, defaultProperties, addProperties, delProperties, delModeProperties, editProperties, connecetProperties } from '@/api/properties'
 export default {
    
   components:{
@@ -413,13 +413,10 @@ export default {
       },
       // 加载下拉框分组类型
       initGroup(){
-         defaultProperties({ attrName: this.searchValue })
+         getPropertiesGroup()
             .then(res=>{
-               // console.log(res)
-               if(JSON.stringify(res.result)=="{}"){
-                  this.groupOptions = []
-               }else{
-                  this.groupOptions = res.result.attrGroup
+               if(res.code == 200){
+                  this.groupOptions = res.result
                }
             })
             .catch(err=>err)
