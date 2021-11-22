@@ -2,9 +2,9 @@
   <div>
     <el-input 
       v-model="textValue" 
-      type="number"
-      onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode || event.which))) || event.which === 8"
-      @change="handleTextChange(arguments[0])"
+      :maxlength="propMaxLength"
+      show-word-limit
+      @change="handleTextChange"
       :style="{width: '80%'}"
       clearable></el-input>
   </div>
@@ -15,7 +15,8 @@ export default {
   components:{},
   props:{
     getData: null,
-    theIndex: null
+    theIndex: null,
+    propMaxLength: null
   },
   data(){
     return {
@@ -28,9 +29,14 @@ export default {
     }
   },
   methods:{
-    handleTextChange(val){
-      this.textValue = Number(val)
+    handleTextChange(){
       this.$emit('sonIP', this.textValue, this.theIndex)
+    },
+    handleBlur(){
+      let reg = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/;
+      if(!reg.test(this.textValue)){
+        this.$message.error('请输入正确的ip地址')
+      }
     }
   },
 }

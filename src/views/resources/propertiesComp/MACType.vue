@@ -2,7 +2,9 @@
   <div>
     <el-input 
       v-model="textValue" 
-      @change="handleTextChange"
+      type="number"
+      onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode || event.which))) || event.which === 8"
+      @change="handleTextChange(arguments[0])"
       :style="{width: '80%'}"
       clearable></el-input>
   </div>
@@ -16,7 +18,8 @@ export default {
   },
   data(){
     return {
-      textValue:""
+      textValue:"",
+      theIndex: null
     }
   },
   mounted(){
@@ -25,8 +28,9 @@ export default {
     }
   },
   methods:{
-    handleTextChange(){
-      this.$emit('sonMAC', this.textValue)
+    handleTextChange(val){
+      this.textValue = Number(val)
+      this.$emit('sonMAC', this.textValue, this.theIndex)
     }
   },
 }
