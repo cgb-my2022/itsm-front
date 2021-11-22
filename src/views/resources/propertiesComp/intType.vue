@@ -2,9 +2,10 @@
   <div>
     <el-input 
       v-model="textValue" 
-      :maxlength="14" 
-      show-word-limit 
-      @change="handleTextChange"
+      type="number"
+      placeholder="最大长度为14字符"
+      onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode || event.which))) || event.which === 8"
+      @change="handleTextChange(arguments[0],14)"
       :style="{width: '80%'}"
       clearable></el-input>
   </div>
@@ -14,7 +15,8 @@
 export default {
   components:{},
   props:{
-    getData: null
+    getData: null,
+    theIndex: null
   },
   data(){
     return {
@@ -27,8 +29,18 @@ export default {
     }
   },
   methods:{
-    handleTextChange(){
-      this.$emit('sonInt', this.textValue)
+    handleTextChange(val,maxNum){
+      this.textValue = Number(val)
+        this.$nextTick(()=>{
+          //比较输入的值和最大值，返回小的
+          let num = Math.min(Number(val),maxNum)
+          if(num < 0){
+            this.textValue = 0
+          }else{
+            this.textValue = num
+          }
+      })
+      this.$emit('sonInt', this.textValue, this.theIndex)
     }
   },
 }

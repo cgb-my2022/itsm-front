@@ -2,11 +2,13 @@
   <div>
     <el-input 
       v-model="textValue" 
-      type="number"
-      onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode || event.which))) || event.which === 8"
-      @change="handleTextChange(arguments[0])"
+      oninput='value=value.replace(/[^0-9.]/g,"")'
+      :maxlength="propMaxLength"
+      show-word-limit
+      @change="handleTextChange()"
       :style="{width: '80%'}"
       clearable></el-input>
+    <span class="propTips" title="小数的最大长度限制的是用户在本输入框输入数字整数部分加小数部分的总长度。">?</span>
   </div>
 </template>
 
@@ -15,7 +17,8 @@ export default {
   components:{},
   props:{
     getData: null,
-    theIndex: null
+    theIndex: null,
+    propMaxLength: null
   },
   data(){
     return {
@@ -28,9 +31,8 @@ export default {
     }
   },
   methods:{
-    handleTextChange(val){
-      this.textValue = Number(val)
-      this.$emit('sonIP', this.textValue, this.theIndex)
+    handleTextChange(){
+      this.$emit('sonFloat', this.textValue, this.theIndex)
     }
   },
 }

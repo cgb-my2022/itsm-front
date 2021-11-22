@@ -72,6 +72,14 @@ export function deleteAction(url,parameter) {
   })
 }
 
+export function deleteModeAction(url,parameter) {
+  return axios({
+    url: url,
+    method: 'delete',
+    data: parameter
+  })
+}
+
 export function getUserList(parameter) {
   return axios({
     url: api.user,

@@ -9,8 +9,8 @@ import store from './store/'
 
 import { VueAxios } from "@/utils/request"
 
-import 'element-ui/lib/theme-chalk/index.css';
 import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
@@ -22,6 +22,10 @@ import Print from 'vue-print-nb-jeecg'
 /*import '@babel/polyfill'*/
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
+
+import 'xe-utils'
+import VXETable from 'vxe-table'
+import 'vxe-table/lib/style.css'
 
 import {
   ACCESS_TOKEN,
@@ -46,8 +50,9 @@ import JeecgComponents from '@/components/jeecg/index'
 import '@/assets/less/JAreaLinkage.less'
 import VueAreaLinkage from 'vue-area-linkage'
 
-
 Vue.config.productionTip = false
+Vue.use(ElementUI);
+
 Vue.use(Storage, config.storageOptions)
 Vue.use(ElementUI);
 Vue.use(Antd)
@@ -61,6 +66,7 @@ Vue.use(preview)
 Vue.use(vueBus);
 Vue.use(JeecgComponents);
 Vue.use(VueAreaLinkage);
+Vue.use(VXETable)
 new Vue({
   router,
   store,

@@ -2,7 +2,7 @@
    <a-card :bordered="false">
       <div>
          <el-button type="primary" @click="handleAdd">增加</el-button>
-         <el-button type="primary" @click="delList">删除</el-button>
+         <el-button type="primary" @click="delList(1)">删除</el-button>
          <el-input 
             class="searchInput" 
             placeholder="请输入属性名称"
@@ -18,20 +18,36 @@
          <el-table
             :data="tableDataDefault.slice((searchPage.page-1)*searchPage.size,searchPage.page*searchPage.size)"
             border
-            @selection-change="handleSelectionChange"
             style="width: 100%; margin-top: 30px">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="name" label="属性名称" width="100"></el-table-column>
-            <el-table-column prop="date" label="英文名称" width="100"></el-table-column>
-            <el-table-column prop="date" label="数据类型" width="100"></el-table-column>
-            <el-table-column prop="date" label="可选值" ></el-table-column>
-            <el-table-column prop="date" label="最大长度" ></el-table-column>
-            <el-table-column prop="date" label="描述" ></el-table-column>
+            <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+            <el-table-column prop="attrName" label="属性名称" width="100"></el-table-column>
+            <el-table-column prop="enName" label="英文名称" width="100"></el-table-column>
+            <el-table-column label="数据类型" width="100">
+               <template slot-scope="scope">
+                  {{ scope.row.attrType == 1? "文本"
+                     : scope.row.attrType == 2? "文本区域"
+                     : scope.row.attrType == 3? "下拉文本"
+                     : scope.row.attrType == 4? "树形下拉文本"
+                     : scope.row.attrType == 5? "小数"
+                     : scope.row.attrType == 6? "整数"
+                     : scope.row.attrType == 7? "密文"
+                     : scope.row.attrType == 8? "MAC"
+                     : scope.row.attrType == 9? "IP"
+                     : scope.row.attrType == 10? "url"
+                     : scope.row.attrType == 11? "日期格式"
+                     : scope.row.attrType == 12?"附件"
+                     : ""
+                  }}
+               </template>
+            </el-table-column>
+            <el-table-column prop="optionalValue" label="可选值" ></el-table-column>
+            <el-table-column prop="maxLength" label="最大长度" ></el-table-column>
+            <el-table-column prop="describes" label="描述" width="200" show-overflow-tooltip></el-table-column>
             <el-table-column label="操作" width="300">
                <template slot-scope="scope">
                   <el-button type="primary" size="mini" @click="relation(scope.row)">关联资源类型</el-button>
                   <el-button type="primary" size="mini" @click="Edit(scope.row)">修改</el-button>
-                  <el-button type="primary" size="mini" @click="del(scope.row)">删除</el-button>
+                  <!-- <el-button type="danger" size="mini" @click="del(2, scope.row)">删除</el-button> -->
                </template>
             </el-table-column>
          </el-table>
@@ -57,17 +73,34 @@
             @selection-change="handleSelectionChangeSelf"
             style="width: 100%; margin-top: 30px">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="name" label="属性名称" width="100"></el-table-column>
-            <el-table-column prop="date" label="英文名称" width="100"></el-table-column>
-            <el-table-column prop="date" label="数据类型" width="100"></el-table-column>
-            <el-table-column prop="date" label="可选值" ></el-table-column>
-            <el-table-column prop="date" label="最大长度" ></el-table-column>
-            <el-table-column prop="date" label="描述" ></el-table-column>
+             <el-table-column prop="attrName" label="属性名称" width="100"></el-table-column>
+            <el-table-column prop="enName" label="英文名称" width="100"></el-table-column>
+            <el-table-column label="数据类型" width="100">
+               <template slot-scope="scope">
+                  {{ scope.row.attrType == 1? "文本"
+                     : scope.row.attrType == 2? "文本区域"
+                     : scope.row.attrType == 3? "下拉文本"
+                     : scope.row.attrType == 4? "树形下拉文本"
+                     : scope.row.attrType == 5? "小数"
+                     : scope.row.attrType == 6? "整数"
+                     : scope.row.attrType == 7? "密文"
+                     : scope.row.attrType == 8? "MAC"
+                     : scope.row.attrType == 9? "IP"
+                     : scope.row.attrType == 10? "url"
+                     : scope.row.attrType == 11? "日期格式"
+                     : scope.row.attrType == 12?"附件"
+                     : ""
+                  }}
+               </template>
+            </el-table-column>
+            <el-table-column prop="optionalValue" label="可选值" ></el-table-column>
+            <el-table-column prop="maxLength" label="最大长度" ></el-table-column>
+            <el-table-column prop="describes" label="描述" width="200" show-overflow-tooltip	></el-table-column>
             <el-table-column label="操作" width="300">
                <template slot-scope="scope">
                   <el-button type="primary" size="mini" @click="relation(scope.row)">关联资源类型</el-button>
                   <el-button type="primary" size="mini" @click="Edit(scope.row)">修改</el-button>
-                  <el-button type="primary" size="mini" @click="del(scope.row)">删除</el-button>
+                  <el-button type="danger" size="mini" @click="del(2, scope.row)">删除</el-button>
                </template>
             </el-table-column>
          </el-table>
@@ -93,8 +126,12 @@
             border
             style="width: 100%; margin-top: 30px">
             <el-table-column prop="name" label="资源类型名称"></el-table-column>
-            <el-table-column prop="date" label="描述"></el-table-column>
-            <el-table-column prop="date" label="用户自定义" ></el-table-column>
+            <el-table-column prop="describes" label="描述"></el-table-column>
+            <el-table-column label="用户自定义" >
+               <template slot-scope="scope">
+                  {{ scope.row.builtIn == 0? '否': '是' }}
+               </template>
+            </el-table-column>
          </el-table>
          <div slot="footer" class="dialog-footer" style="text-align: center">
             <el-button @click="relationDialog = false">返 回</el-button>
@@ -116,13 +153,14 @@
       <el-dialog
          :title="isAdd==1?'新增属性': '修改属性'"
          :visible.sync="addEditDialog"
+         v-if="addEditDialog"
          width="50%"
          :before-close="resetForm"
          >
          <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
             <el-form-item label="所属分组" prop="group">
                <el-select v-model="formData.group" placeholder="请选择所属分组" clearable :style="{width: '80%'}">
-                  <el-option v-for="(item, index) in groupOptions" :key="index" :label="item.label" :value="item.value"
+                  <el-option v-for="(item, index) in groupOptions" :key="index" :label="item.name" :value="`${item.id},${item.name}`"
                   :disabled="item.disabled"></el-option>
                </el-select>
             </el-form-item>
@@ -136,36 +174,36 @@
                <span class="propTips" title="属性的唯一标识，用于跟监控数据、服务管理等进行资源匹配。">?</span>
             </el-form-item>
             <el-form-item label="属性类型" prop="type">
-               <el-select v-model="formData.type" placeholder="请选择属性类型" clearable :style="{width: '80%'}" @change="handleTypeChange">
+               <el-select v-model="typeGroup" placeholder="请选择属性类型" clearable :style="{width: '80%'}" @change="handleTypeChange">
                   <el-option v-for="(item, index) in typeOptions" :key="index" :label="item.label" :value="item.value"
                   :disabled="item.disabled"></el-option>
                </el-select>
             </el-form-item>
             <el-form-item :label="activeTitle">
                <!-- 文本 -->
-               <textType v-if="formData.type == 1" :getData="this.activeData.textValue" @sonText="getText"></textType>
+               <textType v-if="typeGroup == 1" :getData="this.activeData.textValue" @sonText="getText"></textType>
                <!-- 文本区域 -->
-               <textAreaType v-if="formData.type == 2" :getData="this.activeData.textAreaValue" @sonTextArea="getTextArea"></textAreaType>
+               <textAreaType v-if="typeGroup == 2" :getData="this.activeData.textAreaValue" @sonTextArea="getTextArea"></textAreaType>
                <!-- 下拉文本 -->
-               <selectMode v-if="formData.type == 3" :getData="this.activeData.textSecModeValue" @sonSecMode="getSecMode"></selectMode>
+               <selectMode v-if="typeGroup == 3" :getData="this.activeData.textSecModeValue" @sonSecMode="getSecMode"></selectMode>
                <!-- 树形下拉文本 -->
-               <el-button type="primary" v-if="formData.type == 4" @click="openTreeDialog">编辑</el-button>
+               <el-button type="primary" v-if="typeGroup == 4" @click="openTreeDialog">编辑</el-button>
                <!-- 小数 -->
-               <floatType v-if="formData.type == 5" :getData="this.activeData.floatValue" @sonFloat="getFloat"></floatType>
+               <floatType v-if="typeGroup == 5" :getData="this.activeData.floatValue" @sonFloat="getFloat"></floatType>
                 <!-- 整数 -->
-               <intType v-if="formData.type == 6" :getData="this.activeData.intValue" @sonInt="getInt"></intType>
+               <intType v-if="typeGroup == 6" :getData="this.activeData.intValue" @sonInt="getInt"></intType>
                <!-- 密文 -->
-               <secretType v-if="formData.type == 7" :getData="this.activeData.secretValue" @sonSecret="getSecret"></secretType>
+               <secretType v-if="typeGroup == 7" :getData="this.activeData.secretValue" @sonSecret="getSecret"></secretType>
                <!-- MAC -->
-               <MACType v-if="formData.type == 8" :getData="this.activeData.MACValue" @sonMAC="getMAC"></MACType>
+               <MACType v-if="typeGroup == 8" :getData="this.activeData.MACValue" @sonMAC="getMAC"></MACType>
                <!-- IP -->
-               <ipType v-if="formData.type == 9" :getData="this.activeData.ipValue" @sonIP="getIp"></ipType>
+               <ipType v-if="typeGroup == 9" :getData="this.activeData.ipValue" @sonIP="getIp"></ipType>
                <!-- url -->
-               <urlType v-if="formData.type == 10" :getData="this.activeData.urlValue" @sonUrl="getUrl"></urlType>
+               <urlType v-if="typeGroup == 10" :getData="this.activeData.urlValue" @sonUrl="getUrl"></urlType>
                <!-- 日期格式 -->
-               <dateTime v-if="formData.type == 11" :getData="this.activeData.dateValue" @sonDate="getDate"></dateTime>
+               <dateTime v-if="typeGroup == 11" :getData="this.activeData.dateValue" @sonDate="getDate"></dateTime>
                <!-- 附件 -->
-               <fileType v-if="formData.type == 12" :getData="this.activeData.fileValue" @sonFile="getFile"></fileType>
+               <fileType v-if="typeGroup == 12" :getData="this.activeData.fileValue" @sonFile="getFile"></fileType>
             </el-form-item>
             <el-form-item label="描述" prop="disc">
                <el-input v-model="formData.disc" type="textarea" placeholder="请输入描述" :autosize="{minRows: 4}"
@@ -179,7 +217,7 @@
       </el-dialog>
       <!-- 树形dialog -->
       <treeType
-         v-if="isShowTree"
+         v-if="treeDialogVisible"
          :getData="this.activeData.treeValue" 
          :treeDialogVisible="treeDialogVisible" 
          @treeCancleClose="treeCancleClose"
@@ -201,6 +239,9 @@ import ipType from './propertiesComp/ipType.vue'
 import urlType from './propertiesComp/urlType.vue'
 import dateTime from './propertiesComp/dateTime.vue'
 import fileType from './propertiesComp/fileType.vue'
+
+import { mapGetters } from 'vuex'
+import { getPropertiesGroup, defaultProperties, addProperties, delProperties, delModeProperties, editProperties, connecetProperties } from '@/api/properties'
 export default {
    
   components:{
@@ -225,48 +266,38 @@ export default {
       isAdd: 1,
       addEditDialog: false,
 
-      tableDataDefault: [{
-         date: '2016-05-02',
-         name: '王小虎'
-      },{
-         date: '2016-05-02',
-         name: '王小虎33'
-      }],
-      multipleSelectionDefault: [], //多选框
+      tableDataDefault: [],
+      // multipleSelectionDefault: [], //多选框
       searchPage: {
          size: 10,
          page: 1,
-         total: 2
+         total: 0
       },
 
       // 自定义数据部分---------------------------------------
-      tableDataSelf: [{
-         date: '2016-05-02',
-         name: '王小虎333'
-      }],
+      tableDataSelf: [],
       multipleSelectionSelf: [], //多选框自定义
       searchPageSelf: {
          size: 10,
          page: 1,
-         total: 1
+         total: 0
       },
       // 资源关联
       relationDialog: false,
-      tableRelation: [
-         {
-            date: '2016-05-02',
-            name: '王小虎33'
-         }
-      ],
+      tableRelation: [],
       // 删除
       delDialog: false,
+      delId: null, //单个删除的id
+      delIndex: null,
+      modeDel: null,
 
+      editId: null,
       // 新增/编辑dialog数据
       formData: {
         group: undefined,
         name: undefined,
         ENAME: undefined,
-        type: undefined,
+        //type: undefined,
         disc: undefined,
       },
       rules: {
@@ -285,20 +316,15 @@ export default {
           message: '请输入英文名称',
           trigger: 'blur'
         }],
-        type: [{
-          required: true,
-          message: '请选择属性类型',
-          trigger: 'change'
-        }],
+         //   type: [{
+         //     required: true,
+         //     message: '请选择属性类型',
+         //     trigger: 'change'
+         //   }],
         disc: [],
       },
-      groupOptions: [{
-         "label": "公共属性",
-         "value": 1
-         }, {
-         "label": "自定义属性",
-         "value": 2
-      }],
+      typeGroup: null,
+      groupOptions: [],
       typeOptions: [{
          "label": "文本",
          "value": 1
@@ -360,32 +386,94 @@ export default {
       
     }
   },
-  mounted(){},
+  mounted(){
+     this.initTable()
+     this.initGroup()
+  },
   methods:{
+      ...mapGetters(['userInfo']),
+      // 初始加载表格数据
+      initTable(){
+         defaultProperties({ attrName: this.searchValue })
+            .then(res=>{
+               // console.log(res)
+               if(JSON.stringify(res.result)=="{}"){
+                  this.tableDataDefault = []
+                  this.searchPage.total = 0
+                  this.tableDataSelf = []
+                  this.searchPageSelf.total = 0
+               }else{
+                  this.tableDataDefault = res.result.public
+                  this.searchPage.total = res.result.public.length
+                  this.tableDataSelf = res.result.customize
+                  this.searchPageSelf.total = res.result.customize.length
+               }
+            })
+            .catch(err=>err)
+      },
+      // 加载下拉框分组类型
+      initGroup(){
+         getPropertiesGroup()
+            .then(res=>{
+               if(res.code == 200){
+                  this.groupOptions = res.result
+               }
+            })
+            .catch(err=>err)
+      },
       handleSearch(){
-         console.log(this.searchValue)
+         // console.log(this.searchValue)
+         this.initTable()
       },
       // 新增按钮
       handleAdd(){
          this.isAdd = 1
-         for( var k in this.activeData ){
+         this.formData = {
+            group: null,
+            name: null,
+            ENAME: null,
+            disc: null,
+         }
+         this.typeGroup = null
+         for(var k in this.activeData){
             this.activeData[k] = ""
          }
-         this.formData.type = null
+         // console.log(this.formData)
          this.activeTitle = ""
          this.addEditDialog = true
-      },
-      // 多选
-      handleSelectionChange(val){
-         this.multipleSelectionDefault = val
+         this.$nextTick(()=>{
+            this.$refs['elForm'].resetFields()
+         })
       },
       // 编辑
       Edit(row){
+         this.editId = row.id
+         // console.log(row)
          this.isAdd = 2
          this.addEditDialog = true
          // 后台返回对应类型id
-         this.formData.type = 4
-         this.activeData.treeValue = 'file文件'
+         this.typeGroup = Number(row.attrType)
+         this.formData = {
+            group: row.groupId +','+ row.groupName,
+            name: row.attrName,
+            ENAME: row.enName,
+            disc: row.describes
+         }
+         this.activeData = {
+            textValue: row.attrType == 1? row.maxLength:"" ,//文本
+            textAreaValue:  row.attrType == 2? row.maxLength:"" , //文本区域
+            textSecModeValue: row.attrType == 3? row.optionalValue:"" , //下拉文本
+            treeValue: row.attrType == 4? JSON.parse(row.optionalValue): null , //树形
+            intValue: row.attrType == 5? row.maxLength:"",// 整数
+            floatValue: row.attrType == 6? row.maxLength:"",//小数
+            secretValue: row.attrType == 7? row.maxLength:"", //密文
+            MACValue: row.attrType == 8? row.maxLength:"",
+            ipValue: row.attrType == 9? row.maxLength:"",
+            urlValue: row.attrType == 10? row.maxLength:"",
+            dateValue: row.attrType == 11? row.dateType:"",
+            fileValue: row.attrType == 12? row.buttonName:""
+         }
+         
       },
       // 系统分页
       handleCurrentChange(val) {
@@ -411,86 +499,176 @@ export default {
       // 关联资源类型
       relation(row){
          this.relationDialog = true
+         connecetProperties({id: row.id})
+            .then(res=>{
+               if(res.code == 200){
+                  this.tableRelation = res.result
+               }
+            }).catch(err=>{ this.$message.error('获取关联资源失败') })
       },
       // 删除
-      del(row){
+      del(index, row){
          this.delDialog = true
+         // console.log(row)
+         this.delIndex = index
+         this.delId = row.id
       },
       // 删除确认按钮
       delSure(){
-         this.delDialog = false
+         let ids = []
+         for(var i = 0; i < this.modeDel.length; i++){
+            ids.push(this.modeDel[i].id)
+         }
+         ids = ids.join(',')
+         let fetch = this.delIndex == 2? delProperties({id: this.delId}) : delModeProperties({ids})
+            fetch.then(res =>{
+               // console.log(res)
+               if(res.code == 200){
+                  this.$message.success('删除成功')
+                  this.initTable()
+               }else{
+                  this.$message.success('删除失败')
+               }
+               this.delDialog = false
+            }).catch(err=>{
+               this.$message.error('删除失败')
+               this.delDialog = false
+            })
       },
       // 批量删除
       delList(){
+         if(this.multipleSelectionSelf.length == 0){
+            this.$message.error('请选择数据再进行批量删除')
+            return
+         }
          this.delDialog = true
+         this.modeDel = this.multipleSelectionSelf
       },
 
       // 新增编辑确认按钮
       submitForm() {
-         console.log(this.activeData)
+         // console.log(this.formData)
+         // console.log(this.activeData)
+         // console.log(this.userInfo())
          this.$refs['elForm'].validate(valid => {
-         if (!valid) return
-         // TODO 提交表单
-         let regEn = /^[a-zA-Z]$/
-         if(!regEn.test(this.formData.ENAME)){
-            this.$message.error('请输入正确的英文名称')
-            return
-         }
-         if(this.formData.type == 3){
-            if(this.activeData.textSecModeValue.split(',').length > 30){
-               this.$message.error('可选值最多不超过30个')
-            }
-         }
-         if(this.formData.type == 5){
-            let reg = /^-?([1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0)$/;
-            if(!reg.test(Number(this.activeData.floatValue))){
-               this.$message.error('只能输入小数')
+            if (!valid) return
+            // TODO 提交表单
+            var re = new RegExp("^[a-zA-Z]+$");
+            if(!re.test(this.formData.ENAME)){
+               this.$message.error('请输入正确的英文名称')
                return
             }
-         }
-         if(this.formData.type == 6){
-            let reg = /^[1-9]\d*$/;
-            if(!reg.test(Number(this.activeData.intValue))){
-               this.$message.error('只能输入整数')
-               return
+            if(this.typeGroup == 3){
+               let secLength = this.activeData.textSecModeValue.split(',')
+               if(secLength.length == 0){
+                  this.$message.error('请输入可选值')
+                  return
+               }
+               if( secLength.length > 30){
+                  this.$message.error('可选值最多不超过30个')
+                  return
+               }
+               for(var i = 0; i < secLength.length; i++){
+                  if(!secLength[i]){
+                     this.$message.error('请输入可选值')
+                     return
+                  }
+                  if(secLength[i].length > 50){
+                     this.$message.error('单个可选值长度不超过50个字符')
+                     return
+                  }
+               }
             }
-         }
-         if(this.formData.type == 9){
-            let reg = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/;
-            if(!reg.test(Number(this.activeData.ipValue))){
-               this.$message.error('请输入正确的ip地址')
-               return
+
+            let fetchObj = {
+               groupId: this.formData.group.split(',')[0], //分组id
+               groupName: this.formData.group.split(',')[1], //分组名称
+               attrName: this.formData.name, //属性名称
+               enName: this.formData.ENAME, //英文名称
+               attrType: this.typeGroup, //属性类型
+               describes: this.formData.disc, //描述
+               maxLength:"", // 最大长度
+               optionalValue:"", //可选值、树形
+               dateType:"",  //时间类型 1 年月日 2 年月日时分秒
+               buttonName:"", //按钮名称
             }
-         }
-         if(this.formData.type == 10){
-            let reg = /(^(http|https):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/;
-            if(!reg.test(Number(this.activeData.urlValue))){
-               this.$message.error('请输入正确的url地址')
-               return
+            if(this.typeGroup == 3){
+               // 文本下拉
+               fetchObj.optionalValue = this.activeData.textSecModeValue
+            }else if(this.typeGroup == 4){
+               // 树形
+               fetchObj.optionalValue = JSON.stringify(this.activeData.treeValue)
+            }else if(this.typeGroup == 11){
+               // 日期
+               fetchObj.dateType = this.activeData.dateValue
+            }else if(this.typeGroup == 12){
+               // 文件上传
+               if(!this.activeData.fileValue){
+                  this.$message.error('请输入按钮名称')
+                  return
+               }
+               fetchObj.buttonName = this.activeData.fileValue
+            }else{
+               for(var k in this.activeData){
+                  if(this.activeData[k]){
+                     fetchObj.maxLength = this.activeData[k]
+                  }
+               }
+               if(!fetchObj.maxLength){
+                  this.$message.error('请输入最大长度')
+                  return
+               }
+            }  
+
+            if(this.isAdd == 1){
+               addProperties(fetchObj).then(res=>{
+                  // console.log(res)
+                  if(res.code == 500){
+                     this.$message.error('新增失败')
+                  }else{
+                     this.$message.success('新增成功')
+                  }
+                  this.initTable()
+                  this.addEditDialog = false
+               }).catch(err=>{
+                  this.$message.error('新增失败')
+                  this.addEditDialog = false
+               })
+            }else {
+               fetchObj.id = this.editId
+               editProperties(fetchObj).then(res=>{
+                  // console.log(res)
+                  if(res.code == 500){
+                     this.$message.error('修改失败')
+                  }else{
+                     this.$message.success('修改成功')
+                  }
+                  this.initTable()
+                  this.addEditDialog = false
+               }).catch(err=>{
+                  this.$message.error('修改失败')
+                  this.addEditDialog = false
+               })
             }
-         }
-         if(this.formData.type == 8){
-            let reg = /([A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2}/;
-            if(!reg.test(Number(this.activeData.MACValue))){
-               this.$message.error('请输入正确的MAC地址')
-               return
-            }
-         }
-         this.addEditDialog = false
+            
             
          })
       },
       resetForm() {
          this.$refs['elForm'].resetFields()
+         this.typeGroup = null
          this.activeTitle = ""
-         this.formData.type = null
+         // this.typeGroup = null
          this.addEditDialog = false
       },
 
       // 组件数据传值------------------------------
       // 类型选择
       handleTypeChange(){
-         switch(this.formData.type){
+         for(var k in this.activeData){
+            this.activeData[k] = ""
+         }
+         switch(this.typeGroup){
             case 1:
                // 文本
                this.activeTitle = "最大长度"
@@ -546,10 +724,10 @@ export default {
       // 打开tree的dialog
       openTreeDialog(){
          this.treeDialogVisible = true
-         this.isShowTree = true
       },
       treeCancleClose(val){
-         this.treeDialogVisible = val
+         this.treeDialogVisible = val.flag
+         this.activeData.treeValue = val.treeDatas
       },
       // 树形结构数据
       treeSureClose(val){

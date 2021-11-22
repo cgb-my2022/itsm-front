@@ -2,9 +2,9 @@
   <div>
     <el-input 
       v-model="textValue" 
-      type="number"
-      onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode || event.which))) || event.which === 8"
-      @change="handleTextChange(arguments[0])"
+      :maxlength="propMaxLength"
+      show-word-limit
+      @change="handleTextChange"
       :style="{width: '80%'}"
       clearable></el-input>
   </div>
@@ -15,11 +15,12 @@ export default {
   components:{},
   props:{
     getData: null,
+    propMaxLength: null,
     theIndex: null
   },
   data(){
     return {
-      textValue:""
+      textValue:"",
     }
   },
   mounted(){
@@ -29,8 +30,7 @@ export default {
   },
   methods:{
     handleTextChange(val){
-      this.textValue = Number(val)
-      this.$emit('sonIP', this.textValue, this.theIndex)
+      this.$emit('sonMAC', this.textValue, this.theIndex)
     }
   },
 }
