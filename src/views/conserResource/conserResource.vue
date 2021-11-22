@@ -93,14 +93,24 @@
             class="upload-demo"
             :action="upUrl"
             :headers="headers"
+            :data="upData"
             :on-remove="handleUploadRemove"
             :limit="1"
             :on-success="handleUpSuccess"
             :before-upload="beforeAvatarUpload"
             :file-list="fileList">
-            <el-button type="primary">选择</el-button>
+            <el-button type="primary">选择并上传</el-button>
             <div slot="tip" style="color: red" class="el-upload__tip">支持.xlsx或.xls类型的Excel文件。</div>
           </el-upload>
+          <!-- <a-upload
+            name="file"
+            :multiple="true"
+            :action="upUrl"
+            :headers="headers"
+            @change="handleUploadChange"
+          >
+            <a-button> <a-icon type="upload" /> 上 传 </a-button>
+          </a-upload> -->
           <br>
           <!-- <div>
             <span style="margin-right: 20px">主键重复操作</span>
@@ -110,7 +120,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="handleUploadCancle">取 消</el-button>
-          <el-button type="primary" @click="handleUploadSure">导 入</el-button>
+          <!-- <el-button type="primary" @click="handleUploadSure">导 入</el-button> -->
         </span>
       </el-dialog>
     </div>
@@ -121,7 +131,6 @@
 import { getIntTree, searchIntTree, getTreeIdInfo, delResource, delModeResource, outResource, downResource, importResource } from '@/api/conserResource'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
-
 export default {
   components:{},
   props:{},
@@ -154,11 +163,14 @@ export default {
 
       // 导入
       headers:{},
-      upUrl: window._CONFIG['domianURL'] + '/sys/common/upload',
+      upUrl: window._CONFIG['domianURL'] + '/cmdb/resource/importExcel',
       fileList:[],
       uploadDialogVisible: false,
       upRadio: "1",
       upFile: null,
+      upData: {
+        id: sessionStorage.getItem('treeid')
+      }
     }
   },
   mounted(){
@@ -392,9 +404,21 @@ export default {
       return extension || extension2
     },
     handleUpSuccess(res, file){
-      console.log(file);
-      this.upFile = res.message
+      this.$message.success('上传成功')
+      this.uploadDialogVisible = false
+      this.fileList = []
+      this.upFile = null
+      this.getDefaultTree(sessionStorage.getItem('treeid'))
+      
     },
+
+    // handleUploadChange(info){
+    //   console.log(info)
+    //   this.upFile = info.file
+    //   if (info.file.status === 'done') {
+    //     this.upFile = info.fileList
+    //   }
+    // },
     // upload移除
     handleUploadRemove(){
       this.fileList = []
@@ -409,14 +433,39 @@ export default {
       this.upFile = null
     },
     handleUploadSure(){
-      let obj = {
-        fileUrl: this.upFile,
-        id: sessionStorage.getItem('treeid')
+      if(!this.upFile){
+        this.$message.error('请选择文件')
+        return
       }
-      importResource(obj)
-        .then(res=>{
-          console.log(res);
-        })
+      var formData_o = new FormData();
+      formData_o.append("file",this.upFile);
+      formData_o.append("id",sessionStorage.getItem('treeid'));
+      var that = this;
+      $.ajax({ 
+        url: window._CONFIG['domianURL'] +"/cmdb/resource/importExcel",
+        type: 'POST', 
+        headers: this.headers,
+        data: formData_o,
+        // dataType: 'json', 
+        mimeType: "multipart/form-data",
+        async: false,
+        cache: false, 
+        contentType: false, 
+        processData: false, 
+        success: function (returndata) { 
+          console.log(returndata)
+        }, 
+        error: function (returndata) { 
+        }
+      }) 
+      // let obj = {
+      //   fileUrl: this.upUrl,
+      //   id: sessionStorage.getItem('treeid')
+      // }
+      // importResource(obj)
+      //   .then(res=>{
+      //     console.log(res);
+      //   })
     }
 
   },

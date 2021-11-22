@@ -47,7 +47,7 @@
                <template slot-scope="scope">
                   <el-button type="primary" size="mini" @click="relation(scope.row)">关联资源类型</el-button>
                   <el-button type="primary" size="mini" @click="Edit(scope.row)">修改</el-button>
-                  <!-- <el-button type="danger" size="mini" @click="del(2, scope.row)">删除</el-button> -->
+                  <el-button type="danger" size="mini" @click="del(2, scope.row)">删除</el-button>
                </template>
             </el-table-column>
          </el-table>
@@ -516,10 +516,13 @@ export default {
       // 删除确认按钮
       delSure(){
          let ids = []
-         for(var i = 0; i < this.modeDel.length; i++){
-            ids.push(this.modeDel[i].id)
+         if(this.delIndex == 1){
+            for(var i = 0; i < this.modeDel.length; i++){
+               ids.push(this.modeDel[i].id)
+            }
+            ids = ids.join(',')
          }
-         ids = ids.join(',')
+
          let fetch = this.delIndex == 2? delProperties({id: this.delId}) : delModeProperties({ids})
             fetch.then(res =>{
                // console.log(res)
@@ -536,11 +539,12 @@ export default {
             })
       },
       // 批量删除
-      delList(){
+      delList(index){
          if(this.multipleSelectionSelf.length == 0){
             this.$message.error('请选择数据再进行批量删除')
             return
          }
+         this.delIndex = index
          this.delDialog = true
          this.modeDel = this.multipleSelectionSelf
       },
@@ -553,7 +557,7 @@ export default {
          this.$refs['elForm'].validate(valid => {
             if (!valid) return
             // TODO 提交表单
-            var re = new RegExp("^[a-zA-Z]+$");
+            var re = new RegExp("^[a-zA-Z-_]+$");
             if(!re.test(this.formData.ENAME)){
                this.$message.error('请输入正确的英文名称')
                return
