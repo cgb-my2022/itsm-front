@@ -194,7 +194,7 @@
           </a-col>
         </a-row>
       </a-form>
-      <biz-service-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
+      <biz-service-select-single-user-modal :url="url.assignList" ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
     </a-spin>
   </a-modal>
 </template>
@@ -325,6 +325,7 @@ export default {
       url: {
         userInfo: '/sys/user/userInfo',
         add: '/sys/event/addAndSubmit',
+        assignList: '/sys/event/assignList',  //处理人员列表
       },
       fromData: {
         eventCatFullName: '',
@@ -337,6 +338,7 @@ export default {
   },
   created() {
     this.initDictData("EVENT_LEVEL")
+    console.log(this.userInfo);
   },
   methods: {
     //  初始页面内容
@@ -356,7 +358,10 @@ export default {
     handleDetail() {},
     // 选择处理人
     handleSelect() {
-      this.$refs.selectSingleUserModal.select(1);
+      this.form.validateFields((err, values) => {
+        
+      })
+      // this.$refs.selectSingleUserModal.select(1);
     },
     selectUserOK(data) {
       let fieldval = pick(this.model)

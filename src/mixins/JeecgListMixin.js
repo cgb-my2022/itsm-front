@@ -211,7 +211,16 @@ export const JeecgListMixin = {
       // 分页、排序、筛选变化时触发
       // TODO 筛选
       if (Object.keys(sorter).length > 0) {
-        this.isorter.column = sorter.field;
+        // 是否需要中文排序
+        if (this.sortName) {
+          if (sorter.field === 'createName' || sorter.field === 'currentUserName') {
+            this.isorter.column = `convert(${sorter.field} using 'gbk')`;
+          } else {
+            this.isorter.column = sorter.field;
+          }
+        } else {
+          this.isorter.column = sorter.field;
+        }
         this.isorter.order = sorter.order == 'ascend' ? 'asc' : 'desc'
       }
       this.ipagination = pagination;

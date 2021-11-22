@@ -51,6 +51,11 @@
                 ></j-date>
               </a-form-item>
             </a-col>
+            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-form-item label="事件内容">
+                <a-input v-model="queryParam.eventDesc"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
@@ -248,6 +253,7 @@ export default {
       },
       catIds: "",
       categoryOptions: [], //事件类型内容
+      sortName: true
     }
   },
   watch: {
