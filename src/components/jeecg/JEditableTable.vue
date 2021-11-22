@@ -399,12 +399,12 @@
 
                           <a-tooltip v-else-if="file.status==='done'" :title="file.name">
                             <a-icon type="paper-clip" />
-                            <span style="margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
+                            <span style="margin-left:5px">{{ getEllipsisWord(file.name,30) }}</span>
                           </a-tooltip>
 
                           <a-tooltip v-else :title="file.name">
                             <a-icon type="paper-clip" style="color:red;"/>
-                            <span style="color:red;margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
+                            <span style="color:red;margin-left:5px">{{ getEllipsisWord(file.name,30) }}</span>
                           </a-tooltip>
 
                           <template v-if="showAction" style="width: 30px">
@@ -467,7 +467,7 @@
                         <div :key="fileKey" style="position: relative;">
                           <a-tooltip  :title="file.name">
                             <a-icon type="paper-clip" />
-                            <span style="margin-left:5px"><a  @click="handleClickDownFileByUrl(id)">{{ getEllipsisWord(file.name,5) }}</a></span>
+                            <span style="margin-left:5px"><a  @click="handleClickDownFileByUrl(id)">{{ getEllipsisWord(file.name,30) }}</a></span>
                           </a-tooltip>
                         </div>
                       </template>

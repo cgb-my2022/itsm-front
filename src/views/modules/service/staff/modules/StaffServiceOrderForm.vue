@@ -15,7 +15,7 @@
         <a-tag color="red" class="tag-beyond"> 挂起原因：{{ model.supportPendingReason }} </a-tag>
       </template>
       <template v-if="model.orderStatusDetail === 12 || model.orderStatusDetail === 13">
-        <a-tag color="red" class="tag-beyond"> 备注：{{ model.remark }} </a-tag>
+        <a-tag color="red" class="tag-beyond"> 退回原因：{{ model.remark }} </a-tag>
       </template>
       <!-- 头部 -->
       <span id="staffLeaveTitle">服务请求</span>
@@ -39,77 +39,57 @@
             <tr>
               <td class="firstTr">请求人</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.realName" />
-                </a-form-item>
+                <span class="text">{{formData.serviceOrder.realName}}</span>
               </td>
               <td class="firstTr">创建时间</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.createTime" />
-                </a-form-item>
+                <span class="text">{{formData.serviceOrder.createTime}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">账号</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.userName" />
-                </a-form-item>
+                <span class="text">{{formData.serviceOrder.userName}}</span>
               </td>
               <td class="firstTr">联系电话</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.phoneNo" />
-                </a-form-item>
+                <span class="text">{{formData.serviceOrder.phoneNo}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">所属部门</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.deptName" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.deptName}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">所在公司/园区</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.workplaceDepartnames" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.workplaceDepartnames}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">详细地址</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.workplaceDetail" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.workplaceDetail}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">请求内容</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.eventContent" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.eventContent}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">所属业务</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.serviceCatFullName" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.serviceCatFullName}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">相关资源</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span style="text-align: left">无</span>
-                </a-form-item>
+                <span class="text text-left">无</span>
               </td>
             </tr>
             <tr>
@@ -131,41 +111,33 @@
             <tr>
               <td class="firstTr">当前处理人</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span v-if="setRealname([2], model.orderStatusDetail)"></span>
+                <span class="text" v-if="setRealname([2], model.orderStatusDetail)"></span>
                   <span v-else-if="setRealname([3, 4, 5, 12], model.orderStatusDetail)">{{
                     model.frontlineUserRealname
                   }}</span>
-                  <span v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
-                  <span v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
-                  <span v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
-                  <span v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
+                  <span class="text" v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
+                  <span class="text" v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
+                  <span class="text" v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
+                  <span class="text" v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
                     model.supportUserRealname
                   }}</span>
-                  <span v-else></span>
-                </a-form-item>
+                  <span class="text" v-else></span>
               </td>
               <td class="firstTr">处理时间</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span>{{formData.serviceOrder.comfirmTime}}</span>
-                </a-form-item>
+                <span class="text">{{formData.serviceOrder.comfirmTime}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">问题原因</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.reason" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.reason}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">解决方案</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.solution" />
-                </a-form-item>
+                <span class="text text-left">{{formData.serviceOrder.solution}}</span>
               </td>
             </tr>
             <tr>
@@ -196,9 +168,7 @@
             <tr>
               <td class="firstTr">评价留言</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea v-if="formData.orderEvaluation" class="text" v-model="formData.orderEvaluation.content" />
-                </a-form-item>
+                <span v-if="formData.orderEvaluation" class="text text-left">{{formData.orderEvaluation.content}}</span>
               </td>
             </tr>
           </table>
@@ -283,7 +253,7 @@ export default {
             type: FormTypes.fileView,
             token: true,
             responseName: 'message',
-            width: '200px',
+            width: '100%',
             placeholder: '请输入${title}',
             defaultValue: '',
             actionButton: false,
@@ -422,6 +392,16 @@ export default {
 </script>
 
 <style scoped>
+.firstTr {
+  padding: 12px;
+}
+.text {
+  color: rgba(0, 0, 0, 0.65);
+}
+.text-left {
+  text-align: left;
+  display: inline-block;
+}
 .tag-beyond {
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -478,6 +458,7 @@ export default {
 }
 .time-line {
   padding: 20px 0 0 20px;
+  border: 1px solid rgba(0, 0, 0, 0.7);
 }
 #staffCard {
   border: 1px solid white;

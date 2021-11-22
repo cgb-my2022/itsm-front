@@ -18,6 +18,7 @@
                 v-model="serviceCatName"
                 :options="serviceOptions"
                 change-on-select
+                expand-trigger="hover"
                 @change="serviceChange"
               />
             </a-form-item>
@@ -184,7 +185,7 @@ export default {
           title: '编号',
           dataIndex: 'id',
           align: 'center',
-          width: 160,
+          width: 190,
         },
         {
           title: '请求内容',

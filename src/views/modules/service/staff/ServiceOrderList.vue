@@ -19,6 +19,7 @@
                 v-model="serviceCatName" 
                 :options="serviceOptions" 
                 change-on-select 
+                expand-trigger="hover"
                 @change="serviceChange"/>
             </a-form-item>
           </a-col>

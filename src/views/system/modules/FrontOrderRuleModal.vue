@@ -59,9 +59,9 @@
             <span>{{ setType(text) }}</span>
           </template>
           <!-- 是否接单 -->
-          <template slot="ruleStatus" slot-scope="text">
+          <!-- <template slot="ruleStatus" slot-scope="text">
             <a-switch disabled :checked="text === 1" />
-          </template>
+          </template> -->
           <!-- 操作 -->
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
@@ -164,12 +164,12 @@ export default {
           ellipsis: true,
           dataIndex: 'departNames',
         },
-        {
-          title: '是否接单',
-          align: 'center',
-          dataIndex: 'ruleStatus',
-          scopedSlots: { customRender: 'ruleStatus' },
-        },
+        // {
+        //   title: '是否接单',
+        //   align: 'center',
+        //   dataIndex: 'ruleStatus',
+        //   scopedSlots: { customRender: 'ruleStatus' },
+        // },
         {
           title: '操作',
           dataIndex: 'action',

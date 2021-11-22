@@ -23,6 +23,7 @@
                     :options="quickOptions"
                     :disabled="this.rowInfo.orderType==2"
                     change-on-select 
+                    expand-trigger="hover"
                     @change="catalogChange"/>
                 </a-form-item>
               </a-col>
@@ -32,7 +33,8 @@
                 <a-form-item label="用户名" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <div style="display:flex;">
                     <a-input
-                      disabled
+                      autocomplete="off"
+                      @click="handleSelect"
                       placeholder="点击选择用户"
                       v-decorator="['userName', {
                         rules: [{ required: true, message: '请选择用户!' }]

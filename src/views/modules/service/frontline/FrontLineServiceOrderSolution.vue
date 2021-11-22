@@ -16,6 +16,7 @@
             v-model="serviceOrderModel.serviceCatIds"
             :options="quickOptions"
             change-on-select
+            expand-trigger="hover"
             :disabled="this.rowInfo.orderType==2"
             @change="catalogChange"
           />
@@ -378,6 +379,10 @@ export default {
       this.getNc(res)
     })
     this.serviceOrderModel.eventType = this.formData.eventType
+    this.serviceOrderModel.reason = this.formData.reason
+    this.serviceOrderModel.solution = this.formData.solution
+    this.serviceOrderModel.eventType = this.formData.eventType
+    this.serviceOrderAttachTable.dataSource = this.formData.ywAttaches || []
     this.initDictConfig()
   },
 }

@@ -226,12 +226,13 @@
           {
             title: '手机号码',
             align: 'center',
-            width: 100,
+            width: 160,
             dataIndex: 'phone'
           },
           {
             title: '部门',
             align: 'center',
+            ellipsis: true,
             width: 180,
             dataIndex: 'orgCode'
           },
@@ -360,5 +361,8 @@
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
+  .ant-table-row-cell-break-word {
+    line-height: 1.5em;
+  }
 </style>

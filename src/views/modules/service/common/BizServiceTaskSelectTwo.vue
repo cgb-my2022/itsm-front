@@ -23,6 +23,7 @@
                     :options="quickOptions" 
                     :disabled="this.rowInfo.orderType==2"
                     change-on-select 
+                    expand-trigger="hover"
                     @change="catalogChange"/>
                 </a-form-item>
               </a-col>

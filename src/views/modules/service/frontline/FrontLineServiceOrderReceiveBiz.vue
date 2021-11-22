@@ -16,6 +16,7 @@
                 :field-names="{ label: 'title', value: 'id', children: 'children' }"
                 :show-search="{ filter }"
                 v-model="serviceCatName"
+                expand-trigger="hover"
                 :options="serviceOptions"
                 change-on-select
                 @change="serviceChange"
@@ -188,7 +189,7 @@ export default {
           title: '编号',
           dataIndex: 'id',
           align: 'center',
-          width: 160,
+          width: 190,
         },
         {
           title: '请求内容',

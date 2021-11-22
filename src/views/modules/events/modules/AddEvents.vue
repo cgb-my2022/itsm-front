@@ -182,8 +182,9 @@
             <a-form-item label="处理人" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <div style="display:flex;">
                 <a-input
-                  style="width: 150px;"
-                  disabled
+                  style="width: 200px;"
+                  autocomplete="off"
+                  @click="handleSelect"
                   placeholder="点击选择处理人"
                   v-decorator="['currentUserName', validatorRules.currentUserName]">
                 </a-input>

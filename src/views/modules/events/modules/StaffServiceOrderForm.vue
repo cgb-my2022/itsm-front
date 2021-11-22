@@ -30,85 +30,63 @@
             <tr>
               <td class="firstTr">发起人</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span class="fs-12">{{formData.createName}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.createName}}</span>
               </td>
               <td class="firstTr">事件发生日期</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                 <span class="fs-12">{{formData.eventTime}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.eventTime}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">办公电话</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.phoneNo" />
-                </a-form-item>
+                <span class="fs-12">{{formData.phoneNo}}</span>
               </td>
               <td class="firstTr">开单方式</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span>{{formData.openType === 1 ? '正常开单' : '事后补单'}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.openType === 1 ? '正常开单' : '事后补单'}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">部门</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.deptName" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.deptName}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">地点</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.workplaceDetail" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.workplaceDetail}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">事件来源</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span class="fs-12">{{formData.eventSource === 1 ? '监控平台 ' : '用户报告'}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.eventSource === 1 ? '监控平台 ' : '用户报告'}}</span>
               </td>
               <td class="firstTr">事件分类</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                 <span class="fs-12">{{formData.eventCatFullName}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.eventCatFullName}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">紧急程度</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span class="td-left" v-if="formData.eventLevel == 1" style="color:red;">{{setLevel(formData.eventLevel)}}</span>
-                  <span class="td-left" v-if="formData.eventLevel == 2" style="color:orange;">{{setLevel(formData.eventLevel)}}</span>
-                  <span class="td-left" v-if="formData.eventLevel == 3" style="color:blue;">{{setLevel(formData.eventLevel)}}</span>
-                </a-form-item>
+                <span class="td-left" v-if="formData.eventLevel == 1" style="color:red;">{{setLevel(formData.eventLevel)}}</span>
+                <span class="td-left" v-if="formData.eventLevel == 2" style="color:orange;">{{setLevel(formData.eventLevel)}}</span>
+                <span class="td-left" v-if="formData.eventLevel == 3" style="color:blue;">{{setLevel(formData.eventLevel)}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">事件标题</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.eventTitle" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.eventTitle}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">事件描述</td>
               <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.eventDesc" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.eventDesc}}</span>
               </td>
             </tr>
             <tr>
@@ -123,31 +101,23 @@
             <tr>
               <td class="firstTr">处理人</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span class="fs-12">{{formData.currentUserName}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.currentUserName}}</span>
               </td>
               <td class="firstTr">处理时间</td>
               <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span class="fs-12">{{formData.solTime}}</span>
-                </a-form-item>
+                <span class="fs-12">{{formData.solTime}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">问题原因</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.reason" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.reason}}</span>
               </td>
             </tr>
             <tr>
               <td class="firstTr">解决方案</td>
               <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.solution" />
-                </a-form-item>
+                <span class="fs-12 text-left">{{formData.solution}}</span>
               </td>
             </tr>
             <tr>
@@ -377,7 +347,15 @@ export default {
 </script>
 
 <style scoped>
+.firstTr {
+  padding: 12px;
+}
+.text-left {
+  text-align: left;
+  display: inline-block;
+}
 .fs-12 {
+  color: rgba(0, 0, 0, 0.65);
   font-size: 12px;
 }
 .td-left {

@@ -19,6 +19,7 @@
                 v-model="serviceCatName" 
                 :options="serviceOptions" 
                 change-on-select 
+                expand-trigger="hover"
                 autocomplete="off"
                 @change="serviceChange"/>
             </a-form-item>
@@ -106,8 +107,8 @@
         </template>
         <!-- 处理人 -->
         <template slot="realname" slot-scope="text, record">
-          <span v-if="setRealname([2],record.orderStatusDetail)"></span>
-          <span v-else-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
+          <!-- <span v-if="setRealname([2],record.orderStatusDetail)"></span> -->
+          <span v-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
           <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
           <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
           <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>

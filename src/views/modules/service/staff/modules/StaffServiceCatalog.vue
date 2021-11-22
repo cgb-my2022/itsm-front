@@ -35,7 +35,7 @@
                         </a-form-item>
                     </a-col>
                     <a-col :span="24">
-                        <a-form-item label="目录描述" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
+                        <a-form-item label="相关知识" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
                             <div class="des-catalog">暂无相关知识</div>
                         </a-form-item>
                     </a-col>
