@@ -353,6 +353,7 @@ export default {
 .text-left {
   text-align: left;
   display: inline-block;
+  width: 100%;
 }
 .fs-12 {
   color: rgba(0, 0, 0, 0.65);

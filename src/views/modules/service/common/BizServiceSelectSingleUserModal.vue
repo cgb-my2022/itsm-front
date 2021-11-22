@@ -152,7 +152,8 @@
         loading:false,
         selectedRowKeys: [],
         selectedRows: [],
-        type: "radio"
+        type: "radio",
+        eventParams: {}
       }
     },
     created() {
