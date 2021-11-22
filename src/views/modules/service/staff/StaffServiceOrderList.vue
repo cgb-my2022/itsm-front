@@ -96,13 +96,13 @@
         </template>
         <!-- 工单状态 -->
         <template slot="status" slot-scope="text, record">
-          <div class="order-status">
-            <p v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></p>
-            <p v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></p>
-            <p v-if="record.orderStatus === 6" class="order-status_round c-red"></p>
-            <p v-if="record.orderStatus === 7" class="order-status_round c-gray"></p>
-            <p>{{text}}</p>
-          </div>
+          <span class="order-status">
+            <span v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></span>
+            <span v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></span>
+            <span v-if="record.orderStatus === 6" class="order-status_round c-red"></span>
+            <span v-if="record.orderStatus === 7" class="order-status_round c-gray"></span>
+            <span>{{text}}</span>
+          </span>
         </template>
         <!-- 处理人 -->
         <template slot="realname" slot-scope="text, record">

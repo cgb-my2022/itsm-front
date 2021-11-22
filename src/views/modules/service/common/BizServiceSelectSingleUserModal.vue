@@ -41,10 +41,10 @@
                 :rowSelection="{selectedRowKeys: selectedRowKeys,onSelect:onSelect,onChange: onSelectChange,type: type}"
                 >
 
-               <span slot="username" slot-scope="text, record">
+               <span slot="username" slot-scope="text">
                   <j-ellipsis :value="text" :length="15"/>
                 </span>
-                <span slot="realname" slot-scope="text, record">
+                <span slot="realname" slot-scope="text">
                   <j-ellipsis :value="text" :length="10"/>
                 </span>
               </a-table>
@@ -84,6 +84,12 @@
   export default {
     name: "BizSelectSingleUserModal",
     components: {JEllipsis},
+    props: {
+      url: {
+        type: String,
+        default: "/sys/user/serviceUserlist"
+      }
+    },
     data () {
       return {
         title: "用户列表",
@@ -146,11 +152,7 @@
         loading:false,
         selectedRowKeys: [],
         selectedRows: [],
-        type: "radio",
-        url: {
-          list: "/sys/user/serviceUserlist",
-        },
-
+        type: "radio"
       }
     },
     created() {
@@ -185,7 +187,7 @@
         if(flag){
           params.flag = flag;
         }
-        getAction(this.url.list,params).then((res)=>{
+        getAction(this.url,params).then((res)=>{
           if(res.success){
             this.dataSource1 = res.result;
           }

@@ -3,22 +3,13 @@
     <a-card id="staffCard" style="margin: 0 auto; max-width: 750px">
       <!-- 状态内容 -->
       <a-tag color="cyan">
-        {{ statusName }}
+        {{ setStatus(formData.orderStatus) }}
       </a-tag>
-      <template v-if="model.orderStatusDetail === 4">
-        <a-tag color="red" class="tag-beyond"> 挂起原因：{{ model.frontPendingReason }} </a-tag>
-      </template>
-      <template v-if="model.orderStatusDetail === 5 || model.orderStatusDetail === 6">
-        <a-tag color="red" class="tag-beyond"> 转二线原因：{{ model.transferReason }} </a-tag>
-      </template>
-      <template v-if="model.orderStatusDetail === 7">
-        <a-tag color="red" class="tag-beyond"> 挂起原因：{{ model.supportPendingReason }} </a-tag>
-      </template>
-      <template v-if="model.orderStatusDetail === 12 || model.orderStatusDetail === 13">
-        <a-tag color="red" class="tag-beyond"> 备注：{{ model.remark }} </a-tag>
+      <template v-if="formData.orderStatus === 3">
+        <a-tag color="red" class="tag-beyond"> 已转给{{formData.currentUserName}}处理 </a-tag>
       </template>
       <!-- 头部 -->
-      <span id="staffLeaveTitle">服务请求</span>
+      <span id="staffLeaveTitle">事件工单</span>
       <div class="form-top">
         <ul>
           <li
@@ -30,125 +21,116 @@
             {{ item }}
           </li>
         </ul>
-        <span class="form-top_num">编号:{{ model.id }}</span>
+        <span class="form-top_num">事件ID：{{formData.id}}</span>
       </div>
       <!-- 信息展示 -->
       <template v-if="tabIndex === 0">
         <j-form-container>
           <table border="1px" id="staffLeaveTable">
             <tr>
-              <td class="firstTr">请求人</td>
+              <td class="firstTr">发起人</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.realName" />
+                  <span class="fs-12">{{formData.createName}}</span>
                 </a-form-item>
               </td>
-              <td class="firstTr">创建时间</td>
+              <td class="firstTr">事件发生日期</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.createTime" />
-                </a-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">账号</td>
-              <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.userName" />
-                </a-form-item>
-              </td>
-              <td class="firstTr">联系电话</td>
-              <td class="firstTr">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.phoneNo" />
+                 <span class="fs-12">{{formData.eventTime}}</span>
                 </a-form-item>
               </td>
             </tr>
             <tr>
-              <td class="firstTr">所属部门</td>
+              <td class="firstTr">办公电话</td>
+              <td class="firstTr">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input class="text" v-model="formData.phoneNo" />
+                </a-form-item>
+              </td>
+              <td class="firstTr">开单方式</td>
+              <td class="firstTr">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <span>{{formData.openType === 1 ? '正常开单' : '事后补单'}}</span>
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">部门</td>
               <td class="firstTr" colspan="5">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.deptName" />
+                  <a-textarea class="text" :autoSize="true" v-model="formData.deptName" />
                 </a-form-item>
               </td>
             </tr>
             <tr>
-              <td class="firstTr">所在公司/园区</td>
+              <td class="firstTr">地点</td>
               <td class="firstTr" colspan="4">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.workplaceDepartnames" />
+                  <a-textarea class="text" :autoSize="true" v-model="formData.workplaceDetail" />
                 </a-form-item>
               </td>
             </tr>
             <tr>
-              <td class="firstTr">详细地址</td>
-              <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.workplaceDetail" />
-                </a-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">请求内容</td>
-              <td class="firstTr" colspan="4">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" :autoSize="true" v-model="formData.serviceOrder.eventContent" />
-                </a-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">所属业务</td>
-              <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input class="text" v-model="formData.serviceOrder.serviceCatFullName" />
-                </a-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">相关资源</td>
-              <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span style="text-align: left">无</span>
-                </a-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">服务工单附件</td>
-              <td class="firstTr" colspan="5">
-                <!-- 子表单区域 -->
-                <a-spin :spinning="confirmLoading">
-                  <j-editable-table
-                    :ref="refKeys[0]"
-                    :loading="serviceOrderAttachTable.loading"
-                    :columns="serviceOrderAttachTable.columns"
-                    :dataSource="setFlie(formData.userAttaches)"
-                    :maxHeight="300"
-                    :rowNumber="true"
-                  />
-                </a-spin>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">当前处理人</td>
+              <td class="firstTr">事件来源</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span v-if="setRealname([2], model.orderStatusDetail)"></span>
-                  <span v-else-if="setRealname([3, 4, 5, 12], model.orderStatusDetail)">{{
-                    model.frontlineUserRealname
-                  }}</span>
-                  <span v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
-                  <span v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
-                  <span v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
-                  <span v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
-                    model.supportUserRealname
-                  }}</span>
-                  <span v-else></span>
+                  <span class="fs-12">{{formData.eventSource === 1 ? '监控平台 ' : '用户报告'}}</span>
+                </a-form-item>
+              </td>
+              <td class="firstTr">事件分类</td>
+              <td class="firstTr">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                 <span class="fs-12">{{formData.eventCatFullName}}</span>
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">紧急程度</td>
+              <td class="firstTr" colspan="4">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <span class="td-left" v-if="formData.eventLevel == 1" style="color:red;">{{setLevel(formData.eventLevel)}}</span>
+                  <span class="td-left" v-if="formData.eventLevel == 2" style="color:orange;">{{setLevel(formData.eventLevel)}}</span>
+                  <span class="td-left" v-if="formData.eventLevel == 3" style="color:blue;">{{setLevel(formData.eventLevel)}}</span>
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">事件标题</td>
+              <td class="firstTr" colspan="5">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-textarea class="text" :autoSize="true" v-model="formData.eventTitle" />
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">事件描述</td>
+              <td class="firstTr" colspan="5">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-textarea class="text" :autoSize="true" v-model="formData.eventDesc" />
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">关联资源</td>
+              <td class="firstTr" colspan="5">
+                <!-- <div class="td-flex">
+                  <span>路由器0987、路由器0943</span>
+                  <a-button type="primary">查看详细资源</a-button>
+                </div> -->
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">处理人</td>
+              <td class="firstTr">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <span class="fs-12">{{formData.currentUserName}}</span>
                 </a-form-item>
               </td>
               <td class="firstTr">处理时间</td>
               <td class="firstTr">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <span>{{formData.serviceOrder.comfirmTime}}</span>
+                  <span class="fs-12">{{formData.solTime}}</span>
                 </a-form-item>
               </td>
             </tr>
@@ -156,7 +138,7 @@
               <td class="firstTr">问题原因</td>
               <td class="firstTr" colspan="4">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.reason" />
+                  <a-textarea class="text" :autoSize="true" v-model="formData.reason" />
                 </a-form-item>
               </td>
             </tr>
@@ -164,12 +146,12 @@
               <td class="firstTr">解决方案</td>
               <td class="firstTr" colspan="4">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea class="text" v-model="formData.serviceOrder.solution" />
+                  <a-textarea class="text" :autoSize="true" v-model="formData.solution" />
                 </a-form-item>
               </td>
             </tr>
             <tr>
-              <td class="firstTr">解决工单附件</td>
+              <td class="firstTr">解决事件工单附件</td>
               <td class="firstTr" colspan="5">
                 <!-- 子表单区域 -->
                 <a-spin :spinning="confirmLoading">
@@ -182,23 +164,6 @@
                     :rowNumber="true"
                   />
                 </a-spin>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">服务满意度</td>
-              <td class="firstTr" colspan="5">
-                <span v-if="formData.orderEvaluation">
-                  <a-rate disabled v-model="formData.orderEvaluation.orderScore" style="color: red;"/>
-                  <span class="ant-rate-text">{{formData.orderEvaluation.orderScore}}分</span>
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">评价留言</td>
-              <td class="firstTr" colspan="5">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-textarea v-if="formData.orderEvaluation" class="text" v-model="formData.orderEvaluation.content" />
-                </a-form-item>
               </td>
             </tr>
           </table>
@@ -236,7 +201,7 @@ import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
 
 export default {
   name: 'ServiceOrderForm',
-  props: ['formData'],
+  props: ["formData", "dictStatus", "dictOptions"],
   mixins: [JEditableTableMixin],
   components: {
     JDictSelectTag,
@@ -310,14 +275,28 @@ export default {
         return file || []
       }
     },
-    setRealname() {
-      return function (arr, status) {
-        if (arr.indexOf(status) != -1) {
-          return true
+    // 根据等级id设置等级
+    setLevel() {
+      return function (text) {
+        if (this.dictOptions.length > 0) {
+          const findItem = this.dictOptions.find(item => item.value == text)
+          return findItem.text || findItem.title
+        } else {
+          return ""
         }
-        return false
       }
     },
+    // 设置工单状态
+    setStatus() {
+      return function (text) {
+        if (this.dictStatus.length > 0) {
+          const findItem = this.dictStatus.find(item => item.value == text)
+          return findItem.text || findItem.title
+        } else {
+          return ""
+        }
+      }
+    }
   },
   created() {
     this.queryDepartTree()
@@ -365,32 +344,8 @@ export default {
     },
     /** 调用完edit()方法之后会自动调用此方法 */
     editAfter() {
-      // let fieldval = pick(this.model, 'userName', 'realName', 'phoneNo', 'deptName', 'workplaceDepartids', 'workplaceDepartnames', 'workplaceDetail', 'businessType', 'businessName', 'deviceInfo', 'eventContent', 'bpmStatus', 'createTime', 'orderStatus', 'reason', 'solution', 'problemType', 'remark')
-
-      this.statusName = this.getStatus(this.formData.serviceOrder.orderStatus)
-      let orderStatusDetail = this.model.orderStatusDetail
-      if (orderStatusDetail === 3 || orderStatusDetail === 4 || orderStatusDetail === 12) {
-        this.statusName += '(' + this.model.frontlineUserRealname + ')'
-      } else if (orderStatusDetail === 6 || orderStatusDetail === 7 || orderStatusDetail === 13) {
-        this.statusName += '(' + this.model.supportUserRealname + ')'
-      } else if (orderStatusDetail === 8 || orderStatusDetail === 9) {
-        this.statusName += '(' + this.model.realName + ')'
-      }
-
-      // let workplaceDepartids = fieldval.workplaceDepartids;
-      // fieldval.workplaceDepartids = JSON.parse(workplaceDepartids);
-
-      // fieldval.name = fieldval.userName + '(' + fieldval.realName + ')';
-      // fieldval.problemTypeName = this.getProblemType(fieldval.problemType);
-      // this.$nextTick(() => {
-      //   this.form.setFieldsValue(fieldval)
-      // })
-      // 加载子表数据
-      // 去掉加载服务工单附件
-      // if (this.model.id) {
-      //   let params = { id: this.model.id }
-      //   this.requestSubTableData(this.url.serviceOrderAttach.list, params, this.serviceOrderAttachTable)
-      // }
+      // this.statusName = this.getStatus(this.formData.serviceOrder.orderStatus)
+      this.statusName = "已接单"
     },
     /** 整理成formData */
     classifyIntoFormData(allValues) {
@@ -422,6 +377,25 @@ export default {
 </script>
 
 <style scoped>
+.fs-12 {
+  font-size: 12px;
+}
+.td-left {
+  width: 100%;
+  text-align: left;
+  display: inline-block;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.td-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
 .tag-beyond {
   word-wrap: break-word;
   white-space: pre-wrap;

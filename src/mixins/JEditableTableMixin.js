@@ -1,6 +1,7 @@
 import JEditableTable from '@/components/jeecg/JEditableTable'
 import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import { httpAction, getAction, postAsyncAction } from '@/api/manage'
+import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
 
 export const JEditableTableMixin = {
   components: {
@@ -24,7 +25,20 @@ export const JEditableTableMixin = {
     }
   },
   methods: {
-
+    /** 获取数据字典内容 */
+    initDictData(dictCode) {
+      //优先从缓存中读取字典配置
+      if (getDictItemsFromCache(dictCode)) {
+        this.dictOptions = getDictItemsFromCache(dictCode)
+        return
+      }
+      //根据字典Code, 初始化字典数组
+      ajaxGetDictItems(dictCode, null).then((res) => {
+        if (res.success) {
+          this.dictOptions = res.result
+        }
+      })
+    },
     /** 获取所有的editableTable实例 */
     getAllTable() {
       if (!(this.refKeys instanceof Array)) {

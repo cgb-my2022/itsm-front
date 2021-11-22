@@ -12,23 +12,6 @@
         <a-form :form="form">
             <a-row>
               <a-col :span="24">
-                <a-form-item label="选择业务" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-cascader 
-                    placeholder="请选择"  
-                    :field-names="{ label: 'title', value: 'id', children: 'children' }"
-                    :show-search="{ filter }"
-                    v-decorator="['serviceCatIds', {
-                        rules: [{ required: true, message: '请选择业务!' }]
-                    }]"
-                    :options="quickOptions"
-                    :disabled="this.rowInfo.orderType==2"
-                    change-on-select 
-                    @change="catalogChange"/>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col :span="24">
                 <a-form-item label="用户名" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <div style="display:flex;">
                     <a-input
@@ -43,7 +26,7 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row v-if="setStatus([10, 11], orderStatusDetail)">
+            <a-row>
                 <a-col :span="24">
                   <a-form-item label="转办原因" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
                     <a-textarea 
@@ -58,31 +41,17 @@
             </a-row>
         </a-form>
       </a-spin>
-    <!-- <div>
-      <a-form-item label="业务类型：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <j-dict-select-tag
-          type="list"
-          v-model="model.businessType"
-          dictCode="SERVICE_ORDER_BUSINESS_TYPE" />
-      </a-form-item>
-      <a-form-item label="用户名：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <a-input-search placeholder="点击选择用户" @search="handleSelect" v-model="model.userName">
-          <a-button slot="enterButton" icon="search">选择</a-button>
-        </a-input-search>
-      </a-form-item>
-    </div> -->
     <biz-service-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
   </a-modal>
 </template>
 
 <script>
-  import BizServiceSelectSingleUserModal from './BizServiceSelectSingleUserModal.vue';
-  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+  import BizServiceSelectSingleUserModal from '@/views/modules/service/common/BizServiceSelectSingleUserModal.vue';
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import ARow from 'ant-design-vue/es/grid/Row'
   import pick from 'lodash.pick'
   export default {
-    mixins: [ServiceMixin, JEditableTableMixin],
+    mixins: [JEditableTableMixin],
     components: { BizServiceSelectSingleUserModal, ARow },
     name: 'BizServiceTaskSelectEntrusterModal',
     data() {
@@ -106,29 +75,8 @@
           xs: { span: 24 },
           sm: { span: 20 }
         },
-        userData: {},
-        serviceParam: {
-          flag: 1,
-          companyCode: ''
-        },
-        rowInfo: {
-          orderType: ""
-        },
-        orderStatusDetail: 0,
+        userData: {}
       }
-    },
-    computed: {
-      setStatus() {
-        return function(arr, status) {
-          if(arr.indexOf(status) != -1) {
-            return false
-          }
-          return true
-        }
-      }
-    },
-    created() {
-      this.getCatalog(3)
     },
     methods: {
       handleCancel() {
@@ -138,11 +86,9 @@
         e.preventDefault();
         this.form.validateFields((err, values) => {
           if (!err) {
-            let rowInfo = JSON.parse(JSON.stringify(this.rowInfo))
-            delete rowInfo.orderType
-            rowInfo.transferReason = values.transferReason
-            rowInfo.username = this.userData.username
-            this.$emit('selectFinished', rowInfo);
+            let params = JSON.parse(JSON.stringify(values));
+            params.currentUserId = this.userData.id;
+            this.$emit('ok', params, 'supportTranslate');
             this.visible = false;
           }
         });
@@ -156,23 +102,12 @@
         this.userData = data;
       },
 
-      select(flag, formData) {
+      deal() {
         this.visible = true;
-        this.serviceParam.flag = flag;
-        this.rowInfo.orderType = formData.orderType
-        this.orderStatusDetail = formData.orderStatusDetail
-        this.showCatalog(formData)
       },
       handleSelect: function() {
-        this.$refs.selectSingleUserModal.select(this.serviceParam.flag);
-      },
-      hqUserSelectReset() {
-        // this.hqUserSelectList = {};
+        this.$refs.selectSingleUserModal.select(1);
       }
     }
   }
 </script>
-
-<style scoped>
-
-</style>

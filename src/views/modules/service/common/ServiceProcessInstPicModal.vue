@@ -6,7 +6,6 @@
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
     :bodyStyle ="bodyStyle"
-    style="top: 50px;"
     destroyOnClose
     :footer="null"
     cancelText="关闭">

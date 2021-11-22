@@ -8,6 +8,7 @@
     @ok="handleOkConfirm"
     @cancel="handleCancel"
     cancelText="关闭"
+    okText="提交"
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -17,7 +18,6 @@
             <a-form-item label="事件发生日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-date
                 :disableType="2"
-                :show-time="true"
                 date-format="YYYY-MM-DD"
                 placeholder="请选择"
                 class="query-group-cust"
@@ -38,8 +38,8 @@
         <a-row>
           <a-col :xs="24" :sm="12">
             <a-form-item label="事件来源" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select placeholder="请选择" disabled v-decorator="['eventFrom', { initialValue: 'jack' }]">
-                <a-select-option value="jack"> 用户报告 </a-select-option>
+              <a-select placeholder="请选择" disabled v-decorator="['eventSource', { initialValue: 2 }]">
+                <a-select-option :value="2"> 用户报告 </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -58,13 +58,14 @@
             <a-form-item label="事件分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-tree-select
                 style="width: 100%"
-                v-decorator="['catIds', validatorRules.catIds]"
+                v-decorator="['eventCatId', validatorRules.eventCatId]"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 placeholder="请选择"
                 allow-clear
                 :tree-data="categoryOptions"
                 tree-default-expand-all
                 :replace-fields="{ title: 'title', value: 'id', key: 'id', children: 'children' }"
+                @change="changeCat"
               >
               </a-tree-select>
             </a-form-item>
@@ -76,17 +77,18 @@
                 :disabled="true"
                 placeholder="请选择"
               ></a-input>
-              <!-- <a-input v-decorator="['sysOrgCode',{initialValue:userInfo.orgCode}]" type="hidden" ></a-input> -->
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :xs="24" :sm="12">
             <a-form-item label="紧急程度" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select placeholder="请选择" v-decorator="['eventmergency', validatorRules.eventmergency]">
-                <a-select-option value="1"> 紧急 </a-select-option>
-                <a-select-option value="2"> 重要 </a-select-option>
-                <a-select-option value="3"> 一般 </a-select-option>
+              <a-select placeholder="请选择" v-decorator="['eventLevel', validatorRules.eventLevel]">
+                <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">
+                  <span style="display: inline-block; width: 100%" :title="item.text || item.label">
+                    {{ item.text || item.label }}
+                  </span>
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -117,7 +119,7 @@
             <a-form-item label="开单方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-radio-group
                 name="radioGroup"
-                v-decorator="['eventWay', { initialValue: 1, rules: validatorRules.eventWay.rules }]"
+                v-decorator="['openType', { initialValue: 1, rules: validatorRules.openType.rules }]"
               >
                 <a-radio :value="1">正常开单</a-radio>
                 <a-radio :value="2">事后补单</a-radio>
@@ -128,7 +130,7 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="事件描述" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-textarea v-decorator="['eventContent']" rows="4" placeholder="请输入事件描述(有效长度1-200)" />
+              <a-textarea v-decorator="['eventDesc']" rows="4" placeholder="请输入事件描述(有效长度1-200)" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -157,7 +159,7 @@
                 @change="handleTableChange"
               >
                 <template slot="dictText" slot-scope="text">
-                  <span>{{text}}</span>
+                  <span>{{ text }}</span>
                 </template>
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleDetail(record)">详情</a>
@@ -176,17 +178,22 @@
           </a-col>
         </a-row>
         <a-row>
-          <a-col :xs="24" :sm="12">
-            <a-form-item label="处理人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input
-                v-decorator="['eventPerson', validatorRules.eventPerson]"
-                :maxLength="32"
-                placeholder="请输入处理人(有效长度1-32)"
-              ></a-input>
+          <a-col :span="24">
+            <a-form-item label="处理人" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+              <div style="display:flex;">
+                <a-input
+                  style="width: 150px;"
+                  disabled
+                  placeholder="点击选择处理人"
+                  v-decorator="['currentUserName', validatorRules.currentUserName]">
+                </a-input>
+                <a-button icon="search" @click="handleSelect">选择</a-button>
+              </div>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
+      <biz-service-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
     </a-spin>
   </a-modal>
 </template>
@@ -201,11 +208,13 @@ import ARow from 'ant-design-vue/es/grid/Row'
 import { postAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
 import JDate from '@/components/jeecg/JDate.vue'
+import BizServiceSelectSingleUserModal from '@/views/modules/service/common/BizServiceSelectSingleUserModal.vue';
 
 export default {
   name: 'ServiceOrderModal',
   mixins: [JEditableTableMixin, JeecgListMixin],
   components: {
+    BizServiceSelectSingleUserModal,
     ARow,
     JDictSelectTag,
     JDate,
@@ -214,61 +223,60 @@ export default {
   data() {
     return {
       refKeys: ['serviceOrderAttach'],
+      dictOptions: [],
       columns: [
         {
           title: '名称 ',
           align: 'center',
           dataIndex: 'username',
-          ellipsis: true
+          ellipsis: true,
         },
         {
           title: '描述',
           align: 'center',
           dataIndex: 'realname',
-          ellipsis: true
+          ellipsis: true,
         },
         {
           title: 'IP',
           align: 'center',
-          dataIndex: 'avatar'
+          dataIndex: 'avatar',
         },
 
         {
           title: '资源类型',
           align: 'center',
           dataIndex: 'sex_dictText',
-          ellipsis: true
+          ellipsis: true,
         },
         {
           title: '资源分组',
           align: 'center',
           dataIndex: 'birthday',
-          ellipsis: true
+          ellipsis: true,
         },
         {
           title: '状态',
           align: 'center',
           width: 80,
           dataIndex: 'dictText',
-          scopedSlots: { customRender: 'dictText' }
+          scopedSlots: { customRender: 'dictText' },
         },
         {
           title: '使用人',
           align: 'center',
-          dataIndex: 'person'
+          dataIndex: 'person',
         },
         {
           title: '操作',
           dataIndex: 'action',
           scopedSlots: { customRender: 'action' },
           align: 'center',
-          width: 170
+          width: 170,
         },
       ],
       disableMixinCreated: true,
       disableSubmit: false,
-      flowCode: 'onl_service_order',
-      defaultWorkplaceDeparts: [],
       labelCol: {
         xs: { span: 24 },
         sm: { span: 6 },
@@ -294,10 +302,10 @@ export default {
         phoneNo: {
           rules: [{ required: true, message: '请输入办公电话！' }],
         },
-        catIds: {
+        eventCatId: {
           rules: [{ required: true, message: '请选择事件分类!' }],
         },
-        eventmergency: {
+        eventLevel: {
           rules: [{ required: true, message: '请选择紧急程度!' }],
         },
         workplaceDetail: {
@@ -306,40 +314,38 @@ export default {
         eventTitle: {
           rules: [{ required: true, message: '请输入地点事件标题!' }],
         },
-        eventWay: {
+        openType: {
           rules: [{ required: true, message: '请选择开单方式!' }],
         },
-        eventPerson: {
-          rules: [{ required: true, message: '请输入处理人!' }],
+        currentUserName: {
+          rules: [{ required: true, message: '请选择处理人!' }],
         },
       },
       url: {
         userInfo: '/sys/user/userInfo',
-        add: '/system/serviceOrder/addAndSubmit',
+        add: '/sys/event/addAndSubmit',
       },
-      rowInfo: {
-        orderType: 1,
-        userName: '',
-        sysOrgCode: '',
+      fromData: {
+        eventCatFullName: '',
+        currentUserId: ''
       },
     }
   },
   computed: {
     ...mapGetters(['userInfo']),
   },
+  created() {
+    this.initDictData("EVENT_LEVEL")
+  },
   methods: {
     //  初始页面内容
     add() {
-      const { workplaceDeptParentIdes, username, orgCode } = this.userInfo
       this.visible = true
       this.form.resetFields()
-      this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2)
-      this.rowInfo.userName = username
-      this.rowInfo.sysOrgCode = orgCode
     },
     // 选项业务
     changeCat(value, label) {
-      this.catIds = value
+      this.fromData.eventCatFullName = label.join(' ')
     },
     // 添加资源
     handleAdd() {},
@@ -347,18 +353,47 @@ export default {
     handleDel() {},
     // 查看资源
     handleDetail() {},
-    handleOkConfirm: function () {
-      let that = this
-      this.$confirm({
-        title: '提示',
-        content: '确认提交流程吗?',
-        onOk: function () {
-          that.okConfirm()
-        },
+    // 选择处理人
+    handleSelect() {
+      this.$refs.selectSingleUserModal.select(1);
+    },
+    selectUserOK(data) {
+      let fieldval = pick(this.model)
+      fieldval.currentUserName = data.realname
+      this.$nextTick(() => {
+          this.form.setFieldsValue(fieldval)
       })
+      this.fromData.currentUserId = data.id
     },
     // 提交
-    okConfirm() {},
+    handleOkConfirm(e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          let params = JSON.parse(JSON.stringify(values))
+          params.eventTime = params.eventTime + ' ' + '00:00:00'
+          params.sysOrgCode = this.userInfo.orgCode
+          params.deptName = this.userInfo.myDeptParentNames
+          Object.assign(params, this.fromData)
+          this.confirmLoading = true
+          postAction(this.url.add, params)
+            .then((res) => {
+              this.confirmLoading = false
+              if (res.success) {
+                this.$message.success(res.message)
+                this.$emit('closeLoad')
+                this.close()
+              } else {
+                this.$message.warning(res.message)
+              }
+            })
+            .finally(() => {
+              this.confirmLoading = false
+              return ''
+            })
+        }
+      })
+    },
     /** 调用完edit()方法之后会自动调用此方法 */
     editAfter() {
       let fieldval = pick(
