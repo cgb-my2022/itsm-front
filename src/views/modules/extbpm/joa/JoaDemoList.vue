@@ -97,7 +97,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>

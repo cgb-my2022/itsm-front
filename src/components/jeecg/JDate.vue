@@ -2,6 +2,7 @@
   <a-date-picker
     :disabled="disabled || readOnly"
     :placeholder="placeholder"
+    :disabled-date="disabledDate"
     @change="handleDateChange"
     :value="momVal"
     :showTime="showTime"
@@ -52,6 +53,11 @@
       getCalendarContainer: {
         type: Function,
         default: (node) => node.parentNode
+      },
+      // 禁用时间（1：不禁用  2：今天之前  3：今天之后）包括今天
+      disableType: {
+        type: Number,
+        default: 1  
       }
     },
     data () {
@@ -74,7 +80,16 @@
       moment,
       handleDateChange(mom,dateStr){
         this.$emit('change', dateStr);
-      }
+      },
+      disabledDate(current) {
+        if(this.disableType === 2) {
+          return current && current > moment().endOf('day');
+        } else if (this.disableType === 3) {
+          return current && current < moment().endOf('day');
+        } else {
+          return current && current < moment().endOf('day') && current > moment().endOf('day');
+        }
+      },
     },
     //2.2新增 在组件内定义 指定父组件调用时候的传值属性和事件类型 这个牛逼
     model: {

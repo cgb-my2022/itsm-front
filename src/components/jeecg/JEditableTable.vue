@@ -407,7 +407,7 @@
                             <span style="color:red;margin-left:5px">{{ getEllipsisWord(file.name,5) }}</span>
                           </a-tooltip>
 
-                          <template style="width: 30px">
+                          <template v-if="showAction" style="width: 30px">
                             <a-dropdown :trigger="['click']" placement="bottomRight" :getPopupContainer="getParentContainer" style="margin-left: 10px;">
                               <a-tooltip title="操作" :getPopupContainer="getParentContainer">
                                 <a-icon v-if="file.status!=='uploading'" type="setting" style="cursor: pointer;"/>
@@ -450,6 +450,7 @@
                               :action="getUploadAction(col.action)"
                               :headers="uploadGetHeaders(row,col)"
                               :showUploadList="false"
+                              :beforeUpload="beforeUploadFile"
                               v-bind="buildProps(row,col)"
                               @change="(v)=>handleChangeUpload(v,id,row,col)"
                             >
@@ -855,6 +856,21 @@
         type: String,
         default: 'orderNum'
       },
+      // 最多可以添加几行
+      maxRow: {
+        type: Number,
+        default: 0
+      },
+      // 文件上传最大限制(以M为单位)
+      maxFile: {
+        type: Number,
+        default: 0
+      },
+      // 是否显示上传完成后的操作按钮
+      showAction: {
+        type: Boolean,
+        default: true
+      }
     },
     data() {
       return {
@@ -1077,7 +1093,17 @@
 
     },
     methods: {
-
+      // 上传文件之前的校验
+      beforeUploadFile(file) {
+        if (this.maxFile <= 0) {
+          return true;
+        }
+        const isLt2M = file.size / 1024 / 1024 < this.maxFile;
+        if (!isLt2M) {
+          this.$message.error(`上传文件不能超过${this.maxFile}M!`);
+        }
+        return isLt2M;
+      },
       getElement(id, noCaseId = false) {
         if (!this.el[id]) {
           this.el[id] = document.getElementById((noCaseId ? '' : this.caseId) + id)
@@ -2091,8 +2117,13 @@
         }
 
       },
+      // 添加
       handleClickAdd() {
-        this.add()
+        if (this.maxRow < 1 || this.rows.length < this.maxRow) {
+          this.add()
+        } else {
+          this.$message.success(`最多可以添加${this.maxRow}个`)
+        }
       },
       handleConfirmDelete() {
         this.removeSelectedRows()
@@ -2333,6 +2364,12 @@
       },
       handleChangeUpload(info, id, row, column) {
         let { file } = info
+        if (this.maxFile > 0) {
+          const isLt2M = file.size / 1024 / 1024 < this.maxFile;
+          if (!isLt2M) {
+            return
+          }
+        }
         let value = {
           name: file.name,
           type: file.type,

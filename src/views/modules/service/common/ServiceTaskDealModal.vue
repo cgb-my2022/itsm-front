@@ -70,25 +70,8 @@
     <biz-service-task-select-entruster-modal ref="ywdelegate" @selectFinished="handleDelegate"></biz-service-task-select-entruster-modal>
     <!--主管转办-->
     <biz-service-task-select-entruster-modal ref="supDelegate" @selectFinished="handleEntruster"></biz-service-task-select-entruster-modal>
-    <a-modal
-      title="转二线处理"
-      :visible="visible2"
-      :confirm-loading="confirmLoading"
-      @ok="toSupportOk()"
-      @cancel="handleCancel"
-    >
-      <a-form-item label="业务类型：" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <j-dict-select-tag
-          type="list"
-          v-model="model.businessType"
-          dictCode="SERVICE_ORDER_BUSINESS_TYPE" />
-      </a-form-item>
-      <a-textarea
-        v-model="model.transferReason"
-        placeholder="请输入转处理原因"
-        :auto-size="{ minRows: 4, maxRows: 8 }"
-      />
-    </a-modal>
+    <!-- 转二线 -->
+    <biz-service-task-select-two ref="twoDelegate" @selectFinished="toSupportOk"></biz-service-task-select-two>
     <a-modal
       title="暂挂"
       :visible="visible3"
@@ -98,7 +81,8 @@
     >
       <a-textarea
         v-model="model.frontPendingReason"
-        placeholder="请输入暂挂原因"
+        placeholder="请输入暂挂原因(有效长度1-300)"
+        :maxLength="300"
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>
@@ -111,7 +95,8 @@
     >
       <a-textarea
         v-model="model.supportPendingReason"
-        placeholder="请输入暂挂原因"
+        placeholder="请输入暂挂原因(有效长度1-300)"
+        :maxLength="300"
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>
@@ -147,7 +132,7 @@
 
 <script>
 
-  import { putAction, postAction } from '@/api/manage'
+  import { putAction, postAction, getAction } from '@/api/manage'
   import { isURL } from '@/utils/validate'
   import ServiceBizTaskOptModal from './ServiceBizTaskOptModal.vue';
   import StaffServiceOrderForm from '../staff/modules/StaffServiceOrderForm';
@@ -155,6 +140,7 @@
   import { ACCESS_TOKEN } from '@/store/mutation-types'
   import BizServiceTaskSelectEntrusterModal from './BizServiceTaskSelectEntrusterModal.vue';
   import ATextarea from 'ant-design-vue/es/input/TextArea'
+  import BizServiceTaskSelectTwo from './BizServiceTaskSelectTwo.vue';
 
   export default {
     name: 'ServiceTaskDealModal',
@@ -162,17 +148,17 @@
       ATextarea,
       StaffServiceOrderForm,
       ServiceBizTaskOptModal,
-      BizServiceTaskSelectEntrusterModal
+      BizServiceTaskSelectEntrusterModal,
+      BizServiceTaskSelectTwo
     },
-    // props: ['path', 'formData'],
     computed: {
       isComp: function () {
-        console.log('isComp组件名称：', this.path);
+        // console.log('isComp组件名称：', this.path);
         var TOKEN = Vue.ls.get(ACCESS_TOKEN);
         var DOMAIN_URL = window._CONFIG['domianURL'];
         var TASKID = this.formData.taskDefKey;
         var URL = (this.path || '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)) // URL支持{{ window.xxx }}占位符变量
-        console.log('isComp组件名称：', URL);
+        // console.log('isComp组件名称：', URL);
         if (isURL(URL)) {
           this.iframeUrl = URL;
           return false;
@@ -196,7 +182,6 @@
         visible5: false,
         visible4: false,
         visible3: false,
-        visible2: false,
         loading: false,
         title: '',
         visible: false,
@@ -226,18 +211,56 @@
           supportLineUnlock: '/system/serviceOrder/supportLineUnlock',
           transferSupport: '/system/serviceOrder/transferSupport',
           unresolve: '/system/serviceOrder/confirmOrderUnresolved',
-          resolve: '/system/serviceOrder/confirmOrderResolved'
+          resolve: '/system/serviceOrder/confirmOrderResolved',
+          moreInfo: '/system/serviceOrder/moreInfo'
         }
       }
     },
     created() {
     },
     methods: {
-
-      toSupportLine() {
-        this.model.businessType = this.formData.businessType;
-         this.visible2 = true;
+      // 根据id初始化数据
+      deal(id) {
+        // this.formData = data;
+        getAction(
+          this.url.moreInfo, { id }
+        ).then(res => {
+          if (res.code === 200) {
+            let result = res.result;
+            Object.keys(result.serviceOrder).forEach(item => {
+              result[item] = result.serviceOrder[item]
+            })
+            this.formData = result
+            this.visible = true;
+          }
+        })
       },
+      // 转二线
+      toSupportLine() {
+        this.$refs.twoDelegate.select(this.formData);
+        this.$refs.twoDelegate.title = '转二线办理';
+      },
+      toSupportOk(data) {
+        this.ModalText = '转办二线中...';
+        this.confirmLoading = true;
+        let params = {
+          id: this.formData.id,
+          version: this.formData.version
+        };
+        Object.assign(params, data)
+        putAction(this.url.transferSupport, params).then((res) => {
+          this.confirmLoading = false;
+          if (res.success) {
+            this.$message.success(res.message);
+            this.completeProcess();
+          } else {
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+          this.confirmLoading = false;
+        })
+      },
+      // 暂挂
       frontPending() {
         this.visible3 = true;
       },
@@ -247,38 +270,6 @@
       confirmOrder() {
         this.visible5 = true;
       },
-      toSupportOk(e) {
-        this.model.id = this.formData.id;
-        let that = this;
-        if (this.model.transferReason === '') {
-          that.$message.warning('请输入转处理原因');
-          return;
-        }
-        this.ModalText = '转办二线中...';
-        this.confirmLoading = true;
-        var params = { id: this.model.id, version: this.formData.version, transferReason: this.model.transferReason, businessType: this.model.businessType };
-
-        putAction(that.url.transferSupport, params).then((res) => {
-          that.visible2 = false;
-          that.visible = false;
-          if (res.success) {
-            that.$message.success(res.message);
-          } else {
-            that.$message.warning(res.message);
-          }
-          that.$emit('ok');
-        }).finally(() => {
-          that.confirmLoading = false;
-          that.visible2 = false;
-          that.visible = false;
-          that.$emit('ok');
-        })
-      },
-      handleCancel(e) {
-        console.log('Clicked cancel button');
-        this.visible2 = false;
-      },
-
       // 暂挂
       handleOk3(e) {
         this.model.id = this.formData.id;
@@ -342,24 +333,20 @@
         }
       },
       handleCancel3(e) {
-        console.log('Clicked cancel button');
+        // console.log('Clicked cancel button');
         this.visible3 = false;
       },
       handleCancel4(e) {
-        console.log('Clicked cancel button');
+        // console.log('Clicked cancel button');
         this.visible4 = false;
       },
       handleCancel5(e) {
-        console.log('Clicked cancel button');
+        // console.log('Clicked cancel button');
         this.visible5 = false;
       },
       // 关闭模态框
       handleModalCancel() {
         this.visible = false
-      },
-      deal(data) {
-        this.formData = data;
-        this.visible = true;
       },
       completeProcess() {
         this.visible = false;
@@ -392,27 +379,21 @@
       },
       handleDelegate(data) {
         var that = this;
-        var params = {};// 查询条件
+        var params = {
+          id: this.formData.id,
+          version: this.formData.version
+        };// 查询条件
         let url0 = '';
         // 一线已接单
-        if (this.formData.orderStatusDetail == 3) {
+        if (this.formData.orderStatusDetail == 3 || this.formData.orderStatusDetail == 12) {
           url0 = that.url.delegateFrontUser;
-          params = {
-            id: this.formData.id,
-            version: this.formData.version,
-            businessType: data.businessType,
-            frontlineUserName: data.username
-          };
+          params.frontlineUserName = data.username
           // 二线已接单
-        } else if (this.formData.orderStatusDetail == 6) {
+        } else if (this.formData.orderStatusDetail == 6 || this.formData.orderStatusDetail == 13) {
           url0 = that.url.delegateSupportUser;
-          params = {
-            id: this.formData.id,
-            version: this.formData.version,
-            businessType: data.businessType,
-            supportUserName: data.username
-          };
+          params.supportUserName = data.username
         }
+        Object.assign(params, data)
         putAction(url0, params).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
@@ -424,25 +405,21 @@
       },
       handleEntruster(data) {
         var that = this;
-        var params = {};// 查询条件
+        var params = {
+          id: this.formData.id,
+          version: this.formData.version
+        };// 查询条件
         let url0 = '';
         // 一线待转办
         if (this.formData.orderStatusDetail == 10||this.formData.orderStatusDetail == 3||this.formData.orderStatusDetail == 12) {
           url0 = that.url.nextDelegateFrontUser;
-          params = {
-            id: this.formData.id,
-            version: this.formData.version,
-            frontlineUserName: data.username
-          };
+          params.frontlineUserName = data.username
           // 二线待转办
         } else if (this.formData.orderStatusDetail == 11||this.formData.orderStatusDetail == 6||this.formData.orderStatusDetail == 13) {
           url0 = that.url.nextDelegateSupportUser;
-          params = {
-            id: this.formData.id,
-            version: this.formData.version,
-            supportUserName: data.username
-          };
+          params.supportUserName = data.username
         }
+        Object.assign(params, data)
         putAction(url0, params).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
@@ -561,23 +538,23 @@
       },
       // 一线转办
       frontDelegate() {
-        this.$refs.ywdelegate.select(1, this.formData.businessType);
+        this.$refs.ywdelegate.select(1, this.formData);
         this.$refs.ywdelegate.title = '选择办理人';
       },
       // 二线转办
       supportDelegate() {
-        this.$refs.ywdelegate.select(2, this.formData.businessType);
+        this.$refs.ywdelegate.select(2, this.formData);
         this.$refs.ywdelegate.title = '选择办理人';
       },
 
         // 一线主管转办
       frontSupDelegate() {
-        this.$refs.supDelegate.select(1, this.formData.businessType);
+        this.$refs.supDelegate.select(1, this.formData);
         this.$refs.supDelegate.title = '选择办理人';
       },
       // 二线主管转办
       supportSupDelegate() {
-        this.$refs.supDelegate.select(2, this.formData.businessType);
+        this.$refs.supDelegate.select(2, this.formData);
         this.$refs.supDelegate.title = '选择办理人';
       },
 

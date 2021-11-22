@@ -86,7 +86,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="avatarslot" slot-scope="text, record, index">
+        <template slot="avatarslot" slot-scope="text, record">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
@@ -138,7 +138,8 @@
     <!-- table区域-end -->
 
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-    <order-rule-modal ref="ruleForm" ></order-rule-modal>
+    <!-- 接单规则 -->
+    <order-rule-modal ref="ruleForm"></order-rule-modal>
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
@@ -146,13 +147,15 @@
 
     <!-- 用户回收站 -->
     <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
+    
 
   </a-card>
 </template>
 
 <script>
   import UserModal from './modules/UserModal'
-  import OrderRuleModal from './modules/SupportOrderRuleModal'
+  // import OrderRuleModal from './modules/SupportOrderRuleModal'
+  import OrderRuleModal from './modules/FrontOrderRuleModal'
   import PasswordModal from './modules/PasswordModal'
   import { putAction, getFileAccessHttpUrl } from '@/api/manage';
   import { frozenBatch } from '@/api/api'
@@ -316,7 +319,7 @@
         }
       },
       ruleForm(record) {
-        this.$refs.ruleForm.edit(record);
+        this.$refs.ruleForm.edit(record, 2);
       },
       handleFrozen: function (id, status, username) {
         let that = this;

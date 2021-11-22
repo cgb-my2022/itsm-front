@@ -87,12 +87,22 @@ const editDictItem = (params)=>putAction("/sys/dictItem/edit",params);
 
 //字典标签专用（通过code获取字典数组）
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
-//从缓存中获取字典配置
-function getDictItemsFromCache(dictCode) {
-  if (Vue.ls.get(UI_CACHE_DB_DICT_DATA) && Vue.ls.get(UI_CACHE_DB_DICT_DATA)[dictCode]) {
-    let dictItems = Vue.ls.get(UI_CACHE_DB_DICT_DATA)[dictCode];
-    console.log("-----------getDictItemsFromCache----------dictCode="+dictCode+"---- dictItems=",dictItems)
-    return dictItems;
+export const ajaxGetCategoryItems = () => getAction("/sys/category/treeMap");
+
+/**
+ * 从缓存中获取字典配置
+ * @param {*} dictCode 
+ * @param {*} type
+ * @returns 
+ */
+function getDictItemsFromCache(dictCode, type=0) {
+  const types = ['sysAllDictItems', 'sysAllCategoryItems']
+  if (Vue.ls.get(UI_CACHE_DB_DICT_DATA)) {
+    if (Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]] && Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]][dictCode]) {
+      let dictItems = Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]][dictCode];
+      // console.log("-----------getDictItemsFromCache----------dictCode="+dictCode+"---- dictItems=",dictItems)
+      return dictItems;
+    }
   }
 }
 
@@ -134,6 +144,14 @@ export const transitRESTful = {
 }
 //查询会议室
 const getMettingRoomList = (params)=>getAction("/metting/eoaMettingRoom/list",params);
+
+// 服务目录管理 
+export const getServiceCat = (params) => getAction("/sys/serviceCat/treeList", params); //服务目录管理-树形列表
+export const addServiceCat = (params) => postAction("/sys/serviceCat/add", params)     //服务目录管理-新增
+export const putServiceCat = (params) => putAction("/sys/serviceCat/edit", params)     //服务目录管理-更新
+export const getServiceInfo = (params) => getAction("/sys/serviceCat/info", params);   //服务目录管理-详情
+export const delServiceInfo = (params) => deleteAction("/sys/serviceCat/delete", params);   //服务目录管理-删除(多个逗号分割)
+export const getServiceProcess = (params) => getAction("/sys/serviceCat/processList", params);  //获取关联业务流程
 
 export {
   // imgView,

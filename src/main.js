@@ -54,6 +54,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 
 Vue.use(Storage, config.storageOptions)
+Vue.use(ElementUI);
 Vue.use(Antd)
 Vue.use(VueAxios, router)
 Vue.use(Viser)

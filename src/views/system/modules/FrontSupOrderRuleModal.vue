@@ -42,7 +42,7 @@
         </a-form-item>
       </a-form>
     </a-spin>
-    <depart-window ref="departWindow" @ok="modalFormOk"></depart-window>
+    <depart-window :twoType="1" ref="departWindow" @ok="modalFormOk"></depart-window>
 
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-popconfirm title="确定放弃设置？" @confirm="handleCancel" okText="确定" cancelText="取消">

@@ -100,9 +100,9 @@
               </a-menu-item>
               </template>
               <template v-else>
-                <!--<a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>-->
+                <!--<a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>-->
                 <a-menu-item v-if="queryParam.bizTaskType=='2'" @click="taskNotify(flowCode,record.id)">催办</a-menu-item>
-                <a-menu-item  @click="handleTrack(record)">审批进度</a-menu-item>
+                <a-menu-item  @click="handleTrack(record)">进度</a-menu-item>
                 <a-menu-item v-if="showBtn(record.bpmStatus)&&queryParam.bizTaskType=='2'">
                   <a-popconfirm title="确定要作废吗?" @confirm="() => invalidProcess(record)">
                     <a>

@@ -4,7 +4,7 @@
       <a-row type="flex">
 
         <a-col :flex="5" >
-          <a-card-grid class="tubg"@click="toServiceOrderDelegate" style="cursor: pointer">
+          <a-card-grid class="tubg" @click="toServiceOrderDelegate" style="cursor: pointer">
             <div >
               <a-icon type="clock-circle" style="margin-right: 5px"/><span>历史事件</span>
             </div>
@@ -95,8 +95,8 @@
       </a-row>
     </a-spin>
     <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
-    <service-task-deal-modal :path="path" :formData="formData" ref="taskDealModal" @ok="taskOk" />
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal" />
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <service-task-detail-modal ref="taskDetailModal" />
   </div>
 </template>
 
@@ -135,11 +135,8 @@
             title: '业务类型',
             align: 'center',
             ellipsis: true,
-            dataIndex: 'businessType',
-            customRender: (text) => {
-              // 字典值翻译通用方法
-              return filterDictTextByCache('SERVICE_ORDER_BUSINESS_TYPE', text);
-            }
+            dataIndex: 'serviceCatFullName',
+            ellipsis: true
           },
           {
             title: '工单状态',
@@ -185,8 +182,8 @@
       },
       // 办理
       handleProcess(record) {
-        this.$refs.taskDealModal.title = '转办';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.title = '转办'; 
+        this.$refs.taskDealModal.deal(record.id);
       },
       getBizProcessNodeInfo(record) {
         let url = '/process/extActProcessNode/getBizProcessNodeInfo'
@@ -219,10 +216,8 @@
       },
        // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       toServiceOrderDelegate() {
         this.$router.replace('/service/delegate')

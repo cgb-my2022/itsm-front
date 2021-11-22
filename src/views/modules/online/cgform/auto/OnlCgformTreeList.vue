@@ -111,7 +111,7 @@
               </a-menu-item>
 
               <template v-if="showViewFlowButton(record)">
-                  <a-menu-item @click="handlePreviewPic(record)">审批进度</a-menu-item>
+                  <a-menu-item @click="handlePreviewPic(record)">进度</a-menu-item>
               </template>
 
               <a-menu-item v-if="showOptButton('delete',record)">

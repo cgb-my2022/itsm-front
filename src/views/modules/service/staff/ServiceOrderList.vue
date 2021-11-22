@@ -6,18 +6,20 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="业务类型">
-              <j-dict-select-tag placeholder="请选择业务类型" v-model="queryParam.businessType" dictCode="SERVICE_ORDER_BUSINESS_TYPE"/>
-            </a-form-item>
-          </a-col>
-          <!--<a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="流程状态">
-              <j-dict-select-tag placeholder="请选择流程状态" v-model="queryParam.bpmStatus" dictCode="bpm_status"/>
-            </a-form-item>
-          </a-col>-->
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="工单状态">
               <j-dict-select-tag placeholder="请选择流程状态" v-model="queryParam.orderStatus" dictCode="service_order_status"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="选择业务">
+              <a-cascader 
+                placeholder="请选择"  
+                :field-names="{ label: 'title', value: 'id', children: 'children' }"
+                :show-search="{ filter }"
+                v-model="serviceCatName" 
+                :options="serviceOptions" 
+                change-on-select 
+                @change="serviceChange"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -90,7 +92,27 @@
             下载
           </a-button>
         </template>
-
+        <!-- 工单状态 -->
+        <template slot="status" slot-scope="text, record">
+          <div class="order-status">
+            <p v-if="record.orderStatus === 1 || record.orderStatus === 4" class="order-status_round c-blue"></p>
+            <p v-if="record.orderStatus === 2 || record.orderStatus === 3 || record.orderStatus === 5" class="order-status_round c-green"></p>
+            <p v-if="record.orderStatus === 6" class="order-status_round c-red"></p>
+            <p v-if="record.orderStatus === 7" class="order-status_round c-gray"></p>
+            <p>{{text}}</p>
+          </div>
+        </template>
+        <!-- 处理人 -->
+        <template slot="realname" slot-scope="text, record">
+          <span v-if="setRealname([2],record.orderStatusDetail)"></span>
+          <span v-else-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
+          <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
+          <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
+          <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>
+          <span v-else-if="setRealname([6,7,13],record.orderStatusDetail)">{{record.supportUserRealname}}</span>
+          <span v-else></span>
+        </template>
+        <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
           <!--<template v-if="record.bpmStatus === '1'">
             <a @click="startProcess(record)">提交流程</a>
@@ -98,7 +120,7 @@
           </template>-->
           <a href="javascript:;" @click="showDetailServiceOrder(record)">详情</a>
             <a-divider type="vertical"/>
-           <a href="javascript:;"  @click="handlePreviewPic(record)">审批进度</a>
+           <a href="javascript:;"  @click="handlePreviewPic(record)">进度</a>
           <!--<a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -110,7 +132,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>-->
           <!--<a-dropdown>
@@ -148,7 +170,7 @@
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-else @click="handlePreviewPic(record)">审批进度</a-menu-item>
+              <a-menu-item v-else @click="handlePreviewPic(record)">进度</a-menu-item>
             </a-menu>
           </a-dropdown>-->
         </span>
@@ -157,8 +179,8 @@
 
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-detail-modal :path="path" :formData="formData" ref="taskDetailModal"></service-task-detail-modal>
-    <service-task-deal-modal  :formData="formData" ref="taskDealModal" @ok="taskOk" />
+    <service-task-detail-modal ref="taskDetailModal"></service-task-detail-modal>
+    <service-task-deal-modal  ref="taskDealModal" @closeLoad="taskOk" />
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
@@ -169,6 +191,7 @@
 <script>
   import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { ServiceMixin } from './mixins/ServiceMixin'
   import StaffServiceOrderModal from './modules/StaffServiceOrderModal'
   import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
@@ -179,7 +202,7 @@
 
   export default {
     name: 'ServiceOrderList',
-    mixins: [JeecgListMixin],
+    mixins: [JeecgListMixin, ServiceMixin],
     components: {
       JDictSelectTag,
       JDate,
@@ -201,60 +224,53 @@
             width: 160
           },
           {
-            title: '账号',
-            align: 'center',
-            dataIndex: 'userName'
-          },
-          {
-            title: '真实姓名',
-            align: 'center',
-            dataIndex: 'realName'
-          },
-          {
-            title: '部门',
-            align: 'center',
-            dataIndex: 'deptName',
-            ellipsis: true
-          },
-          {
-            title: '业务类型',
-            align: 'center',
-            dataIndex: 'businessType_dictText'
-          },
-         /* {
-            title: '设备信息',
-            align: 'center',
-            dataIndex: 'deviceInfo',
-            ellipsis: true
-          },*/
-          {
-            title: '事件内容',
-            align: 'center',
+            title: '请求内容',
             dataIndex: 'eventContent',
-            ellipsis: true
+            ellipsis: true,
+            align: 'center',
           },
-          /* {
-            title: '流程状态',
-            align: 'center',
-            dataIndex: 'bpmStatus_dictText'
-          }, */
           {
-            title: '创建日期',
+            title: '所属业务',
             align: 'center',
-            dataIndex: 'createTime'
+            ellipsis: true,
+            dataIndex: 'serviceCatFullName'
           },
           {
             title: '工单状态',
             align: 'center',
             dataIndex: 'orderStatus_dictText',
-            width: 80
+            width: 140,
+            scopedSlots: { customRender: 'status' }
+          },
+          {
+            title: '创建人',
+            align: 'center',
+            dataIndex: 'realName'
+          },
+          {
+            title: '创建人所属部门',
+            align: 'center',
+            dataIndex: 'deptName',
+            ellipsis: true
+          },
+          {
+            title: '创建日期',
+            align: 'center',
+            sorter: true,
+            dataIndex: 'createTime'
+          },
+          {
+            title: '处理人',
+            align: 'center',
+            dataIndex: 'frontlineUserRealname',
+            scopedSlots: { customRender: 'realname' }
           },
           {
             title: '操作',
             dataIndex: 'action',
             align: 'center',
             fixed: 'right',
-            width: 140,
+            width: 130,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -279,17 +295,26 @@
     computed: {
       importExcelUrl: function() {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+      setRealname() {
+        return function(arr, status) {
+          if(arr.indexOf(status) != -1) {
+            return true
+          }
+          return false
+        }
       }
+    },
+    mounted() {
+      this.getCatalog()
     },
     methods: {
       initDictConfig() {
       },
       // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       startProcess: function(record) {
         var that = this;
@@ -339,7 +364,7 @@
       // 确认
       confirmProcess(record) {
         this.$refs.taskDealModal.title = '确认';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
       },
       // 流程作废
       invalidProcess(record) {

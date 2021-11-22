@@ -25,8 +25,8 @@
       </a-row>
     </div>
     <staff-service-order-modal ref="modalForm" @ok="loadData()"></staff-service-order-modal>
-    <service-task-deal-modal   :path="path" :formData="formData" ref="taskDealModal" @ok="loadData()" />
-    <service-task-detail-modal  :path="path" :formData="formData" ref="taskDetailModal" />
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="loadData()" />
+    <service-task-detail-modal ref="taskDetailModal" />
       <a-row type="flex" justify="start" :gutter="3">
         <a-col style="padding-top: 10px;" :sm="24" :lg="12">
           <div class="card-head">
@@ -173,7 +173,7 @@
             title: '业务类型',
             align: 'center',
             ellipsis: true,
-            dataIndex: 'businessType',
+            dataIndex: 'serviceCatFullName',
             customRender: (text) => {
               // 字典值翻译通用方法
               return filterDictTextByCache('SERVICE_ORDER_BUSINESS_TYPE', text);
@@ -214,17 +214,15 @@
       // 办理
       handleProcess(record) {
         this.$refs.taskDealModal.title = '确认服务请求';
-        this.$refs.taskDealModal.deal(record);
+        this.$refs.taskDealModal.deal(record.id);
       },
       loadData() {
         this.myUnfinished();
       },
       // 详情
       showDetailServiceOrder(record) {
-        this.formData = record;
-        this.formData.dataId = record.id;
-        this.path = 'modules/service/staff/modules/StaffServiceOrderForm';
-        this.$refs.taskDetailModal.deal();
+        const path = 'modules/service/staff/modules/StaffServiceOrderForm';
+        this.$refs.taskDetailModal.deal(record.id, path);
       },
       toServiceOrderList() {
         this.$router.replace('/service/StaffServiceOrderList')

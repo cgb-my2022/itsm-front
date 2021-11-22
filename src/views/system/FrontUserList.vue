@@ -86,7 +86,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="avatarslot" slot-scope="text, record, index">
+        <template slot="avatarslot" slot-scope="text, record">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
@@ -138,7 +138,8 @@
     <!-- table区域-end -->
 
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-    <order-rule-modal ref="ruleForm" ></order-rule-modal>
+    <!-- 接单规则 -->
+    <order-rule-modal ref="ruleForm"></order-rule-modal>
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
@@ -316,7 +317,7 @@
         }
       },
       ruleForm(record) {
-        this.$refs.ruleForm.edit(record);
+        this.$refs.ruleForm.edit(record, 1);
       },
       handleFrozen: function (id, status, username) {
         let that = this;
