@@ -12,7 +12,7 @@
             ></el-input>
       </div>
       <!-- 公共属性 -->
-      <div>
+      <div class="toolTipsContainer"> 
          <div class="resourceTitle">公共属性</div>
          <div class="reLine"></div>
          <el-table
@@ -67,13 +67,14 @@
       <div>
          <div class="resourceTitle">自定义属性</div>
          <div class="reLine"></div>
-         <el-table
+         <!-- <el-table
+            class="toolTipsContainer"
             :data="tableDataSelf.slice((searchPageSelf.page-1)*searchPageSelf.size,searchPageSelf.page*searchPageSelf.size)"
             border
             @selection-change="handleSelectionChangeSelf"
             style="width: 100%; margin-top: 30px">
             <el-table-column type="selection" width="55"></el-table-column>
-             <el-table-column prop="attrName" label="属性名称" width="100"></el-table-column>
+            <el-table-column prop="attrName" label="属性名称" width="100"></el-table-column>
             <el-table-column prop="enName" label="英文名称" width="100"></el-table-column>
             <el-table-column label="数据类型" width="100">
                <template slot-scope="scope">
@@ -103,7 +104,44 @@
                   <el-button type="danger" size="mini" @click="del(2, scope.row)">删除</el-button>
                </template>
             </el-table-column>
-         </el-table>
+         </el-table> -->
+         <vxe-table
+            border
+            ref="xTable1"
+            :data="tableDataSelf.slice((searchPageSelf.page-1)*searchPageSelf.size,searchPageSelf.page*searchPageSelf.size)"
+            >
+            <vxe-column type="checkbox" width="60"></vxe-column>
+            <vxe-column field="attrName" title="属性名称"  width="100"></vxe-column>
+            <vxe-column field="enName" title="英文名称"  width="100"></vxe-column>
+            <vxe-column title="数据类型">
+               <template #default="{ row }">
+                  {{ row.attrType == 1? "文本"
+                     :row.attrType == 2? "文本区域"
+                     :row.attrType == 3? "下拉文本"
+                     :row.attrType == 4? "树形下拉文本"
+                     :row.attrType == 5? "小数"
+                     :row.attrType == 6? "整数"
+                     :row.attrType == 7? "密文"
+                     :row.attrType == 8? "MAC"
+                     :row.attrType == 9? "IP"
+                     :row.attrType == 10? "url"
+                     :row.attrType == 11? "日期格式"
+                     :row.attrType == 12?"附件"
+                     : ""
+                  }}
+               </template>
+            </vxe-column>
+            <vxe-column field="optionalValue" title="可选值"></vxe-column>
+            <vxe-column field="maxLength" title="最大长度"></vxe-column>
+            <vxe-column field="describes" title="描述" show-overflow width="200"></vxe-column>
+            <vxe-column title="数据类型" width="300">
+               <template #default="{ row }">
+                  <el-button type="primary" size="mini" @click="relation(row)">关联资源类型</el-button>
+                  <el-button type="primary" size="mini" @click="Edit(row)">修改</el-button>
+                  <el-button type="danger" size="mini" @click="del(2, row)">删除</el-button>
+               </template>
+            </vxe-column>
+         </vxe-table>
          <el-pagination
             style="margin-top: 10px; float: right"
             @current-change="handleCurrentChangeSelf"
@@ -464,8 +502,8 @@ export default {
             textAreaValue:  row.attrType == 2? row.maxLength:"" , //文本区域
             textSecModeValue: row.attrType == 3? row.optionalValue:"" , //下拉文本
             treeValue: row.attrType == 4? JSON.parse(row.optionalValue): null , //树形
-            intValue: row.attrType == 5? row.maxLength:"",// 整数
-            floatValue: row.attrType == 6? row.maxLength:"",//小数
+            floatValue: row.attrType == 5? row.maxLength:"",// 小数
+            intValue: row.attrType == 6? row.maxLength:"",//整数
             secretValue: row.attrType == 7? row.maxLength:"", //密文
             MACValue: row.attrType == 8? row.maxLength:"",
             ipValue: row.attrType == 9? row.maxLength:"",
@@ -540,13 +578,14 @@ export default {
       },
       // 批量删除
       delList(index){
-         if(this.multipleSelectionSelf.length == 0){
+         let selectRecords = this.$refs.xTable1.getCheckboxRecords()
+         if(selectRecords.length == 0){
             this.$message.error('请选择数据再进行批量删除')
             return
          }
          this.delIndex = index
+         this.modeDel = selectRecords
          this.delDialog = true
-         this.modeDel = this.multipleSelectionSelf
       },
 
       // 新增编辑确认按钮
@@ -560,6 +599,10 @@ export default {
             var re = new RegExp("^[a-zA-Z-_]+$");
             if(!re.test(this.formData.ENAME)){
                this.$message.error('请输入正确的英文名称')
+               return
+            }
+            if(!this.typeGroup){
+               this.$message.error('请选择属性类型')
                return
             }
             if(this.typeGroup == 3){

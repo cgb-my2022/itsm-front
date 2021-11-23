@@ -37,11 +37,13 @@ export default {
           let num = Math.min(Number(val),maxNum)
           if(num < 0){
             this.textValue = 0
+          }else if( num > 14 ){
+            this.textValue = 14
           }else{
             this.textValue = num
           }
+          this.$emit('sonFloat', this.textValue, this.theIndex)
       })
-      this.$emit('sonFloat', this.textValue, this.theIndex)
     }
   },
 }

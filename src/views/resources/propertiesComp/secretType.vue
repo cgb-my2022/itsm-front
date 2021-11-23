@@ -36,11 +36,13 @@ export default {
           let num = Math.min(Number(val),maxNum)
           if(num < 0){
             this.textValue = 0
+          }else if( num > 100 ){
+            this.textValue = 100
           }else{
             this.textValue = num
           }
+          this.$emit('sonSecret', this.textValue, this.theIndex)
       })
-      this.$emit('sonSecret', this.textValue, this.theIndex)
     }
   },
 }
