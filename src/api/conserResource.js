@@ -24,6 +24,8 @@ const outResource = (params)=>downFile("/cmdb/resource/exportXls",params);
 const downResource = (params)=>downFile("/cmdb/resource/importTemplate",params);
 // 导入数据
 const importResource = (params)=>getAction("/cmdb/resource/importExcel",params);
+// 查询user
+const userResourceList = (params)=>getAction("/sys/user/list",params);
 
 
 export {
@@ -40,5 +42,6 @@ export {
     searchResourceAsso,
     outResource,
     downResource,
-    importResource
+    importResource,
+    userResourceList
 }
