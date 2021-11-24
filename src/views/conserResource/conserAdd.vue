@@ -6,8 +6,19 @@
          <div class="defalutBox">
             <div v-for="(item, index) in defalutData" :key="index" class="typeContainer">
                <div class="titleContianer" :title="item.attrName">{{ item.attrName }}</div>
+               <div v-if="item.attrType == 1 && item.enName == 'use_user_name'" class="common">
+                  <el-input style="width: 50%; margin-right: 10px" disabled v-model="item.values"></el-input>
+                  <el-button type="primary" @click="checkUser(item)">选择</el-button>
+                  <userDialog 
+                     v-if="userDialogVisible" 
+                     :userDialogVisible="userDialogVisible"
+                     :theIndex="index"
+                     @userCancle="userCancle"
+                     @userSure="userSure"
+                  ></userDialog>
+               </div>
                <!-- 文本 -->
-               <textType class="common" v-if="item.attrType == 1" :propMaxLength="item.maxLength" :theIndex="index" @sonText="getText"></textType>
+               <textType class="common" v-if="item.attrType == 1 && item.enName != 'use_user_name'" :propMaxLength="item.maxLength" :theIndex="index" @sonText="getText"></textType>
                <!-- 文本区域 -->
                <textAreaType v-if="item.attrType == 2" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonTextArea="getTextArea"></textAreaType>
                <!-- 下拉文本 -->
@@ -87,7 +98,7 @@
                      name="file"
                      :action="upUrl"
                      :headers="headers"
-                     @change="value => handleAvatarSuccess(value, item)"
+                     @change="info => handleAvatarSuccess(info, item)"
                   >
                      <a-button> <a-icon type="upload" />上 传</a-button>
                   </a-upload>
@@ -234,6 +245,8 @@ import ipType from './conserComp/ipType.vue'
 import urlType from './conserComp/urlType.vue'
 import dateTime from './conserComp/dateTime.vue'
 import fileType from './conserComp/fileType.vue'
+import userDialog from './conserComp/userDialog.vue' 
+
 export default {
   components:{
       textType,
@@ -247,7 +260,8 @@ export default {
       ipType,
       urlType,
       dateTime,
-      fileType
+      fileType,
+      userDialog
   },
   props:{},
   data(){
@@ -376,6 +390,8 @@ export default {
       ourtreeDialogVisible: false,
 
       ourSecOptions: [], 
+      userDialogVisible: false,
+      userID: null
 
     }
   },
@@ -398,17 +414,28 @@ export default {
                   })
                   this.defalutData = res.result.publicAttr
 
-
+                  res.result.customizeAttr? res.result.customizeAttr : []
                   res.result.customizeAttr.forEach(item=>{
                      item.values = ""
                   })
-                  this.ourData = res.result.customizeAttr
+                  this.ourData = res.result.customizeAttr 
                }else{
                   this.$message.error('获取信息失败')
                }
             })
       },
       // 公共属性部分----------------------------------------------
+      checkUser(item){
+         this.userDialogVisible = true
+      },
+      userCancle(flag){
+         this.userDialogVisible = flag
+      },
+      userSure(flag, row, index){
+         this.userDialogVisible = flag
+         this.defalutData[index].values = row.realname
+         this.userID = row.id
+      },
       handleAvatarSuccess(obj, res, file){
          res.values = JSON.stringify(obj.fileList)
          res.fileList = JSON.stringify(obj.fileList)
@@ -553,9 +580,10 @@ export default {
 
          let fetchObj = {
             publicResourceMap: this.defalutData,
-            customizeResourceMap: this.ourData,
+            customizeResourceMap: this.ourData.length > 0? this.ourData : null,
             allResourceMap: this.defalutData.concat(this.ourData),
             resourceTypeId: this.resourceId,
+            use_user: this.userID
          }
          AddResource(fetchObj)
             .then(res=>{

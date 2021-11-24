@@ -38,7 +38,7 @@
          border
          @selection-change="handleSelectionChange"
          style="width: 100%">
-         <el-table-column  type="selection" width="55"></el-table-column>
+         <el-table-column :selectable="handleIsCheck"  type="selection" width="55"></el-table-column>
          <el-table-column  prop="attrName"  label="属性名称"  ></el-table-column>
          <!-- <el-table-column  prop="date"  label="所属分组"  width="100"></el-table-column> -->
          <el-table-column  label="数据类型"  width="100">
@@ -177,7 +177,7 @@ export default {
       getInitInfo(){
          infoResource({id: this.infoId})
             .then(res=>{
-               // console.log(res)
+               console.log(res)
                if(res.code == 200){
                   this.formData = {
                      fatherName: res.result.parentName,
@@ -192,7 +192,15 @@ export default {
                }
             })
       },
-
+      handleIsCheck(row){
+         let isChecked = true
+         if(row.groupName == '自定义属性'){
+            isChecked = true
+         }else{
+            isChecked = false
+         }
+         return isChecked
+      },
       // 选择父级----------------------------------------------------------
       checkParent(){
          this.checkParentDialogVisible = true

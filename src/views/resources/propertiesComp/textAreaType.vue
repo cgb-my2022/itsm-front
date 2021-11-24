@@ -37,11 +37,13 @@ export default {
         let num = Math.min(Number(val),maxNum)
         if(num < 0){
           this.textValue = 0
+        }else if( num > 2000 ){
+          this.textValue = 2000
         }else{
           this.textValue = num
         }
+        this.$emit('sonTextArea', this.textValue, this.theIndex)
       })
-      this.$emit('sonTextArea', this.textValue, this.theIndex)
     }
   },
 }

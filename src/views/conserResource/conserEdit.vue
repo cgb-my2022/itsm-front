@@ -6,10 +6,21 @@
       <div class="defalutBox">
         <div v-for="(item, index) in defalutData" :key="index" class="typeContainer">
           <div class="titleContianer" :title="item.attrName">{{ item.attrName }}</div>
+          <div v-if="item.attrType == 1 && item.enName == 'use_user_name'" class="common">
+            <el-input style="width: 50%; margin-right: 10px" disabled v-model="item.values"></el-input>
+            <el-button type="primary" @click="checkUser(item)">选择</el-button>
+            <userDialog 
+                v-if="userDialogVisible" 
+                :userDialogVisible="userDialogVisible"
+                :theIndex="index"
+                @userCancle="userCancle"
+                @userSure="userSure"
+            ></userDialog>
+          </div>
           <!-- 文本 -->
           <textType
             class="common"
-            v-if="item.attrType == 1"
+            v-if="item.attrType == 1 && item.enName != 'use_user_name'"
             :getData="item.values"
             :propMaxLength="item.maxLength"
             :theIndex="index"
@@ -39,7 +50,7 @@
               <el-option :label="item.values" style="height: auto" hidden :value="item.values" />
               <el-tree
                 ref="tree"
-                :data="JSON.parse(item.optionalValue)"
+                :data="item.optionalValue? JSON.parse(item.optionalValue):[]"
                 :props="treeProps"
                 :node-key="treeProps.value"
                 @node-click="handleNodeClick(item, $event, index)"
@@ -195,7 +206,7 @@
               <el-option :label="item.values" style="height: auto" hidden :value="item.values" />
               <el-tree
                 ref="tree"
-                :data="JSON.parse(item.optionalValue)"
+                :data="item.optionalValue? JSON.parse(item.optionalValue): []"
                 :props="treeProps"
                 :node-key="treeProps.value"
                 @node-click="ourHandleNodeClick(item, $event, index)"
@@ -335,6 +346,8 @@ import ipType from './conserComp/ipType.vue'
 import urlType from './conserComp/urlType.vue'
 import dateTime from './conserComp/dateTime.vue'
 import fileType from './conserComp/fileType.vue'
+import userDialog from './conserComp/userDialog.vue' 
+
 export default {
   components: {
     textType,
@@ -349,17 +362,12 @@ export default {
     urlType,
     dateTime,
     fileType,
+    userDialog
   },
   props: {},
   data() {
     return {
-      fileList: [
-        {
-          uid: '-1',
-          name: 'xxx.png',
-          url: 'http://www.baidu.com/xxx.png',
-        },
-      ],
+      fileList: [],
       treeProps: {
         value: 'id',
         label: 'label',
@@ -392,6 +400,8 @@ export default {
       ourtreeDialogVisible: false,
 
       ourSecOptions: [],
+      userDialogVisible: false,
+      userID: null
     }
   },
   mounted() {
@@ -407,19 +417,23 @@ export default {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
           let defalutRes = JSON.parse(res.result.publicResource)
-          // console.log(defalutRes)
-          // defalutRes.forEach(item => {
-          //    if(item.attrType == 12){
-          //       item.fileList = []
-          //       item.fileList = item.values
-          //    }
-          // });
           this.defalutData = defalutRes
           this.ourData = JSON.parse(res.result.customizeResource)
         }
       })
     },
     // 公共属性部分----------------------------------------------
+    checkUser(item){
+        this.userDialogVisible = true
+    },
+    userCancle(flag){
+        this.userDialogVisible = flag
+    },
+    userSure(flag, row, index){
+        this.userDialogVisible = flag
+        this.defalutData[index].values = row.realname
+        this.userID = row.id
+    },
     handleAvatarSuccess(obj, res, file) {
       res.values = JSON.stringify(obj.fileList)
       res.fileList = JSON.stringify(obj.fileList)
@@ -429,21 +443,21 @@ export default {
       obj.data.fileList = ''
     },
     // // 打开tree的dialog
-    // openTreeDialog(row, index){
-    //    // console.log(row)
-    //    this.defalutTreeValue = row
-    //    this.defalutTreeIndex = index
-    //    this.treeDialogVisible = true
-    // },
-    // treeCancleClose(val, index){
-    //    this.treeDialogVisible = val.flag
-    //    this.defalutData[index].values =JSON.stringify(val.treeDatas)
-    // },
-    // // 树形结构数据
-    // treeSureClose(val, index){
-    //    this.treeDialogVisible = val.flag
-    //    // this.defalutTreeValue = val.treeDatas
-    //    this.defalutData[index].values = JSON.stringify(val.treeDatas)
+      // openTreeDialog(row, index){
+      //    // console.log(row)
+      //    this.defalutTreeValue = row
+      //    this.defalutTreeIndex = index
+      //    this.treeDialogVisible = true
+      // },
+      // treeCancleClose(val, index){
+      //    this.treeDialogVisible = val.flag
+      //    this.defalutData[index].values =JSON.stringify(val.treeDatas)
+      // },
+      // // 树形结构数据
+      // treeSureClose(val, index){
+      //    this.treeDialogVisible = val.flag
+      //    // this.defalutTreeValue = val.treeDatas
+      //    this.defalutData[index].values = JSON.stringify(val.treeDatas)
     // },
 
     // 树形
@@ -597,10 +611,11 @@ export default {
 
       let fetchObj = {
         publicResourceMap: this.defalutData,
-        customizeResourceMap: this.ourData,
+        customizeResourceMap: this.ourData.length > 0? this.ourData : null,
         allResourceMap: this.defalutData.concat(this.ourData),
         resourceTypeId: sessionStorage.getItem('treeid'),
         id: this.resourceId,
+        use_user: this.userID
       }
       editResource(fetchObj)
         .then((res) => {

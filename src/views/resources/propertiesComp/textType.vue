@@ -31,16 +31,18 @@ export default {
   methods:{
     handleTextChange(val,maxNum){
       this.textValue = Number(val)
-        this.$nextTick(()=>{
-          //比较输入的值和最大值，返回小的
-          let num = Math.min(Number(val),maxNum)
-          if(num < 0){
-            this.textValue = 0
-          }else{
-            this.textValue = num
-          }
+      this.$nextTick(()=>{
+        //比较输入的值和最大值，返回小的
+        let num = Math.min(Number(val),maxNum)
+        if(num < 0){
+          this.textValue = 0
+        }else if( num > 100 ){
+          this.textValue = 100
+        }else{
+          this.textValue = num
+        }
+        this.$emit('sonText', this.textValue, this.theIndex)
       })
-      this.$emit('sonText', this.textValue, this.theIndex)
     }
   },
 }
