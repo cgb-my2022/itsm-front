@@ -178,8 +178,9 @@
           this.$emit("selectFinished",this.dataSource2[0]);
           this.visible = false;
       },
-      select(flag) {
+      select(flag, values={}) {
         this.visible = true;
+        this.eventParams = values
         this.loadData(flag);
       },
       loadData (flag){
@@ -195,7 +196,7 @@
         })
       },
       getQueryParams(){
-        var param = Object.assign({}, this.queryParam,this.isorter);
+        var param = Object.assign({}, this.queryParam,this.isorter, this.eventParams);
         param.field = this.getQueryField();
         return filterObj(param);
       },

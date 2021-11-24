@@ -110,22 +110,18 @@
             </tr>
             <tr>
               <td class="firstTr">当前处理人</td>
-              <td class="firstTr">
-                <span class="text" v-if="setRealname([2], model.orderStatusDetail)"></span>
-                  <span v-else-if="setRealname([3, 4, 5, 12], model.orderStatusDetail)">{{
+              <td class="firstTr" colspan="4">
+                <!-- <span class="text" v-if="setRealname([2], model.orderStatusDetail)"></span> -->
+                  <span class="text text-left" v-if="setRealname([3, 4, 5, 12], model.orderStatusDetail)">{{
                     model.frontlineUserRealname
                   }}</span>
-                  <span class="text" v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
-                  <span class="text" v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
-                  <span class="text" v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
-                  <span class="text" v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
+                  <span class="text text-left" v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
+                  <span class="text text-left" v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
+                  <span class="text text-left" v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
+                  <span class="text text-left" v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
                     model.supportUserRealname
                   }}</span>
-                  <span class="text" v-else></span>
-              </td>
-              <td class="firstTr">处理时间</td>
-              <td class="firstTr">
-                <span class="text">{{formData.serviceOrder.comfirmTime}}</span>
+                  <span class="text text-left" v-else></span>
               </td>
             </tr>
             <tr>

@@ -115,8 +115,8 @@
         </template>
         <!-- 处理人 -->
         <template slot="realname" slot-scope="text, record">
-          <span v-if="setRealname([2], record.orderStatusDetail)"></span>
-          <span v-else-if="setRealname([3, 4, 5, 12], record.orderStatusDetail)">{{
+          <!-- <span v-if="setRealname([2], record.orderStatusDetail)"></span> -->
+          <span v-if="setRealname([3, 4, 5, 12], record.orderStatusDetail)">{{
             record.frontlineUserRealname
           }}</span>
           <span v-else-if="setRealname([10], record.orderStatusDetail)">{{ record.frontlineDelegateName }}</span>

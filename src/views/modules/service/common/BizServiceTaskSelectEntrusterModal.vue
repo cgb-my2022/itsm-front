@@ -165,7 +165,8 @@
         this.orderStatusDetail = formData.orderStatusDetail
         this.showCatalog(formData)
       },
-      handleSelect: function() {
+      handleSelect(e) {
+        e.srcElement.blur()
         this.$refs.selectSingleUserModal.select(this.serviceParam.flag);
       },
       hqUserSelectReset() {

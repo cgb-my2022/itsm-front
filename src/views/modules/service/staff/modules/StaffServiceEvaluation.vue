@@ -82,10 +82,10 @@ export default {
           if (res.code === 200) {
             this.$message.success(res.message)
             this.visible = false
-            this.$emit('closeLoad')
           } else {
             this.$message.warning(res.message)
           }
+          this.$emit('closeLoad')
         })
         .finally(() => {
           this.confirmLoading = false
@@ -94,6 +94,7 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.$emit('closeLoad')
     },
   },
 }
