@@ -196,7 +196,7 @@ export default {
             this.$message.error('加载列表繁忙')
           }
         }).catch((err)=>{
-          console.log(err)
+          // console.log(err)
           this.$message.error('加载列表繁忙')
         })
     },
@@ -221,12 +221,19 @@ export default {
 
     // tree操作
     onSelect(data, res) {
+      let flag = true
       sessionStorage.setItem('treeid', data.id)
-      if((!sessionStorage.getItem('treeid') && this.treeData[0].id == data.id) || (res && res.level == 1)){
+      this.treeData.forEach(item=>{
+        if(item.id == data.id){
+          flag = false
+        }
+      })
+      if(!flag){
         this.isdisable = true
       }else{
         this.isdisable = false
       }
+      
       this.$nextTick(()=>{
         this.highLight = true
         this.$refs.viewTree.setCurrentKey(data.id);

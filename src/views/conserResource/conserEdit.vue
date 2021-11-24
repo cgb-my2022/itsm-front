@@ -50,7 +50,7 @@
               <el-option :label="item.values" style="height: auto" hidden :value="item.values" />
               <el-tree
                 ref="tree"
-                :data="JSON.parse(item.optionalValue)"
+                :data="item.optionalValue? JSON.parse(item.optionalValue):[]"
                 :props="treeProps"
                 :node-key="treeProps.value"
                 @node-click="handleNodeClick(item, $event, index)"
@@ -206,7 +206,7 @@
               <el-option :label="item.values" style="height: auto" hidden :value="item.values" />
               <el-tree
                 ref="tree"
-                :data="JSON.parse(item.optionalValue)"
+                :data="item.optionalValue? JSON.parse(item.optionalValue): []"
                 :props="treeProps"
                 :node-key="treeProps.value"
                 @node-click="ourHandleNodeClick(item, $event, index)"
@@ -367,13 +367,7 @@ export default {
   props: {},
   data() {
     return {
-      fileList: [
-        {
-          uid: '-1',
-          name: 'xxx.png',
-          url: 'http://www.baidu.com/xxx.png',
-        },
-      ],
+      fileList: [],
       treeProps: {
         value: 'id',
         label: 'label',
@@ -423,13 +417,6 @@ export default {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
           let defalutRes = JSON.parse(res.result.publicResource)
-          // console.log(defalutRes)
-          // defalutRes.forEach(item => {
-          //    if(item.attrType == 12){
-          //       item.fileList = []
-          //       item.fileList = item.values
-          //    }
-          // });
           this.defalutData = defalutRes
           this.ourData = JSON.parse(res.result.customizeResource)
         }
@@ -624,7 +611,7 @@ export default {
 
       let fetchObj = {
         publicResourceMap: this.defalutData,
-        customizeResourceMap: this.ourData,
+        customizeResourceMap: this.ourData.length > 0? this.ourData : null,
         allResourceMap: this.defalutData.concat(this.ourData),
         resourceTypeId: sessionStorage.getItem('treeid'),
         id: this.resourceId,

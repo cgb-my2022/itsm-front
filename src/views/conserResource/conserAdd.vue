@@ -98,7 +98,7 @@
                      name="file"
                      :action="upUrl"
                      :headers="headers"
-                     @change="value => handleAvatarSuccess(value, item)"
+                     @change="info => handleAvatarSuccess(info, item)"
                   >
                      <a-button> <a-icon type="upload" />上 传</a-button>
                   </a-upload>
@@ -414,11 +414,11 @@ export default {
                   })
                   this.defalutData = res.result.publicAttr
 
-
+                  res.result.customizeAttr? res.result.customizeAttr : []
                   res.result.customizeAttr.forEach(item=>{
                      item.values = ""
                   })
-                  this.ourData = res.result.customizeAttr
+                  this.ourData = res.result.customizeAttr 
                }else{
                   this.$message.error('获取信息失败')
                }
@@ -580,7 +580,7 @@ export default {
 
          let fetchObj = {
             publicResourceMap: this.defalutData,
-            customizeResourceMap: this.ourData,
+            customizeResourceMap: this.ourData.length > 0? this.ourData : null,
             allResourceMap: this.defalutData.concat(this.ourData),
             resourceTypeId: this.resourceId,
             use_user: this.userID
