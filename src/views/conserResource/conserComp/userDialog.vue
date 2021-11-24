@@ -1,32 +1,39 @@
 <template>
-   <el-dialog
-      title="选择用户"
-      :visible.sync="userDialogVisible"
-      width="50%"
-      >
-      <vxe-table
-         border
-         ref="xTable1"
-         :data="tableData"
-         :radio-config="{highlight: true}"
+   <div v-if="userDialogVisible">
+      <el-dialog
+         title="选择用户"
+         :visible.sync="userDialogVisible"
+         width="50%"
+         :before-close="userCancle"
          >
-         <vxe-column type="radio" width="60"></vxe-column>
-         <vxe-column field="realname" title="姓名"></vxe-column>
-      </vxe-table>
-      <br>
-      <vxe-pager
-         background
-         @page-change="pageChange"
-         :current-page.sync="page.currentPage"
-         :page-size.sync="page.pageSize"
-         :total="page.totalResult"
-         :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'Sizes', 'FullJump', 'Total']">
-      </vxe-pager>
-      <span slot="footer" class="dialog-footer">
-         <el-button @click="userCancle">取 消</el-button>
-         <el-button type="primary" @click="userSure">确 定</el-button>
-      </span>
-   </el-dialog>
+         <div style="margin-bottom: 10px;">
+            <el-input style="width: 40%; margin-right: 10px" v-model="searchValue"></el-input>
+            <el-button type="primary" @click="getUser">搜 索</el-button>
+         </div>
+         <vxe-table
+            border
+            ref="xTable1"
+            :data="tableData"
+            :radio-config="{highlight: true}"
+            >
+            <vxe-column type="radio" width="60"></vxe-column>
+            <vxe-column field="realname" title="姓名"></vxe-column>
+         </vxe-table>
+         <br>
+         <vxe-pager
+            background
+            @page-change="pageChange"
+            :current-page.sync="page.currentPage"
+            :page-size.sync="page.pageSize"
+            :total="page.totalResult"
+            :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'Sizes', 'FullJump', 'Total']">
+         </vxe-pager>
+         <span slot="footer" class="dialog-footer">
+            <el-button @click="userCancle">取 消</el-button>
+            <el-button type="primary" @click="userSure">确 定</el-button>
+         </span>
+      </el-dialog>
+   </div>
 </template>
 
 <script>
@@ -45,6 +52,7 @@ export default {
         pageSize: 10,
         totalResult: 0
       },
+      searchValue:""
     }
   },
   mounted(){
@@ -55,6 +63,7 @@ export default {
         userResourceList({
            pageNo: this.page.currentPage,
            pageSize: this.page.pageSize,
+           realname: this.searchValue
         })
          .then(res=>{
             this.tableData = res.result.records

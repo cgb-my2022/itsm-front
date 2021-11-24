@@ -8,14 +8,7 @@
                <div class="titleContianer" :title="item.attrName">{{ item.attrName }}</div>
                <div v-if="item.attrType == 1 && item.enName == 'use_user_name'" class="common">
                   <el-input style="width: 50%; margin-right: 10px" disabled v-model="item.values"></el-input>
-                  <el-button type="primary" @click="checkUser(item)">选择</el-button>
-                  <userDialog 
-                     v-if="userDialogVisible" 
-                     :userDialogVisible="userDialogVisible"
-                     :theIndex="index"
-                     @userCancle="userCancle"
-                     @userSure="userSure"
-                  ></userDialog>
+                  <el-button type="primary" @click="checkUser(item, index)">选择</el-button>
                </div>
                <!-- 文本 -->
                <textType class="common" v-if="item.attrType == 1 && item.enName != 'use_user_name'" :propMaxLength="item.maxLength" :theIndex="index" @sonText="getText"></textType>
@@ -115,6 +108,14 @@
             @treeCancleClose="treeCancleClose"
             @treeSureClose="treeSureClose"
          ></treeType>
+
+         <userDialog 
+            v-if="userDialogVisible" 
+            :userDialogVisible="userDialogVisible"
+            :theIndex="defaultUserIndex"
+            @userCancle="userCancle"
+            @userSure="userSure"
+         ></userDialog>
      </div>
      <!-- 自定义部分 -->
      <div>
@@ -329,13 +330,7 @@ export default {
 
       // 下拉文本数据
       SecValue: "",
-      SecOptions: [{
-         value: '选项1',
-         label: '黄金糕'
-      }, {
-         value: '选项2',
-         label: '双皮奶'
-      }], 
+      SecOptions: [], 
       
       dateTimeValue: "",// 日期时间
       dateValue:"", //日期
@@ -391,7 +386,8 @@ export default {
 
       ourSecOptions: [], 
       userDialogVisible: false,
-      userID: null
+      userID: null,
+      defaultUserIndex: null
 
     }
   },
@@ -425,7 +421,8 @@ export default {
             })
       },
       // 公共属性部分----------------------------------------------
-      checkUser(item){
+      checkUser(item, index){
+         this.defaultUserIndex = index
          this.userDialogVisible = true
       },
       userCancle(flag){
@@ -564,12 +561,12 @@ export default {
          let defaultFlag = false
          let ourDataFlag = false
          this.defalutData.forEach((item) => {
-            if (!item.values) {
+            if (!item.values || item.values == "[]") {
                defaultFlag = true
             }
          })
          this.ourData.forEach((item) => {
-            if (!item.values) {
+            if (!item.values || item.values == "[]") {
                ourDataFlag = true
             }
          })
@@ -583,8 +580,9 @@ export default {
             customizeResourceMap: this.ourData.length > 0? this.ourData : null,
             allResourceMap: this.defalutData.concat(this.ourData),
             resourceTypeId: this.resourceId,
-            use_user: this.userID
+            useUser: this.userID
          }
+         
          AddResource(fetchObj)
             .then(res=>{
                // console.log(res)

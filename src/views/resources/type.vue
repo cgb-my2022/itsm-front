@@ -3,13 +3,16 @@
     <div>
       <el-button type="primary" @click="handleAdd">增加</el-button>
       <el-button type="primary" @click="modeDel">删除</el-button>
-      <el-input 
+      <div style="float: right;">
+        <el-input 
           class="searchInput" 
           placeholder="请输入搜索内容"
           suffix-icon="el-icon-search"
           v-model="searchValue"
           @keyup.enter.native="handleSearch"
           ></el-input>
+        <el-button type="primary" @click="handleSearch">搜 索</el-button>
+      </div>
     </div>
     <br><br>
     <vxe-table
@@ -29,11 +32,11 @@
       <vxe-table-column type="checkbox" width="60"></vxe-table-column>
       <vxe-table-column field="name" title="名称" tree-node></vxe-table-column>
       <vxe-table-column field="describes" title="描述"></vxe-table-column>
-      <vxe-table-column field="" title="可继承" width="100">
+      <!-- <vxe-table-column field="" title="可继承" width="100">
         <template #default="{ row }">
           {{ row.inherit == 0? '否': '是' }}
         </template>
-      </vxe-table-column>
+      </vxe-table-column> -->
       <vxe-table-column  title="用户自定义" width="100">
         <template #default="{ row }">
           {{ row.builtIn == 0? '否': '是' }}
@@ -48,6 +51,17 @@
         </template>
       </vxe-table-column>
     </vxe-table>
+    <el-dialog
+      title="删除"
+      :visible.sync="delDialogVisible"
+      width="30%"
+      >
+      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) .确认删除吗?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="delDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureDelDialog">确 定</el-button>
+      </span>
+    </el-dialog>
         
   </a-card>
 </template>
@@ -65,6 +79,8 @@ export default {
         children: 'children'
       },
       tableData: [],
+      delDialogVisible: false,
+      delid: null
 
 
     }
@@ -144,14 +160,18 @@ export default {
       })
     },
     toDel(row){
-      // console.log(row)
-      delResource({id: row.id})
+      this.delDialogVisible = true
+      this.delid = row.id
+    },
+    sureDelDialog(){
+      delResource({id: this.delid})
         .then(res=>{
           if(res.code == 200){
             this.$message.success('删除成功')
+            this.delDialogVisible = false
             this.initTree()
           }else{
-            this.$message.error('删除失败')
+            this.$message.error(res.message)
           }
         }).catch(()=>{this.$message.error('删除失败')})
     }
@@ -162,6 +182,6 @@ export default {
 <style scoped>
 .searchInput {
    width: 200px;
-   float: right;
+   margin-right: 5px;
 }
 </style>

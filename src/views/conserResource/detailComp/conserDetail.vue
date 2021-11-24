@@ -7,11 +7,11 @@
             <div v-for="(item, index) in defalutData" :key="index" class="typeContainer">
                <div class="titleContianer" :title="item.attrName">{{ item.attrName }}</div>
                <!-- 文本 -->
-               <textType class="common" v-if="item.attrType == 1" :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonText="getText"></textType>
+               <textType class="common" v-if="item.attrType == 1" disabled :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonText="getText"></textType>
                <!-- 文本区域 -->
-               <textAreaType v-if="item.attrType == 2" class="common" :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonTextArea="getTextArea"></textAreaType>
+               <textAreaType v-if="item.attrType == 2" class="common" disabled :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonTextArea="getTextArea"></textAreaType>
                <!-- 下拉文本 -->
-               <div class="common" v-if="item.attrType == 3">
+               <div class="common" v-if="item.attrType == 3" disabled>
                   <el-select v-model="item.values" placeholder="请选择">
                      <el-option
                         v-for="item in item.optionalValueList"
@@ -23,7 +23,7 @@
                </div>
                <!-- <selectMode v-if="item.type == 3" class="common" :getData="item.value" :theIndex="index" @sonSecMode="getSecMode"></selectMode> -->
                <!-- 树形下拉文本 -->
-               <div class="common" v-if="item.attrType == 4">
+               <div class="common" v-if="item.attrType == 4" >
                   <!-- <el-button type="primary" @click="openTreeDialog(item.optionalValue, index)">选择</el-button> -->
                   <el-select :value="item.values" :ref="`selectTree${index}`" placeholder="请选择">
                      <el-option
@@ -41,7 +41,7 @@
                   </el-select>
                </div>
                <!-- 小数 -->
-               <floatType v-if="item.attrType == 5" class="common" :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="getFloat"></floatType>
+               <floatType v-if="item.attrType == 5" disabled class="common" :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="getFloat"></floatType>
                <!-- 整数 -->
                <intType v-if="item.attrType == 6" class="common" :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonInt="getInt"></intType>
                <!-- 密文 -->

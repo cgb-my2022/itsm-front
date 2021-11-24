@@ -22,10 +22,10 @@
             <el-input v-model="formData.disc" :disabled="theType === 1" type="textarea" placeholder="请输入描述" :autosize="{minRows: 4, maxRows: 4}"
                :style="{width: '50%'}"></el-input>
          </el-form-item>
-         <el-form-item label="可继承" class="extendClass">
+         <!-- <el-form-item label="可继承" class="extendClass">
             <el-radio v-model="formData.radio" label="1" :disabled="theType === 1">是</el-radio>
             <el-radio v-model="formData.radio" label="0" :disabled="theType === 1">否</el-radio>
-         </el-form-item>
+         </el-form-item> -->
       </el-form>
       <div class="resourceTitle">属性信息</div>
       <div class="reLine"></div>
@@ -229,9 +229,20 @@ export default {
       },
       sureOur(row){
          // console.log(row.resCheck)
-         this.tableData = this.tableData.concat(row.resCheck)
+         var catTable = this.tableData.concat(row.resCheck)
+         var result = [];
+         var obj = {};
+         for(var i =0; i<catTable.length; i++){
+            if(!obj[catTable[i].id]){
+               result.push(catTable[i]);
+               obj[catTable[i].id] = true;
+            }
+         }
+         this.tableData = result
+
          this.ourDialogVisible = row.flag
       },
+
       // 底部多选删除按钮
       handleSelectionChange(val){
          this.multipleSelection = val

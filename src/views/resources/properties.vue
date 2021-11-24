@@ -3,13 +3,17 @@
       <div>
          <el-button type="primary" @click="handleAdd">增加</el-button>
          <el-button type="primary" @click="delList(1)">删除</el-button>
-         <el-input 
+         <div style="float: right;">
+            <el-input 
             class="searchInput" 
             placeholder="请输入属性名称"
             suffix-icon="el-icon-search"
             v-model="searchValue"
             @keyup.enter.native="handleSearch"
             ></el-input>
+            <el-button type="primary" @click="handleSearch">搜 索</el-button>
+         </div>
+         
       </div>
       <!-- 公共属性 -->
       <div class="toolTipsContainer"> 
@@ -115,7 +119,8 @@
             <vxe-column field="enName" title="英文名称"  width="100"></vxe-column>
             <vxe-column title="数据类型">
                <template #default="{ row }">
-                  {{ row.attrType == 1? "文本"
+                  <div class="ourClass">
+                     {{ row.attrType == 1? "文本"
                      :row.attrType == 2? "文本区域"
                      :row.attrType == 3? "下拉文本"
                      :row.attrType == 4? "树形下拉文本"
@@ -129,6 +134,7 @@
                      :row.attrType == 12?"附件"
                      : ""
                   }}
+                  </div>
                </template>
             </vxe-column>
             <vxe-column field="optionalValue" title="可选值"></vxe-column>
@@ -830,7 +836,7 @@ export default {
 <style scoped>
 .searchInput {
    width: 200px;
-   float: right;
+   margin-right: 5px;
 }
 .resourceTitle {
    padding: 30px 0 10px;
@@ -853,6 +859,10 @@ export default {
    border-radius: 50%;
    margin-left: 20px;
    cursor: pointer;
+}
+.ourClass{
+   height: 40px;
+   line-height: 15px;
 }
 
 </style>
