@@ -100,12 +100,8 @@
             </tr>
             <tr>
               <td class="firstTr">处理人</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.currentUserName}}</span>
-              </td>
-              <td class="firstTr">处理时间</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.solTime}}</span>
+              <td class="firstTr" colspan="4">
+                <span class="fs-12 text-left">{{formData.currentUserName}}</span>
               </td>
             </tr>
             <tr>

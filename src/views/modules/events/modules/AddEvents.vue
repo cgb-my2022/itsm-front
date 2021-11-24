@@ -182,6 +182,7 @@
             <a-form-item label="处理人" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <div style="display:flex;">
                 <a-input
+                  :disabled="disabledName"
                   style="width: 200px;"
                   autocomplete="off"
                   @click="handleSelect"
@@ -331,6 +332,7 @@ export default {
         eventCatFullName: '',
         currentUserId: ''
       },
+      disabledName: true
     }
   },
   computed: {
@@ -338,7 +340,6 @@ export default {
   },
   created() {
     this.initDictData("EVENT_LEVEL")
-    console.log(this.userInfo);
   },
   methods: {
     //  初始页面内容
@@ -349,6 +350,7 @@ export default {
     // 选项业务
     changeCat(value, label) {
       this.fromData.eventCatFullName = label.join(' ')
+      this.disabledName = value ? false : true
     },
     // 添加资源
     handleAdd() {},
@@ -357,11 +359,20 @@ export default {
     // 查看资源
     handleDetail() {},
     // 选择处理人
-    handleSelect() {
-      this.form.validateFields((err, values) => {
-        
+    handleSelect(e) {
+      e.srcElement.blur()
+      this.form.validateFields(['eventCatId'], (err, values) => {
+        if (!err) {
+          const myDeptParentIdes = JSON.parse(this.userInfo.myDeptParentIdes)
+          const params = {
+            catId: values.eventCatId,
+            companyCode: myDeptParentIdes[1]
+          }
+          this.$refs.selectSingleUserModal.select(1, params);
+        } else {
+          this.$message.warn("请先选择事件分类！")
+        }
       })
-      // this.$refs.selectSingleUserModal.select(1);
     },
     selectUserOK(data) {
       let fieldval = pick(this.model)

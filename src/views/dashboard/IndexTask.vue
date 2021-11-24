@@ -4,13 +4,13 @@
       <a-row type="flex">
         <a-col :flex="5">
          <!-- <div class="tu" @click="handleSubmit('提交工单')" style="cursor: pointer">-->
-          <a-card-grid class="tubg" style="cursor: pointer" @click="handleSubmit('提交工单')" >
+          <a-card-grid class="tubg" style="cursor: pointer" @click="visibleStaff=true" >
               <div><a-icon type="form" style="margin-right: 5px"/>提交工单</div>
           </a-card-grid>
           <!--</div>-->
         </a-col>
         <a-col :flex="5" >
-            <a-card-grid class="tubg"@click="toServiceOrderList" style="cursor: pointer">
+            <a-card-grid class="tubg" @click="toServiceOrderList" style="cursor: pointer">
             <div >
               <a-icon type="clock-circle" style="margin-right: 5px"/><span>历史事件</span>
             </div>
@@ -23,9 +23,13 @@
             </a-card-grid>
         </a-col>
       </a-row>
-    </div>
-    <staff-service-order-modal ref="modalForm" @ok="loadData()"></staff-service-order-modal>
-    <service-task-deal-modal ref="taskDealModal" @closeLoad="loadData()" />
+    </div><!-- 快速发起 -->
+    <staff-service-order-modal ref="modalForm" @closeLoad="loadData"></staff-service-order-modal>
+    <!-- 服务目录 -->
+    <staff-service-catalog ref="serviceCatalog" @closeLoad="loadData"></staff-service-catalog>
+    <!-- 办理 -->
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="loadData" />
+    <!-- 详情 -->
     <service-task-detail-modal ref="taskDetailModal" />
       <a-row type="flex" justify="start" :gutter="3">
         <a-col style="padding-top: 10px;" :sm="24" :lg="12">
@@ -47,6 +51,10 @@
               <span slot="action" slot-scope="text, record">
                 <template v-if="record.orderStatus===6">
                   <a @click="handleProcess(record)">确认</a>
+                  <a-divider type="vertical"/>
+                </template>
+                <template v-if="record.orderStatus === 7 && record.commentStatus === 0">
+                  <a @click="bindEvaluation(record)">评价</a>
                   <a-divider type="vertical"/>
                 </template>
                 <a @click="showDetailServiceOrder(record)">查看</a>
@@ -114,23 +122,48 @@
         </a-col>
 
       </a-row>
-
+    <!-- 评价 -->
+    <staff-service-evaluation ref="serviceEvaluation" @closeLoad="loadData()"></staff-service-evaluation>
+    <!-- 提交工单 -->
+    <a-modal
+      title="提交工单"
+      :visible="visibleStaff"
+      @cancel="visibleStaff = false"
+    >
+      <div class="staff-box">
+        <a-button @click="handleSubmitStaff('请求目录', 'serviceCatalog')" type="primary">请求目录</a-button>
+        <a-button @click="handleSubmitStaff('快速发起', 'modalForm')" type="primary" style="margin-left: 30px">快速发起</a-button>
+      </div>
+      <template slot="footer">
+        <a-button key="back" @click="visibleStaff = false">
+          关闭
+        </a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
 
 <script>
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import StaffServiceOrderModal from '../modules/service/staff/modules/StaffServiceOrderModal'
+  import StaffServiceCatalog from '../modules/service/staff/modules/StaffServiceCatalog'
   import ServiceTaskDetailModal from '../modules/service/common/ServiceTaskDetailModal'
   import ServiceTaskDealModal from '../modules/service/common/ServiceTaskDealModal'
+  import StaffServiceEvaluation from '../modules/service/staff/modules/StaffServiceEvaluation'
   import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
   import { mapGetters } from 'vuex'
-  import { getAction } from '@/api/manage'
+  import { getAction, postAction } from '@/api/manage'
 
   export default {
     name: 'IndexTask',
     mixins: [JeecgListMixin],
-    components: { StaffServiceOrderModal, ServiceTaskDetailModal, ServiceTaskDealModal },
+    components: { 
+      StaffServiceOrderModal, 
+      ServiceTaskDetailModal, 
+      ServiceTaskDealModal, 
+      StaffServiceEvaluation,
+      StaffServiceCatalog 
+    },
     data() {
       return {
         loading: false,
@@ -146,6 +179,8 @@
         dataSource32Size: 0,
         dataSource4: [],
         dataSource4Size: 0,
+        disableMixinCreated: true,
+        visibleStaff: false,
         columns: [
          /* {
             title: '',
@@ -199,25 +234,59 @@
         ],
         url: {
           myUnfinished: '/system/serviceOrder/myUnfinish',
-          list: '/system/serviceOrder/list'
+          list: '/system/serviceOrder/list',
+          resolve: '/system/serviceOrder/confirmOrderResolved'
         }
 
       }
     },
     created() {
-    },
-    mounted() {
       this.loadData();
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
       // 办理
       handleProcess(record) {
-        this.$refs.taskDealModal.title = '确认服务请求';
-        this.$refs.taskDealModal.deal(record.id);
+        // this.$refs.taskDealModal.title = '确认服务请求';
+        // this.$refs.taskDealModal.deal(record.id);
+        const that = this;
+        that.$confirm({
+          title: "确认",
+          content: "确认问题已经解决了吗?",
+          okText: "确定",
+          cancelText: "取消",
+          type: "warning",
+          onOk: async () => {
+            var params = { 
+              id: record.id, 
+              version: record.version
+            };
+            postAction(that.url.resolve, params).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.bindEvaluation(record)
+              } else {
+                that.$message.warning(res.message);
+                that.loadData()
+              }
+            })
+          },
+          onCancel() {},
+        });
+      },
+      // 评价 
+      bindEvaluation(record) {
+        this.$refs.serviceEvaluation.deal(record.id)
       },
       loadData() {
         this.myUnfinished();
+      },
+      // 弹框方法
+      handleSubmitStaff: function (title, ref) {
+        this.visibleStaff = false
+        this.$refs[ref].add();
+        this.$refs[ref].title = title;
+        this.$refs[ref].disableSubmit = false;
       },
       // 详情
       showDetailServiceOrder(record) {
@@ -262,6 +331,10 @@
   }
 </script>
 <style>
+.staff-box {
+  display: flex;
+  justify-content: center;
+}
   .tubg{
     text-align: center;
     line-height: 25px;

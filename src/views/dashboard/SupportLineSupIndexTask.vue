@@ -127,6 +127,7 @@
         dataSource1Size: 0,
         dataSource2: [],
         dataSource2Size: 0,
+        disableMixinCreated: true,
         columns: [
          /* {
             title: '',
@@ -180,8 +181,6 @@
     },
     created() {
       this.loadData();
-    },
-    mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),

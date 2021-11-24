@@ -63,8 +63,8 @@
             <a @click="handleOpen(record)">用户</a>
             <a-divider type="vertical"/>
 
-            <a @click="handleDesign(record.id)">工单授权</a>
-            <a-divider type="vertical"/>
+            <!-- <a @click="handleDesign(record.id)">工单授权</a>
+            <a-divider type="vertical"/> -->
 
             <a-dropdown>
               <a class="ant-dropdown-link">

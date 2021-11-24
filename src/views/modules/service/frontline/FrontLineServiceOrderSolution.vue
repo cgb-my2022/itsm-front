@@ -59,6 +59,22 @@
             "
           />
         </a-form-model-item>
+        <a-form-model-item ref="solution" label="相关资源" prop="solution">
+          <a-table
+            ref="table"
+            bordered
+            size="middle"
+            rowKey="id"
+            :columns="columns"
+            :dataSource="dataSource"
+            :loading="loadingTable"
+          >
+            <!-- 操作按钮 -->
+            <span slot="action" slot-scope="text, record">
+              <a @click="bindEdite(record)">编辑</a>
+            </span>
+          </a-table>
+        </a-form-model-item>
         <!-- 子表单区域 -->
         <a-tabs v-model="activeKey" @change="handleChangeTabs">
           <a-tab-pane tab="服务工单附件" :key="refKeys[0]" :forceRender="true">
@@ -193,12 +209,36 @@ export default {
             type: FormTypes.file,
             token: true,
             responseName: 'message',
-            width: '200px',
+            width: '100%',
             placeholder: '请输入${title}',
             defaultValue: '',
           },
         ],
       },
+      // 相关资源表头
+      loadingTable: false,
+      dataSource: [],
+      columns: [
+        {
+          title: '资源名称',
+          dataIndex: 'orderType',
+          ellipsis: true,
+          align: 'center'
+        },
+        {
+          title: '资源描述',
+          align: 'center',
+          ellipsis: true,
+          dataIndex: 'catNames',
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: 'center',
+          width: 140,
+          scopedSlots: { customRender: 'action' },
+        },
+      ]
     }
   },
   watch: {
@@ -364,6 +404,10 @@ export default {
       this.setNc(this.serviceOrderModel.serviceCatIds)
       return ncList;
     },
+    //先关资源编辑
+    bindEdite() {
+
+    }
   },
   created() {
     /*const token = Vue.ls.get(ACCESS_TOKEN);

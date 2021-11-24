@@ -36,6 +36,7 @@
                 placeholder="请选择"
                 allow-clear
                 multiple
+                :maxTagCount="4"
                 :tree-data="quickOptions"
                 tree-checkable
                 tree-default-expand-all
@@ -60,6 +61,7 @@
                 placeholder="请选择"
                 allow-clear
                 multiple
+                :maxTagCount="4"
                 :tree-data="categoryOptions"
                 tree-checkable
                 tree-default-expand-all
@@ -84,6 +86,7 @@
                 placeholder="请选择"
                 allow-clear
                 multiple
+                :maxTagCount="4"
                 :tree-data="departTree"
                 tree-checkable
                 tree-default-expand-all

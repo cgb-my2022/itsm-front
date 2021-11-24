@@ -187,17 +187,17 @@
           supportLineOnDoList: '/system/serviceOrder/supportLineOnDoList',
           supportLinereceiveList: '/system/serviceOrder/supportLinereceiveList',
           receive: '/system/serviceOrder/supportReceiveOrder'
-        }
+        },
+        disableMixinCreated: true,
       }
     },
     created() {
       this.loadData();
     },
-    mounted() {
-    },
     methods: {
       ...mapGetters(['nickname', 'welcome']),
       loadData() {
+        console.log("222");
         this.mock();
         this.toDoEvents();
         this.ongoingEvents();

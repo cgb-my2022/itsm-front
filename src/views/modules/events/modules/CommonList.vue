@@ -119,6 +119,13 @@
               <a-divider type="vertical" />
             </template>
           </template>
+          <template v-if="!record.currentUserId">
+            <!-- 待接单 -->
+            <template v-if="typeList === 2 && record.orderStatus !== 7">
+              <a @click="bindBtn(1,record)">办理</a>
+              <a-divider type="vertical" />
+            </template>
+          </template>
           <a @click="bindBtn(2, record)">详情</a>
           <a-divider type="vertical" />
           <a @click="bindBtn(3, record)" style="color: orange">进度</a>
@@ -136,6 +143,7 @@
       :categoryOptions="categoryOptions"
       :dictStatus="dictStatus" 
       :dictOptions="dictOptions" 
+      :userInfo="userInfo"
       ref="eventsDetail" 
       @ok="loadData">
     </events-detail>

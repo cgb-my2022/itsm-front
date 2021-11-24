@@ -131,6 +131,7 @@
         dataSource2: [],
         dataSource2Size: 0,
         formData: {},
+        disableMixinCreated: true,
         columns: [
           {
             title: '事件内容',
@@ -173,8 +174,6 @@
     },
     created() {
       this.loadData();
-    },
-    mounted() {
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),

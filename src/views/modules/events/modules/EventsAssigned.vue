@@ -27,19 +27,6 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row>
-                <a-col :span="24">
-                  <a-form-item label="转办原因" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                    <a-textarea 
-                    v-decorator="['transferReason', {
-                      rules: [{ required: true, message: '请输入转办原因!' }]
-                    }]"
-                    :maxLength="300"
-                    rows="4" 
-                    placeholder="请输入转办原因(有效长度1-300)"/>
-                  </a-form-item>
-                </a-col>
-            </a-row>
         </a-form>
       </a-spin>
     <biz-service-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
@@ -89,7 +76,7 @@
           if (!err) {
             let params = JSON.parse(JSON.stringify(values));
             params.currentUserId = this.userData.id;
-            this.$emit('ok', params, 'supportTranslate', 1);
+            this.$emit('ok', params, 'supportDelegate', 1);
             this.visible = false;
           }
         });
@@ -108,7 +95,7 @@
       },
       handleSelect(e) {
         e.srcElement.blur()
-        this.$refs.selectSingleUserModal.select(3);
+        this.$refs.selectSingleUserModal.select(2);
       }
     }
   }
