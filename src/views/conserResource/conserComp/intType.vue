@@ -7,7 +7,7 @@
       show-word-limit
       @change="handleTextChange"
       :style="{width: '80%'}"
-      clearable></el-input>
+      ></el-input>
   </div>
 </template>
 

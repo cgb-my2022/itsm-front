@@ -22,10 +22,10 @@
             <el-input v-model="formData.disc" :disabled="theType === 1" type="textarea" placeholder="请输入描述" :autosize="{minRows: 4, maxRows: 4}"
                :style="{width: '50%'}"></el-input>
          </el-form-item>
-         <el-form-item label="可继承" class="extendClass">
+         <!-- <el-form-item label="可继承" class="extendClass">
             <el-radio v-model="formData.radio" label="1" :disabled="theType === 1">是</el-radio>
             <el-radio v-model="formData.radio" label="0" :disabled="theType === 1">否</el-radio>
-         </el-form-item>
+         </el-form-item> -->
       </el-form>
       <div class="resourceTitle">属性信息</div>
       <div class="reLine"></div>
@@ -229,9 +229,20 @@ export default {
       },
       sureOur(row){
          // console.log(row.resCheck)
-         this.tableData = this.tableData.concat(row.resCheck)
+         var catTable = this.tableData.concat(row.resCheck)
+         var result = [];
+         var obj = {};
+         for(var i =0; i<catTable.length; i++){
+            if(!obj[catTable[i].id]){
+               result.push(catTable[i]);
+               obj[catTable[i].id] = true;
+            }
+         }
+         this.tableData = result
+
          this.ourDialogVisible = row.flag
       },
+
       // 底部多选删除按钮
       handleSelectionChange(val){
          this.multipleSelection = val
@@ -240,13 +251,12 @@ export default {
          if(this.multipleSelection.length === 0){
             this.$message.error('请选择自定属性')
             return
-         }
-         for(var i = 0; i < this.tableData.length; i++){
-             for(var k = 0; k < this.multipleSelection.length; k++){
-               if(this.tableData[i].id == this.multipleSelection[k].id){
-                  this.tableData.splice(i, 1)
-               }
-            }
+         }   
+         for(var k = 0; k < this.multipleSelection.length; k++){
+            const findindex = this.tableData.findIndex(item=>{
+               return this.multipleSelection[k].id == item.id
+            })
+            this.tableData.splice(findindex, 1)
          }
 
       },

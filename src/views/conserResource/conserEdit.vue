@@ -416,9 +416,9 @@ export default {
     getType(id) {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
-          let defalutRes = JSON.parse(res.result.publicResource)
+          let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
-          this.ourData = JSON.parse(res.result.customizeResource)
+          this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
         }
       })
     },
@@ -569,12 +569,12 @@ export default {
       let defaultFlag = false
       let ourDataFlag = false
       this.defalutData.forEach((item) => {
-        if (!item.values) {
+        if (!item.values || item.values == "[]") {
           defaultFlag = true
         }
       })
       this.ourData.forEach((item) => {
-        if (!item.values) {
+        if (!item.values || item.values == "[]") {
           ourDataFlag = true
         }
       })
@@ -615,7 +615,7 @@ export default {
         allResourceMap: this.defalutData.concat(this.ourData),
         resourceTypeId: sessionStorage.getItem('treeid'),
         id: this.resourceId,
-        use_user: this.userID
+        useUser: this.userID
       }
       editResource(fetchObj)
         .then((res) => {

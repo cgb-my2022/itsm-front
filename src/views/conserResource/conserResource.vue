@@ -43,10 +43,10 @@
           ref="xTable1"
           :data="tableData.slice((page.currentPage-1)*page.pageSize,page.currentPage*page.pageSize)"
           >
-          <vxe-column type="checkbox"></vxe-column>
+          <vxe-column type="checkbox" fixed="left"></vxe-column>
           <vxe-column 
             v-for="(item, index) in tableHead"
-            :show-overflow="item.prop == 'upload' "
+            show-overflow
             :key="index"
             width="180"
             :field="item.prop" :title="item.name">
@@ -169,8 +169,10 @@ export default {
       upRadio: "1",
       upFile: null,
       upData: {
-        id: sessionStorage.getItem('treeid')
-      }
+        id: null
+      },
+
+      outPutId: null
     }
   },
   mounted(){
@@ -223,11 +225,15 @@ export default {
     onSelect(data, res) {
       let flag = true
       sessionStorage.setItem('treeid', data.id)
+      this.upData.id = data.id
       this.treeData.forEach(item=>{
         if(item.id == data.id){
           flag = false
         }
       })
+      if(data.classLevel && data.classLevel == '2'){
+          flag = true
+      }
       if(!flag){
         this.isdisable = true
       }else{
@@ -248,6 +254,7 @@ export default {
             if(res.result){
               this.tableHead = res.result.mapTitle
               this.tableData = res.result.mapBody
+              this.page.totalResult = res.result.mapBody.length
             }else{
               this.$message.error('暂无数据')
             }
@@ -362,6 +369,20 @@ export default {
     },
 
     outResourceFile(){
+      this.outPutId = null
+      let selectRecords = this.$refs.xTable1.getCheckboxRecords()
+      if(selectRecords.length == 0){
+        this.$message.error('请选择数据')
+        return
+      }
+      if(selectRecords.length > 1){
+        this.$message.error('不支持批量导出')
+        return
+      }
+      this.outPutId = selectRecords[0].id
+      console.log(selectRecords);
+      console.log(this.outPutId);
+      return
       outResource({id: sessionStorage.getItem('treeid')})
         .then(res=>{
           const _res = res;
