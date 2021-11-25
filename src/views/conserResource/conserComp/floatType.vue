@@ -7,7 +7,7 @@
       show-word-limit
       @change="handleTextChange()"
       :style="{width: '80%'}"
-      clearable></el-input>
+      ></el-input>
     <span class="propTips" title="小数的最大长度限制的是用户在本输入框输入数字整数部分加小数部分的总长度。">?</span>
   </div>
 </template>

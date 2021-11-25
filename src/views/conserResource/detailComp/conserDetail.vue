@@ -11,8 +11,8 @@
                <!-- 文本区域 -->
                <textAreaType v-if="item.attrType == 2" class="common" disabled :getData="item.values" :propMaxLength="item.maxLength" :theIndex="index" @sonTextArea="getTextArea"></textAreaType>
                <!-- 下拉文本 -->
-               <div class="common" v-if="item.attrType == 3" disabled>
-                  <el-select v-model="item.values" placeholder="请选择">
+               <div class="common" v-if="item.attrType == 3">
+                  <el-select v-model="item.values" disabled placeholder="请选择">
                      <el-option
                         v-for="item in item.optionalValueList"
                         :key="item.key"
@@ -25,7 +25,7 @@
                <!-- 树形下拉文本 -->
                <div class="common" v-if="item.attrType == 4" >
                   <!-- <el-button type="primary" @click="openTreeDialog(item.optionalValue, index)">选择</el-button> -->
-                  <el-select :value="item.values" :ref="`selectTree${index}`" placeholder="请选择">
+                  <el-select :value="item.values" disabled :ref="`selectTree${index}`" placeholder="请选择">
                      <el-option
                         :label="item.values"
                         style="height: auto"
@@ -497,9 +497,9 @@ export default {
    width: 80px;
    text-align: right;
    margin-right: 15px;
-   overflow: hidden;
+   /* overflow: hidden;
    text-overflow: ellipsis;
-   white-space: nowrap;
+   white-space: nowrap; */
 }
 .defalutBox .typeContainer {
    width: 48%;

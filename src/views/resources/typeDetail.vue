@@ -251,13 +251,12 @@ export default {
          if(this.multipleSelection.length === 0){
             this.$message.error('请选择自定属性')
             return
-         }
-         for(var i = 0; i < this.tableData.length; i++){
-             for(var k = 0; k < this.multipleSelection.length; k++){
-               if(this.tableData[i].id == this.multipleSelection[k].id){
-                  this.tableData.splice(i, 1)
-               }
-            }
+         }   
+         for(var k = 0; k < this.multipleSelection.length; k++){
+            const findindex = this.tableData.findIndex(item=>{
+               return this.multipleSelection[k].id == item.id
+            })
+            this.tableData.splice(findindex, 1)
          }
 
       },

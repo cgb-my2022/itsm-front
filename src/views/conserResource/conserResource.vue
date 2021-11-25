@@ -170,7 +170,9 @@ export default {
       upFile: null,
       upData: {
         id: null
-      }
+      },
+
+      outPutId: null
     }
   },
   mounted(){
@@ -367,11 +369,20 @@ export default {
     },
 
     outResourceFile(){
+      this.outPutId = null
       let selectRecords = this.$refs.xTable1.getCheckboxRecords()
-      if(selectRecords.length === 0){
-        this.$message.error('请选择数据进行导出')
+      if(selectRecords.length == 0){
+        this.$message.error('请选择数据')
         return
       }
+      if(selectRecords.length > 1){
+        this.$message.error('不支持批量导出')
+        return
+      }
+      this.outPutId = selectRecords[0].id
+      console.log(selectRecords);
+      console.log(this.outPutId);
+      return
       outResource({id: sessionStorage.getItem('treeid')})
         .then(res=>{
           const _res = res;
