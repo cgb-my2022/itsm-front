@@ -203,7 +203,7 @@
          >
          <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
             <el-form-item label="所属分组" prop="group">
-               <el-select v-model="formData.group" placeholder="请选择所属分组" clearable :style="{width: '80%'}">
+               <el-select v-model="formData.group" :disabled="isAdd == 2" placeholder="请选择所属分组" clearable :style="{width: '80%'}">
                   <el-option v-for="(item, index) in groupOptions" :key="index" :label="item.name" :value="`${item.id},${item.name}`"
                   :disabled="item.disabled"></el-option>
                </el-select>
@@ -218,7 +218,7 @@
                <span class="propTips" title="属性的唯一标识，用于跟监控数据、服务管理等进行资源匹配。">?</span>
             </el-form-item>
             <el-form-item label="属性类型" prop="type">
-               <el-select v-model="typeGroup" placeholder="请选择属性类型" clearable :style="{width: '80%'}" @change="handleTypeChange">
+               <el-select v-model="typeGroup" :disabled="isAdd == 2" placeholder="请选择属性类型" clearable :style="{width: '80%'}" @change="handleTypeChange">
                   <el-option v-for="(item, index) in typeOptions" :key="index" :label="item.label" :value="item.value"
                   :disabled="item.disabled"></el-option>
                </el-select>
