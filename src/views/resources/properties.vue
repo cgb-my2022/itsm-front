@@ -677,7 +677,7 @@ export default {
                addProperties(fetchObj).then(res=>{
                   // console.log(res)
                   if(res.code == 500){
-                     this.$message.error('新增失败')
+                     this.$message.error(res.message)
                   }else{
                      this.$message.success('新增成功')
                   }
