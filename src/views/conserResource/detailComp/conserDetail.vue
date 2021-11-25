@@ -420,9 +420,15 @@ export default {
     getType(id) {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
-          let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
-          this.defalutData = defalutRes
-          this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
+          if(!res.result){
+            this.defalutData = []
+            this.ourData = []
+          }else{
+            let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
+            this.defalutData = defalutRes
+            this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
+          }
+          
         }
       })
     },
