@@ -418,7 +418,6 @@ export default {
         if (res.code == 200) {
           let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
-          console.log(defalutRes);
           this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
         }
       })
