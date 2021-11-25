@@ -34,7 +34,7 @@
         padding: '10px 16px',
         background: '#fff',
         textAlign: 'left',
-        zIndex: 1
+        zIndex: 99
       }">
       <!--当前任务环节：{{ currTask.taskName }}-->
       <!--<a-select style="width:300px" :defaultValue="currTask.id">

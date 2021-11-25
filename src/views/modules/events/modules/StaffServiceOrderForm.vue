@@ -214,7 +214,7 @@ export default {
             type: FormTypes.fileView,
             token: true,
             responseName: 'message',
-            width: '200px',
+            width: '100%',
             placeholder: '请输入${title}',
             defaultValue: '',
             actionButton: false,

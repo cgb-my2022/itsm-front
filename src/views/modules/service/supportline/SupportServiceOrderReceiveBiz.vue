@@ -94,6 +94,12 @@
             下载
           </a-button>
         </template>
+        <!-- 优先级 -->
+        <template slot="serviceLevel" slot-scope="text">
+          <span v-if="text == 1" style="color:red;">{{setLevel(text)}}</span>
+          <span v-if="text == 2" style="color:orange;">{{setLevel(text)}}</span>
+          <span v-if="text == 3" style="color:blue;">{{setLevel(text)}}</span>
+        </template>
         <!-- 工单状态 -->
         <template slot="status" slot-scope="text, record">
           <span class="order-status">
@@ -152,114 +158,22 @@
 </template>
 
 <script>
-import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { ServiceMixin } from '../staff/mixins/ServiceMixin'
-import StaffServiceOrderModal from '../staff/modules/StaffServiceOrderModal'
-import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import JDate from '@/components/jeecg/JDate.vue'
-import '@/assets/less/TableExpand.less'
+import { ServiceColumns } from '@/views/modules/service/mixins/ServiceColumns'
 import { postAction, getAction } from '@/api/manage'
-import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal'
-
-import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
-import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
 
 export default {
   name: 'SupportServiceOrderList',
-  mixins: [JeecgListMixin, ServiceMixin],
-  components: {
-    JDictSelectTag,
-    JDate,
-    StaffServiceOrderModal,
-    ServiceProcessInstPicModal,
-    ServiceTaskDealModal,
-    ServiceTaskDetailModal,
-  },
+  mixins: [ServiceColumns],
   data() {
     return {
       description: '服务工单管理页面',
       flowCode: 'onl_service_order',
-      // 表头
-      columns: [
-        {
-          title: '编号',
-          dataIndex: 'id',
-          align: 'center',
-          width: 190,
-        },
-        {
-          title: '请求内容',
-          dataIndex: 'eventContent',
-          ellipsis: true,
-          align: 'center',
-        },
-        {
-          title: '所属业务',
-          align: 'center',
-          ellipsis: true,
-          dataIndex: 'serviceCatFullName',
-        },
-        {
-          title: '工单状态',
-          align: 'center',
-          dataIndex: 'orderStatus_dictText',
-          width: 140,
-          scopedSlots: { customRender: 'status' },
-        },
-        {
-          title: '创建人',
-          align: 'center',
-          dataIndex: 'realName',
-        },
-        {
-          title: '创建人所属部门',
-          align: 'center',
-          dataIndex: 'deptName',
-          ellipsis: true,
-        },
-        {
-          title: '创建日期',
-          align: 'center',
-          sorter: true,
-          dataIndex: 'createTime',
-        },
-        {
-          title: '处理人',
-          align: 'center',
-          dataIndex: 'frontlineUserRealname',
-          scopedSlots: { customRender: 'realname' },
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          align: 'center',
-          fixed: 'right',
-          width: 150,
-          scopedSlots: { customRender: 'action' },
-        },
-      ],
       url: {
         list: '/system/serviceOrder/supportLineList',
         receive: '/system/serviceOrder/supportReceiveOrder',
       },
       dictOptions: {},
     }
-  },
-  mounted() {
-    this.getCatalog()
-  },
-  computed: {
-    importExcelUrl: function () {
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
-    setRealname() {
-      return function (arr, status) {
-        if (arr.indexOf(status) != -1) {
-          return true
-        }
-        return false
-      }
-    },
   },
   methods: {
     initDictConfig() {},

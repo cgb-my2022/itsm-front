@@ -228,12 +228,13 @@
           {
             title: '手机号码',
             align: 'center',
-            width: 100,
+            width: 160,
             dataIndex: 'phone'
           },
           {
             title: '部门',
             align: 'center',
+            ellipsis: true,
             width: 180,
             dataIndex: 'orgCode'
           },

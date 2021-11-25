@@ -139,7 +139,7 @@
           <a-col :xs="24" :sm="12">
             <a-form-item label="关联资源" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-button @click="handleAdd()" type="primary">添加</a-button>
-              <a-button @click="handleDel()" type="primary" style="margin-left: 10px">删除</a-button>
+              <a-button @click="handleDel(1)" type="primary" style="margin-left: 10px">删除</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -158,20 +158,10 @@
                 :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                 @change="handleTableChange"
               >
-                <template slot="dictText" slot-scope="text">
-                  <span>{{ text }}</span>
-                </template>
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleDetail(record)">详情</a>
                   <a-divider type="vertical" />
-                  <a-popconfirm
-                    title="确认删除该接单规则?"
-                    ok-text="确定"
-                    cancel-text="取消"
-                    @confirm="handleDel(record)"
-                  >
-                    <a href="#" style="color: red">删除</a>
-                  </a-popconfirm>
+                  <a href="#" @click="handleDel(2, record.id)" style="color: red">删除</a>
                 </span>
               </a-table>
             </a-form-item>
@@ -195,7 +185,10 @@
           </a-col>
         </a-row>
       </a-form>
+      <!-- 选择处理人 -->
       <biz-service-select-single-user-modal :url="url.assignList" ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
+      <!-- 资源列表 -->
+      <resources-list ref="resourcesList" @selectOk="selectOk"></resources-list>
     </a-spin>
   </a-modal>
 </template>
@@ -211,6 +204,7 @@ import { postAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
 import JDate from '@/components/jeecg/JDate.vue'
 import BizServiceSelectSingleUserModal from '@/views/modules/service/common/BizServiceSelectSingleUserModal.vue';
+import ResourcesList from './ResourcesList'
 
 export default {
   name: 'ServiceOrderModal',
@@ -220,6 +214,7 @@ export default {
     ARow,
     JDictSelectTag,
     JDate,
+    ResourcesList
   },
   props: ['categoryOptions'],
   data() {
@@ -227,47 +222,28 @@ export default {
       refKeys: ['serviceOrderAttach'],
       dictOptions: [],
       columns: [
-        {
+       {
           title: '名称 ',
           align: 'center',
-          dataIndex: 'username',
+          dataIndex: 'name',
           ellipsis: true,
         },
         {
           title: '描述',
           align: 'center',
-          dataIndex: 'realname',
+          dataIndex: 'describes',
           ellipsis: true,
         },
-        {
-          title: 'IP',
-          align: 'center',
-          dataIndex: 'avatar',
-        },
-
         {
           title: '资源类型',
           align: 'center',
-          dataIndex: 'sex_dictText',
+          dataIndex: 'resourceTypeId',
           ellipsis: true,
-        },
-        {
-          title: '资源分组',
-          align: 'center',
-          dataIndex: 'birthday',
-          ellipsis: true,
-        },
-        {
-          title: '状态',
-          align: 'center',
-          width: 80,
-          dataIndex: 'dictText',
-          scopedSlots: { customRender: 'dictText' },
         },
         {
           title: '使用人',
           align: 'center',
-          dataIndex: 'person',
+          dataIndex: 'useUserName',
         },
         {
           title: '操作',
@@ -332,7 +308,9 @@ export default {
         eventCatFullName: '',
         currentUserId: ''
       },
-      disabledName: true
+      disabledName: true,
+      dataSource: [],
+      selectedRowKeys: []
     }
   },
   computed: {
@@ -351,11 +329,44 @@ export default {
     changeCat(value, label) {
       this.fromData.eventCatFullName = label.join(' ')
       this.disabledName = value ? false : true
+      this.selectUserOK({
+        realname: "",
+        currentUserId: ""
+      })
     },
     // 添加资源
-    handleAdd() {},
+    handleAdd() {
+      let list = []
+      if (this.dataSource.length > 0) {
+        this.dataSource.forEach(item => {
+          list.push(item.id)
+        })
+      }
+      this.$refs.resourcesList.add(list)
+    },
+    selectOk(data) {
+      this.dataSource = JSON.parse(JSON.stringify(data))
+    },
     // 删除资源
-    handleDel() {},
+    handleDel(type, id) {
+      let list = []
+      if(type === 1) {
+        if (this.selectedRowKeys.length > 0) {
+          list = JSON.parse(JSON.stringify(this.selectedRowKeys))
+        } else {
+          this.$message.warning("请勾选需要删除的关联资源！")
+        }
+      } else {
+        list = [id]
+      }
+      if (list.length === 0) return
+      list.forEach(item => {
+        const findIndex = this.dataSource.findIndex(citem => citem.id === item)
+        this.dataSource.splice(findIndex, 1)
+        const findIndex1 = this.selectedRowKeys.findIndex(citem => citem === item)
+        this.selectedRowKeys.splice(findIndex1, 1)
+      })
+    },
     // 查看资源
     handleDetail() {},
     // 选择处理人

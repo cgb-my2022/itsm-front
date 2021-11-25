@@ -79,7 +79,7 @@
 
 <script>
   import BizServiceSelectSingleUserModal from './BizServiceSelectSingleUserModal.vue';
-  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+  import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import ARow from 'ant-design-vue/es/grid/Row'
   import pick from 'lodash.pick'

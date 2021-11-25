@@ -37,7 +37,7 @@
         <j-form-container>
           <table border="1px" id="staffLeaveTable">
             <tr>
-              <td class="firstTr">请求人</td>
+              <td class="firstTr">发起人</td>
               <td class="firstTr">
                 <span class="text">{{formData.serviceOrder.realName}}</span>
               </td>

@@ -32,7 +32,7 @@
         padding: '10px 16px',
         background: '#fff',
         textAlign: 'left',
-        zIndex: 1,
+        zIndex: 99,
       }"
     >
       <a-space :size="8" align="center">

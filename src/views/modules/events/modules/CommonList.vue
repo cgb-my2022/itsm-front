@@ -18,13 +18,13 @@
             <a-form-item label="事件分类">
               <a-tree-select
                 style="width: 100%"
-                :value="catIds"
+                :value="eventCatFullName"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 placeholder="请选择"
                 allow-clear
                 :tree-data="categoryOptions"
                 tree-default-expand-all
-                :replace-fields="{ title: 'title', value: 'id', key: 'id', children: 'children' }"
+                :replace-fields="{ title: 'title', value: 'title', key: 'title', children: 'children' }"
                 :filterTreeNode="searchFilterTreeNode"
                 @change="changeCat"
               >
@@ -109,7 +109,7 @@
         <span slot="action" slot-scope="text, record">
           <template v-if="userInfo.id === record.currentUserId">
             <!-- 事件办理页面 并且是自己的未完成的单 -->
-            <template v-if="typeList === 2 && record.orderStatus !== 7">
+            <template v-if="typeList === 2 && record.orderStatus < 6">
               <a @click="bindBtn(1,record)">办理</a>
               <a-divider type="vertical" />
             </template>
@@ -259,7 +259,7 @@ export default {
         id: '',
         approved: '',
       },
-      catIds: "",
+      eventCatFullName: "",
       categoryOptions: [], //事件类型内容
       sortName: true
     }
@@ -308,22 +308,6 @@ export default {
       this.setDic("EVENT_LEVEL", "dictOptions")
       // 工单状态
       this.setDic("SERVICE_ORDER_STATUS", "dictStatus")
-    },
-    setDic(dictCode, obj) {
-      let data = {}
-      //优先从缓存中读取字典配置
-      if (getDictItemsFromCache(dictCode)) {
-        data[obj] = getDictItemsFromCache(dictCode)
-        Object.assign(this, data)
-        return
-      }
-      //根据字典Code, 初始化字典数组
-      ajaxGetDictItems(dictCode, null).then((res) => {
-        if (res.success) {
-          data[obj] = res.result
-          Object.assign(this, data)
-        }
-      })
     },
     // 初始化工单类型
     initDictData() {
@@ -395,8 +379,8 @@ export default {
     },
     // 选项业务
     changeCat(value, label) {
-      this.catIds = value
-      this.queryParam.catIds = value
+      this.eventCatFullName = value
+      this.queryParam.eventCatFullName = value
     }
   },
 }

@@ -115,7 +115,7 @@
 
 <script>
 import { postAction, putAction } from '@/api/manage'
-import { ServiceMixin } from '@/views/modules/service/staff/mixins/ServiceMixin'
+import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
 import { ajaxGetCategoryItems, getDictItemsFromCache, queryIdTree } from '@/api/api'
 
 export default {

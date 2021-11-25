@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    :title="title"
+    :title="operations === 1 ? '一线接单规则' : '二线接单规则'"
     :maskClosable="true"
     :width="drawerWidth"
     placement="right"
@@ -202,7 +202,6 @@ export default {
       busTypes: [],
       departIdShow: false,
       departIds: [], // 负责部门id
-      title: '一线接单规则',
       visible: false,
       model: {},
       roleList: [],
@@ -344,8 +343,6 @@ export default {
       queryall().then((res) => {
         if (res.success) {
           this.roleList = res.result
-        } else {
-          console.log(res.message)
         }
       })
     },
@@ -353,8 +350,6 @@ export default {
       queryUserRole({ userid: userid }).then((res) => {
         if (res.success) {
           this.selectedRole = res.result
-        } else {
-          console.log(res.message)
         }
       })
     },
@@ -374,7 +369,6 @@ export default {
       this.edit({ activitiSync: '1' })
     },
     edit(record, operations = 1) {
-      console.log(record);
       if (this.dictOptions.length === 1) {
         this.initDictData()
       }
