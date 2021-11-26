@@ -71,7 +71,7 @@
           >
             <!-- 操作按钮 -->
             <span slot="action" slot-scope="text, record">
-              <a @click="bindEdite(record.id)">编辑</a>
+              <a-button :disabled="disabledSolution" @click="bindEdite(record.id)">编辑</a-button>
             </span>
           </a-table>
         </a-form-model-item>
@@ -196,6 +196,7 @@ export default {
         supportresolve: '/system/serviceOrder/supportresolveOrder', //二线解决
         vipResolveOrder: '/system/serviceOrderVip/vipResolveOrder', //二线解决
         getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
+        getResourcePermission: '/sys/permission/getResourcePermission',  //资源编辑权限
       },
       fileList: [],
       headers: {},
@@ -262,7 +263,8 @@ export default {
         },
       ],
       showDetail: false,
-      detailId: ""
+      detailId: "",
+      disabledSolution: true
     }
   },
   watch: {
@@ -297,6 +299,15 @@ export default {
               this.rowInfo[item] = info[item]
           })
 
+      })
+    },
+    // 是否可以编辑资源 
+    pesourcePermission() {
+      getAction(this.url.getResourcePermission).then(res => {
+        if (res.code == 200) {
+          const result = res.result
+          this.disabledSolution = result.length === 0 ? true : false
+        }
       })
     },
     setNc(newVal) {
@@ -463,6 +474,8 @@ export default {
       this.getProcessTaskTransInfo(this.formData); */
     // 获取相关资源
     this.getResources()
+    // 资源是否可以编辑
+    this.pesourcePermission()
     // 获取业务
     this.getCatalog(3)
     // 获取二级业务
