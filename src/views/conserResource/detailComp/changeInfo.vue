@@ -5,7 +5,7 @@
       :data="tableData.slice((page.currentPage-1)*page.pageSize,page.currentPage*page.pageSize)"
       >
       <vxe-column field="createTime" title="变更时间" sortable></vxe-column>
-      <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column>
+      <!-- <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column> -->
       <vxe-column field="changeDataBefore" title="变更前数据" show-overflow></vxe-column>
       <vxe-column field="changeDataAfter" title="变更后数据" show-overflow></vxe-column>
       <vxe-column field="updateName" title="变更人" sortable></vxe-column>
@@ -34,9 +34,7 @@ export default {
   props:{},
   data(){
     return {
-      tableData: [
-        
-      ],
+      tableData: [],
       page: {
         currentPage: 1,
         pageSize: 10,
@@ -45,7 +43,11 @@ export default {
     }
   },
   mounted(){
-    this.getHis(this.$route.query.id)
+    if(sessionStorage.getItem('resourceTableID')){
+      this.getHis(sessionStorage.getItem('resourceTableID'))
+    }else{
+      this.$message.error('获取变更日志失败')
+    }
   },
   methods:{
     getHis(id){
@@ -68,9 +70,9 @@ export default {
 
     toDetail(row){
       this.$router.push({
-        path: "/conserResource/conserDetailHome",
-        query:{
-          id: row.id
+        name: "conserResource-conserDetailHome",
+        params:{
+          data: row
         }
       })
       this.$emit('changeKey', '1')
