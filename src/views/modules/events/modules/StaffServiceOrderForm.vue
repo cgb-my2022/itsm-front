@@ -108,8 +108,7 @@
               <tr>
                 <td class="firstTr">处理人</td>
                 <td class="firstTr" colspan="4">
-                  <span v-if="formData.currentRole === 'ROLE_NORMAL_PERSONNEL'" class="fs-12 text-left">{{formData.upUserName}}</span>
-                  <span v-else class="fs-12 text-left">{{formData.currentUserName}}</span>
+                  <span class="fs-12 text-left">{{formData.solRealName}}</span>
                 </td>
               </tr>
               <tr>
