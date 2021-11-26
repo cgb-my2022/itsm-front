@@ -140,6 +140,7 @@ export default {
     return {
       operations: 1,
       orderType: '', //工单类型
+      title: "",
       // 表格数据
       loading: false,
       dataSource: [],

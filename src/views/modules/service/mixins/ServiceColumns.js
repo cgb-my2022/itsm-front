@@ -111,12 +111,8 @@ export const ServiceColumns = {
         // 根据等级id设置等级
         setLevel() {
             return function (text) {
-                if (this.dictOptions.length > 0) {
-                    const findItem = this.optionLevel.find(item => item.value == text)
-                    return findItem.text || findItem.title
-                } else {
-                    return ""
-                }
+                const findItem = this.optionLevel.find(item => item.value == text)
+                return findItem.text || findItem.title
             }
         },
     }

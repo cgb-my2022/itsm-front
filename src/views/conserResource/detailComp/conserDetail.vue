@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <div class="pointerClass">
-      <div class="resourceTitle">公共属性</div>
+      <div class="resourceTitle" :class="[isShowButton === '1' ? 'resourceTitle1' : 'resourceTitle2']">公共属性</div>
       <div class="reLine"></div>
       <div class="defalutBox">
         <div v-for="(item, index) in defalutData" :key="index" class="typeContainer">
@@ -367,6 +367,20 @@ export default {
     isShowButton: {
       type: String,
       default: '1'
+    },
+    detailId: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    detailId: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.getType(value)
+        }
+      }
     }
   },
   data() {
@@ -411,10 +425,11 @@ export default {
   mounted() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
-
-    let secID = this.$route.query.id
-    this.resourceId = this.$route.query.id
-    this.getType(secID)
+    if (this.isShowButton === '1') {
+      let secID = this.$route.query.id
+      this.resourceId = this.$route.query.id
+      this.getType(secID)
+    }
   },
   methods: {
     getType(id) {
@@ -651,9 +666,14 @@ export default {
 </script>
 <style scoped>
 .resourceTitle {
-  padding: 30px 0 10px;
   font-size: 20px;
   font-weight: 700;
+}
+.resourceTitle1 {
+  padding: 30px 0 10px;
+}
+.resourceTitle2 {
+  padding: 0px 0 10px;
 }
 .reLine {
   width: 100%;

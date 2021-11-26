@@ -159,7 +159,7 @@
                 @change="handleTableChange"
               >
                 <span slot="action" slot-scope="text, record">
-                  <a @click="handleDetail(record)">详情</a>
+                  <a @click="handleDetail(record.id)">详情</a>
                   <a-divider type="vertical" />
                   <a href="#" @click="handleDel(2, record.id)" style="color: red">删除</a>
                 </span>
@@ -186,9 +186,16 @@
         </a-row>
       </a-form>
       <!-- 选择处理人 -->
-      <biz-service-select-single-user-modal :url="url.assignList" ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
+      <events-user ref="eventsUser" @selectFinished="selectUserOK"></events-user>
       <!-- 资源列表 -->
       <resources-list ref="resourcesList" @selectOk="selectOk"></resources-list>
+      <!-- 资源详情 -->
+      <resources-detail 
+        :detailId="detailId" 
+        v-if="showDetail" 
+        ref="resourcesDetail" 
+        @closeDetail="showDetail=false">
+      </resources-detail>
     </a-spin>
   </a-modal>
 </template>
@@ -203,18 +210,20 @@ import ARow from 'ant-design-vue/es/grid/Row'
 import { postAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
 import JDate from '@/components/jeecg/JDate.vue'
-import BizServiceSelectSingleUserModal from '@/views/modules/service/common/BizServiceSelectSingleUserModal.vue';
 import ResourcesList from './ResourcesList'
+import ResourcesDetail from './ResourcesDetail'
+import EventsUser from './EventsUser'
 
 export default {
   name: 'ServiceOrderModal',
   mixins: [JEditableTableMixin, JeecgListMixin],
   components: {
-    BizServiceSelectSingleUserModal,
     ARow,
     JDictSelectTag,
     JDate,
-    ResourcesList
+    ResourcesList,
+    ResourcesDetail,
+    EventsUser
   },
   props: ['categoryOptions'],
   data() {
@@ -301,8 +310,7 @@ export default {
       },
       url: {
         userInfo: '/sys/user/userInfo',
-        add: '/sys/event/addAndSubmit',
-        assignList: '/sys/event/assignList',  //处理人员列表
+        add: '/sys/event/addAndSubmit'
       },
       fromData: {
         eventCatFullName: '',
@@ -310,7 +318,9 @@ export default {
       },
       disabledName: true,
       dataSource: [],
-      selectedRowKeys: []
+      selectedRowKeys: [],
+      detailId: "",
+      showDetail: false
     }
   },
   computed: {
@@ -324,6 +334,12 @@ export default {
     add() {
       this.visible = true
       this.form.resetFields()
+      this.dataSource = []
+      this.selectedRowKeys = []
+      this.fromData = {
+        eventCatFullName: '',
+        currentUserId: ''
+      }
     },
     // 选项业务
     changeCat(value, label) {
@@ -368,7 +384,10 @@ export default {
       })
     },
     // 查看资源
-    handleDetail() {},
+    handleDetail(id) {
+      this.detailId = id
+      this.showDetail = true
+    },
     // 选择处理人
     handleSelect(e) {
       e.srcElement.blur()
@@ -379,7 +398,7 @@ export default {
             catId: values.eventCatId,
             companyCode: myDeptParentIdes[1]
           }
-          this.$refs.selectSingleUserModal.select(1, params);
+          this.$refs.eventsUser.select(params);
         } else {
           this.$message.warn("请先选择事件分类！")
         }
@@ -402,6 +421,16 @@ export default {
           params.eventTime = params.eventTime + ' ' + '00:00:00'
           params.sysOrgCode = this.userInfo.orgCode
           params.deptName = this.userInfo.myDeptParentNames
+          // 关联资源内容
+          if (this.dataSource.length > 0) {
+            let relateSource = [], relateSourceNames = []
+            this.dataSource.forEach(item => {
+              relateSource.push(item.id)
+              relateSourceNames.push(item.name)
+            })
+            params.relateSource = relateSource.join(",")
+            params.relateSourceNames = relateSourceNames.join("、")
+          }
           Object.assign(params, this.fromData)
           this.confirmLoading = true
           postAction(this.url.add, params)

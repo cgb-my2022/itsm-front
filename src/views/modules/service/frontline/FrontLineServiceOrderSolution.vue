@@ -143,6 +143,8 @@ import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { FormTypes, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import { validateTables, VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
+import { getAction } from '../../../../api/manage'
+
 export default {
   mixins: [ServiceMixin, JEditableTableMixin],
   components: {
@@ -155,8 +157,14 @@ export default {
   props: ['formData'],
   data() {
     return {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 },
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 4 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 18 },
+      },
       rules: {
         serviceCatIds: [{ required: true, message: '请选择业务', trigger: 'change' }],
         reason: [
@@ -172,8 +180,9 @@ export default {
       remnant: 500,
       url: {
         upload: window._CONFIG['domianURL'] + '/sys/common/upload',
-        frontresolve: '/system/serviceOrder/frontresolveOrder',
-        supportresolve: '/system/serviceOrder/supportresolveOrder',
+        frontresolve: '/system/serviceOrder/frontresolveOrder',  //一线解决
+        supportresolve: '/system/serviceOrder/supportresolveOrder', //二线解决
+        getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
       },
       fileList: [],
       headers: {},
@@ -221,7 +230,7 @@ export default {
       columns: [
         {
           title: '资源名称',
-          dataIndex: 'orderType',
+          dataIndex: 'name',
           ellipsis: true,
           align: 'center'
         },
@@ -229,7 +238,7 @@ export default {
           title: '资源描述',
           align: 'center',
           ellipsis: true,
-          dataIndex: 'catNames',
+          dataIndex: 'describes',
         },
         {
           title: '操作',
@@ -404,6 +413,22 @@ export default {
       this.setNc(this.serviceOrderModel.serviceCatIds)
       return ncList;
     },
+    // 获取相关资源
+    getResources() {
+      this.loadingTable = true
+      getAction(
+        this.url.getResourceListById,
+        { id: this.userInfo.id }
+      ).then(res => {
+        console.log(res);
+        this.loadingTable = false
+        if (res.result) {
+          this.dataSource = res.result
+        }
+      }).finally( () => {
+        this.loadingTable = false
+      })
+    },
     //先关资源编辑
     bindEdite() {
 
@@ -416,6 +441,8 @@ export default {
     /*this.currTask = this.formData.bizTaskList[0];
       this.model.taskId = this.currTask.id;
       this.getProcessTaskTransInfo(this.formData); */
+    // 获取相关资源
+    this.getResources()
     // 获取业务
     this.getCatalog(3)
     // 获取二级业务

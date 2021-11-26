@@ -105,6 +105,11 @@
             <span>{{setStatus(text)}}</span>
           </span>
         </template>
+        <!-- 受理人 -->
+        <template slot="currentRole" slot-scope="text, record">
+          <span v-if="text === 'ROLE_NORMAL_PERSONNEL'">{{record.upUserName}}</span>
+          <span v-else>{{record.currentUserName}}</span>
+        </template>
         <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
           <template v-if="userInfo.id === record.currentUserId">
@@ -240,7 +245,8 @@ export default {
           align: 'center',
           width: 140,
           sorter: true,
-          dataIndex: 'currentUserName'
+          dataIndex: 'currentRole',
+          scopedSlots: { customRender: 'currentRole' }
         },
         {
           title: '操作',
