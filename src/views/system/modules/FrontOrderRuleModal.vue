@@ -242,7 +242,7 @@ export default {
         },
         // vip运维人员接单参数
         {
-          role: 'SUPPORT_PERSONNEL',
+          role: 'VIP_SUP',
           title: 'VIP接单规则'
         },
       ],

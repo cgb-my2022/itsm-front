@@ -34,12 +34,18 @@
 
 <script>
 import { filterObj } from '@/utils/util'
-import { getAction } from '@/api/manage'
+import { getAction, postAction } from '@/api/manage'
 import JEllipsis from '@/components/jeecg/JEllipsis'
 
 export default {
   name: 'BizSelectSingleUserModal',
   components: { JEllipsis },
+  props: {
+    url: {
+      type: String,
+      default: "/sys/event/assignList"
+    }
+  },
   data() {
     return {
       title: '用户列表',
@@ -73,8 +79,7 @@ export default {
       selectedRowKeys: [],
       selectedRows: [],
       type: 'radio',
-      eventParams: {},
-      url: "/sys/event/assignList"
+      eventParams: {}
     }
   },
   methods: {

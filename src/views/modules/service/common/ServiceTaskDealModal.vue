@@ -52,7 +52,7 @@
         </template>
         <template v-else-if="formData.orderStatusDetail === 4"
           ><!--一线暂挂状态-->
-          <a-button @click="frontActive()" type="primary" icon="unlock">解挂</a-button>
+          <a-button @click="bindActive('frontLineUnlock')" type="primary" icon="unlock">解挂</a-button>
         </template>
         <template v-if="formData.orderStatusDetail === 10"
           ><!--一线经理待转办-->
@@ -66,8 +66,8 @@
           <a-button @click="supportDelegate()" type="primary" icon="user">转办</a-button>
         </template>
         <template v-else-if="formData.orderStatusDetail === 7"
-          ><!--一二线暂挂状态-->
-          <a-button @click="supportActive()" type="primary" icon="unlock">解挂</a-button>
+          ><!--二线暂挂状态-->
+          <a-button @click="bindActive('supportLineUnlock')" type="primary" icon="unlock">解挂</a-button>
         </template>
         <template v-if="formData.orderStatusDetail === 11"
           ><!--一线经理待转办-->
@@ -78,9 +78,23 @@
           ><!--待确认状态-->
           <a-button @click="confirmOrder()" type="primary" icon="check-circle">确认</a-button>
         </template>
+
+        <!-- vip -->
+        <template v-if="formData.orderStatusDetail === 21 || formData.orderStatusDetail === 23"
+          ><!--vip办理-->
+          <a-button @click="taskDeal()" type="primary" icon="caret-right">任务办理</a-button>
+          <a-button @click="visible6 = true" type="primary" icon="lock">暂挂</a-button>
+          <a-button @click="vipSupDelegate()" type="primary" icon="user">转一线经理</a-button>
+          <a-button @click="vipDelegate()" type="primary" icon="rollback">转一线</a-button>
+        </template>
+        <template v-if="formData.orderStatusDetail === 22"
+          ><!--vip解挂-->
+          <a-button @click="bindActive('vipSupUnlock')" type="primary" icon="unlock">解挂</a-button>
+        </template>
       </a-space>
       <!-- <span style="color: red" v-if="currTask.suspendFlag">当前流程已挂起，需要进行解挂，再进行办理！</span>-->
     </div>
+    <!-- 任务办理 -->
     <service-biz-task-opt-modal
       ref="bpmBizTaskOptModal"
       :formData="formData"
@@ -95,6 +109,12 @@
     <biz-service-task-select-entruster-modal
       ref="supDelegate"
       @selectFinished="handleEntruster"
+    ></biz-service-task-select-entruster-modal>
+    <!--vip转办-->
+    <biz-service-task-select-entruster-modal
+      :isVip="true"
+      ref="vipDelegate"
+      @selectFinished="handleVip"
     ></biz-service-task-select-entruster-modal>
     <!-- 转二线 -->
     <biz-service-task-select-two ref="twoDelegate" @selectFinished="toSupportOk"></biz-service-task-select-two>
@@ -126,6 +146,22 @@
         :auto-size="{ minRows: 4, maxRows: 8 }"
       />
     </a-modal>
+    <!-- vip暂挂 -->
+    <a-modal
+      title="暂挂"
+      :visible="visible6"
+      :confirm-loading="confirmLoading6"
+      @ok="handleOk6"
+      @cancel="visible6 = false"
+    >
+      <a-textarea
+        v-model="model.vipPendingReason"
+        placeholder="请输入暂挂原因(有效长度1-300)"
+        :maxLength="300"
+        :auto-size="{ minRows: 4, maxRows: 8 }"
+      />
+    </a-modal>
+    <!-- 办理确认 -->
     <a-modal
       title="确认"
       :visible="visible5"
@@ -196,6 +232,7 @@ export default {
         transferReason: '',
         frontPendingReason: '',
         supportPendingReason: '',
+        vipPendingReason: '',
         remark: '',
         businessType: 1,
       },
@@ -203,10 +240,12 @@ export default {
       visible5: false,
       visible4: false,
       visible3: false,
+      visible6: false,
       loading: false,
       title: '',
       visible: false,
       confirmLoading: false,
+      confirmLoading6: false,
       confirmLoading5: false,
       confirmLoading4: false,
       confirmLoading3: false,
@@ -227,13 +266,20 @@ export default {
         // suspend: '/act/processInstance/suspend',
         frontLinePending: '/system/serviceOrder/frontLinePending',
         supportLinePending: '/system/serviceOrder/supportLinePending',
+        vipSupPending: '/system/serviceOrderVip/vipSupPending', //vip专员运维暂挂
         // restart: '/act/processInstance/restart',
         frontLineUnlock: '/system/serviceOrder/frontLineUnlock',
         supportLineUnlock: '/system/serviceOrder/supportLineUnlock',
+        vipSupUnlock: '/system/serviceOrderVip/vipSupUnlock',
+
         transferSupport: '/system/serviceOrder/transferSupport',
         unresolve: '/system/serviceOrder/confirmOrderUnresolved',
         resolve: '/system/serviceOrder/confirmOrderResolved',
         moreInfo: '/system/serviceOrder/moreInfo',
+        // vip
+        receiveOrderUserList: '/system/userOrderRule/receiveOrderUserList',  //一线运维选择人员
+        frontSup: '/system/usrServiceOrderRule/frontSup',  //一线经理选择人员
+        vipDelegateFrontSup: '/system/serviceOrderVip/vipDelegateFrontSup',  //转一线经理 
       },
     }
   },
@@ -357,6 +403,39 @@ export default {
           that.$emit('ok')
         })
     },
+    handleOk6(e) {
+      this.model.id = this.formData.id
+      let that = this
+      if (this.model.vipPendingReason === '') {
+        that.$message.warning('请输入暂挂原因')
+        return
+      }
+      this.ModalText = '暂挂处理中...'
+      this.confirmLoading6 = true
+      var params = {
+        id: this.model.id,
+        version: this.formData.version,
+        vipPendingReason: this.model.vipPendingReason,
+      }
+
+      putAction(that.url.vipSupPending, params)
+        .then((res) => {
+          that.visible6 = false
+          that.visible = false
+          if (res.success) {
+            that.$message.success(res.message)
+          } else {
+            that.$message.warning(res.message)
+          }
+          that.$emit('ok')
+        })
+        .finally(() => {
+          that.confirmLoading6 = false
+          that.visible6 = false
+          that.visible = false
+          that.$emit('ok')
+        })
+    },
     handleOk5(e) {
       if (this.confirmAction === '1') {
         this.resolve()
@@ -411,6 +490,7 @@ export default {
         },
       })
     },
+    // 运维转办
     handleDelegate(data) {
       var that = this
       var params = {
@@ -437,6 +517,7 @@ export default {
         }
       })
     },
+    // 主管转办
     handleEntruster(data) {
       var that = this
       var params = {
@@ -460,6 +541,30 @@ export default {
       ) {
         url0 = that.url.nextDelegateSupportUser
         params.supportUserName = data.username
+      }
+      Object.assign(params, data)
+      putAction(url0, params).then((res) => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.completeProcess()
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    // vip转办
+    handleVip(data) {
+      var that = this
+      var params = {
+        id: this.formData.id,
+        version: this.formData.version,
+        frontlineUserName: data.username
+      } 
+      let url0 = ""
+      if (data.flag === 1) {
+        url0 =  this.url.vipDelegateFrontSup
+      } else if (data.flag === 2) {
+        url0 =  this.url.nextDelegateFrontUser
       }
       Object.assign(params, data)
       putAction(url0, params).then((res) => {
@@ -538,7 +643,8 @@ export default {
           }
         });
       } */
-    frontActive() {
+    // 解挂
+    bindActive(urlName) {
       var that = this
       var params = { id: this.formData.id, version: this.formData.version }
       this.$confirm({
@@ -546,30 +652,7 @@ export default {
         content: '是否解挂该任务?',
         onOk: function () {
           that.confirmLoading = true
-          putAction(that.url.frontLineUnlock, params)
-            .then((res) => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.completeProcess()
-              } else {
-                that.$message.warn(res.message)
-              }
-            })
-            .finally(() => {
-              that.confirmLoading = false
-            })
-        },
-      })
-    },
-    supportActive() {
-      var that = this
-      var params = { id: this.formData.id, version: this.formData.version }
-      this.$confirm({
-        title: '确认解挂吗',
-        content: '是否解挂该任务?',
-        onOk: function () {
-          that.confirmLoading = true
-          putAction(that.url.supportLineUnlock, params)
+          putAction(that.url[urlName], params)
             .then((res) => {
               if (res.success) {
                 that.$message.success(res.message)
@@ -605,7 +688,16 @@ export default {
       this.$refs.supDelegate.select(2, this.formData)
       this.$refs.supDelegate.title = '选择办理人'
     },
-
+    // vip转一线经理
+    vipSupDelegate() {
+      this.$refs.vipDelegate.select(1, this.formData, this.url.frontSup)
+      this.$refs.vipDelegate.title = '转一线经理'
+    },
+    // vip转一线
+    vipDelegate() {
+      this.$refs.vipDelegate.select(2, this.formData, this.url.receiveOrderUserList)
+      this.$refs.vipDelegate.title = '转一线'
+    },
     // 未解决
     unResolve(e) {
       this.model.id = this.formData.id

@@ -25,7 +25,7 @@
             :tree-data="gData"
             @select="handleTreeSelect"
           >
-            <!-- <template #title="{ key: treeKey, title, catLevel }">
+            <template #title="{ key: treeKey, title, catLevel, }">
               <a-dropdown :trigger="['contextmenu']">
                 <span class="dropdown-span" :title="title">{{ title }}</span>
                 <template #overlay>
@@ -45,7 +45,7 @@
                   </a-menu>
                 </template>
               </a-dropdown>
-            </template> -->
+            </template>
           </a-tree>
         </a-spin>
       </a-card>
@@ -78,19 +78,20 @@
             <span>{{ text === 1 ? '公有' : '私有' }}</span>
           </template>
           <!-- 操作 -->
-          <span slot="action" slot-scope="text, record">
-            <a @click="onContextMenuClick(record.id, '3', record.catLevel)">添加下级</a>
+          <!-- <span slot="action" slot-scope="text, record">
+            <a @click="onContextMenuClick(record.id, '3', record.catLevel, record)">添加下级</a>
             <a-divider type="vertical" />
             <a @click="onContextMenuClick(record.id, '1', record.catLevel)">编辑</a>
             <a-divider type="vertical" />
             <a @click="onContextMenuClick(record.id, '2', record.catLevel)">删除</a>
-          </span>
+          </span> -->
         </a-table>
       </a-card>
     </a-col>
     <!-- 添加/编辑 服务目录 -->
     <service-info
       ref="modalForm"
+      :serviceInfo="selectInfo"
       :rowInfo="rowInfo"
       :paramsInfo="paramsInfo"
       @closeLoad="closeLoad()"
@@ -125,6 +126,7 @@ export default {
       expandedKeys: [],
       searchValue: '',
       rowInfo: {},
+      selectInfo: {},   //关联内容
       paramsInfo: {
         catLevel: 1, // 级别
         id: null, // 编辑的id
@@ -253,7 +255,7 @@ export default {
       this.$refs.modalForm.disableSubmit = false
     },
     // 添加目录
-    addRow(catLevel = 1, parentId = null, id = null) {
+    addRow(catLevel = 1, parentId = null, info = null, id = null) {
       if (!id) {
         this.rowInfo = {}
       }
@@ -261,6 +263,11 @@ export default {
         catLevel, // 级别
         id, // 编辑的id
         parentId // 父id
+      }
+      this.selectInfo = {
+        processId: info ? info.processId : "", 
+        processName: info ? info.processName : "", 
+        processRelationCode: info ? info.processRelationCode : ""
       }
       const title = id ? '编辑目录' : '新增目录'
       this.handleSubmit(title)
@@ -270,13 +277,7 @@ export default {
       switch (menuKey) {
         // 编辑
         case '1':
-          getServiceInfo({ id: treeKey }).then((res) => {
-            if (res.code === 200) {
-              const result = res.result
-              this.rowInfo = result
-              this.addRow(result.catLevel, result.parentId, result.id)
-            }
-          })
+          this.detailMethods(treeKey, catLevel, menuKey)
           break
         // 删除
         case '2':
@@ -284,11 +285,30 @@ export default {
           break
         // 添加
         case '3':
-          this.addRow(catLevel + 1, treeKey)
+          this.detailMethods(treeKey, catLevel + 1, menuKey)
           break
         default:
           break
       }
+    },
+    // 获取详情
+    detailMethods(id, catLevel, menuKey) {
+      getServiceInfo({ id }).then((res) => {
+        if (res.code === 200) {
+          const result = res.result
+          const selectInfo = {
+            processId: result.processId, 
+            processName: result.processName, 
+            processRelationCode: result.processRelationCode
+          }
+          if (menuKey === '1') {
+            this.rowInfo = result
+            this.addRow(catLevel, result.parentId, selectInfo, result.id)
+          } else {
+            this.addRow(catLevel, id, selectInfo)
+          }
+        }
+      })
     },
     // 选择获取业务流程关联
     handleTreeSelect(selectedKeys, event) {

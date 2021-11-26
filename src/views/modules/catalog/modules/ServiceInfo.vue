@@ -31,7 +31,7 @@
                                 @click="handleSelect"
                                 placeholder="点击选择关联流程"
                                 v-decorator="['processName', {
-                                    initialValue: rowInfo.processName || '',
+                                    initialValue: rowInfo.processName || serviceInfo.processName,
                                     rules: [{ required: true, message: '请选择关联流程!' }]
                                 }]">
                                 </a-input>
@@ -71,6 +71,9 @@ export default {
         },
         rowInfo: {
             type: Object,
+        },
+        serviceInfo: {
+            type: Object
         }
     },
     mixins: [JEditableTableMixin],
@@ -85,7 +88,7 @@ export default {
                     this.permission = newVal.id ? this.rowInfo.permission : 1
                 }
                 Object.keys(this.selectInfo).forEach(item => {
-                    this.selectInfo[item] = newVal.id ? this.rowInfo[item] : ""
+                    this.selectInfo[item] = newVal.id ? this.rowInfo[item] : this.serviceInfo[item]
                 })
             },
             immediate: true

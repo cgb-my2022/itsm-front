@@ -23,7 +23,8 @@
             </a-card-grid>
         </a-col>
       </a-row>
-    </div><!-- 快速发起 -->
+    </div>
+    <!-- 快速发起 -->
     <staff-service-order-modal ref="modalForm" @closeLoad="loadData"></staff-service-order-modal>
     <!-- 服务目录 -->
     <staff-service-catalog ref="serviceCatalog" @closeLoad="loadData"></staff-service-catalog>
@@ -52,6 +53,8 @@
                 <template v-if="record.orderStatus===6">
                   <a @click="handleProcess(record)">确认</a>
                   <a-divider type="vertical"/>
+                  <a @click="cancelProcess(record)" style="color:orange;">退回</a>
+                  <a-divider type="vertical"/> 
                 </template>
                 <template v-if="record.orderStatus === 7 && record.commentStatus === 0">
                   <a @click="bindEvaluation(record)">评价</a>
@@ -123,7 +126,9 @@
 
       </a-row>
     <!-- 评价 -->
-    <staff-service-evaluation ref="serviceEvaluation" @closeLoad="loadData()"></staff-service-evaluation>
+    <staff-service-evaluation ref="serviceEvaluation" @closeLoad="loadData"></staff-service-evaluation>
+    <!-- 退回 -->
+    <staff-service-back ref="serviceBack" @closeLoad="loadData"></staff-service-back>
     <!-- 提交工单 -->
     <a-modal
       title="提交工单"
@@ -150,6 +155,7 @@
   import ServiceTaskDetailModal from '../modules/service/common/ServiceTaskDetailModal'
   import ServiceTaskDealModal from '../modules/service/common/ServiceTaskDealModal'
   import StaffServiceEvaluation from '../modules/service/staff/modules/StaffServiceEvaluation'
+  import StaffServiceBack from '../modules/service/staff/modules/StaffServiceBack'
   import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
   import { mapGetters } from 'vuex'
   import { getAction, postAction } from '@/api/manage'
@@ -162,7 +168,8 @@
       ServiceTaskDetailModal, 
       ServiceTaskDealModal, 
       StaffServiceEvaluation,
-      StaffServiceCatalog 
+      StaffServiceCatalog,
+      StaffServiceBack
     },
     data() {
       return {
@@ -273,6 +280,10 @@
           },
           onCancel() {},
         });
+      },
+      // 退回
+      cancelProcess(record) {
+        this.$refs.serviceBack.deal(record)
       },
       // 评价 
       bindEvaluation(record) {

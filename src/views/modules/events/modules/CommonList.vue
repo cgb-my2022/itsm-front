@@ -60,7 +60,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset1" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
@@ -369,13 +369,10 @@ export default {
       }
     },
     // 重置
-    searchReset1() {
-      Object.keys(this.queryParam).forEach(item => {
-        if (item != 'queryAll') {
-          this.queryParam[item] = ""
-        }
-      })
-      this.loadData(1);
+    bindReset() {
+      this.eventCatFullName = ""
+      this.queryParam.eventCatFullName = ""
+      this.searchReset()
     },
     // 选项业务
     changeCat(value, label) {

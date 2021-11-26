@@ -38,7 +38,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
@@ -121,21 +121,18 @@
           }}</span>
           <span v-else-if="setRealname([10], record.orderStatusDetail)">{{ record.frontlineDelegateName }}</span>
           <span v-else-if="setRealname([11], record.orderStatusDetail)">{{ record.supportDelegateName }}</span>
-          <span v-else-if="setRealname([8, 9, 14], record.orderStatusDetail)">{{ record.solRealName }}</span>
+          <span v-else-if="setRealname([8, 9, 14, 24], record.orderStatusDetail)">{{ record.solRealName }}</span>
           <span v-else-if="setRealname([6, 7, 13], record.orderStatusDetail)">{{ record.supportUserRealname }}</span>
+          <span v-else-if="setRealname([21, 22, 23], record.orderStatusDetail)">{{ record.vipDelegateName }}</span>
           <span v-else></span>
         </template>
         <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
-          <template v-if="record.orderStatusDetail == 5">
-            <a @click="handleClaim(record)">接单</a>
-            <a-divider type="vertical" />
-          </template>
-          <template v-else-if="record.orderStatusDetail == 6 || record.orderStatusDetail == 13">
+          <template v-if="record.orderStatusDetail == 21 || record.orderStatusDetail == 23">
             <a @click="handleProcess(record)">办理</a>
             <a-divider type="vertical" />
           </template>
-          <template v-else-if="record.orderStatusDetail == 7">
+          <template v-else-if="record.orderStatusDetail == 22">
             <a @click="handleProcess(record)">解挂</a>
             <a-divider type="vertical" />
           </template>

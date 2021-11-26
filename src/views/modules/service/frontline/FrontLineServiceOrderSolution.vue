@@ -109,13 +109,16 @@
       <div style="margin-top: 20px; text-align: center">
         <!-- 一线解决工单 -->
         <template v-if="formData.orderStatusDetail === 3 || formData.orderStatusDetail === 12">
-          <a-button type="primary" @click="handleResolved(1)">已解决</a-button>
+          <a-button type="primary" @click="handleResolved('frontresolve')">已解决</a-button>
         </template>
         <!-- 二线解决工单 -->
         <template v-if="formData.orderStatusDetail === 6 || formData.orderStatusDetail === 13">
-          <a-button type="primary" @click="handleResolved(2)">已解决</a-button>
+          <a-button type="primary" @click="handleResolved('supportresolve')">已解决</a-button>
         </template>
-
+        <!-- 二线解决工单 -->
+        <template v-if="formData.orderStatusDetail === 21 || formData.orderStatusDetail === 23">
+          <a-button type="primary" @click="handleResolved('vipResolveOrder')">已解决</a-button>
+        </template>
         <!--<template v-if="model.processModel==1">
         <template v-for="(item,index) in resultObj.transitionList">
           <a-button type="primary" @click="handleProcessComplete(item.nextnode)">{{ item.Transition }}</a-button>
@@ -191,6 +194,7 @@ export default {
         upload: window._CONFIG['domianURL'] + '/sys/common/upload',
         frontresolve: '/system/serviceOrder/frontresolveOrder',  //一线解决
         supportresolve: '/system/serviceOrder/supportresolveOrder', //二线解决
+        vipResolveOrder: '/system/serviceOrderVip/vipResolveOrder', //二线解决
         getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
       },
       fileList: [],
@@ -344,8 +348,8 @@ export default {
       this.model.fileList = JSON.stringify(this.fileList)
       console.log('-----fileList-----', this.model.fileList)
     },
-    // 已解决(type 1:一线  2：二线)
-    handleResolved(type) {
+    // 已解决(type 1:一线  2：二线 3：vip)
+    handleResolved(url) {
       const that = this
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
@@ -353,7 +357,6 @@ export default {
             title: '提示',
             content: '确认提交吗?',
             onOk: function () {
-              const url = type === 1 ? 'frontresolve' : 'supportresolve'
               that.okConfirm(url)
             }
           })
