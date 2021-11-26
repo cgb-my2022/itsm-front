@@ -595,7 +595,7 @@ export default {
                      }
                   })
                }else{
-                  this.$message.success('新增失败')
+                  this.$message.error('新增失败')
                }
             }).catch(err=>{
                console.log(err);
