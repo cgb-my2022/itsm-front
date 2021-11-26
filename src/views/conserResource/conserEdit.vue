@@ -593,22 +593,22 @@ export default {
 
     // 确认按钮
     addSourceSure() {
-      let defaultFlag = false
-      let ourDataFlag = false
-      this.defalutData.forEach((item) => {
-        if (!item.values || item.values == "[]") {
-          defaultFlag = true
-        }
-      })
-      this.ourData.forEach((item) => {
-        if (!item.values || item.values == "[]") {
-          ourDataFlag = true
-        }
-      })
-      if (defaultFlag || ourDataFlag) {
-        this.$message.error('请完善属性信息')
-        return
-      }
+      // let defaultFlag = false
+      // let ourDataFlag = false
+      // this.defalutData.forEach((item) => {
+      //   if (!item.values || item.values == "[]") {
+      //     defaultFlag = true
+      //   }
+      // })
+      // this.ourData.forEach((item) => {
+      //   if (!item.values || item.values == "[]") {
+      //     ourDataFlag = true
+      //   }
+      // })
+      // if (defaultFlag || ourDataFlag) {
+      //   this.$message.error('请完善属性信息')
+      //   return
+      // }
       // let typeFlag = true
       // this.ourData.forEach(item=>{
         //    if(item.attrType == 9){

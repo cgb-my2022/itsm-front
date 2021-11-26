@@ -5,7 +5,7 @@
       :data="tableData.slice((page.currentPage-1)*page.pageSize,page.currentPage*page.pageSize)"
       >
       <vxe-column field="createTime" title="变更时间" sortable></vxe-column>
-      <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column>
+      <!-- <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column> -->
       <vxe-column field="changeDataBefore" title="变更前数据" show-overflow></vxe-column>
       <vxe-column field="changeDataAfter" title="变更后数据" show-overflow></vxe-column>
       <vxe-column field="updateName" title="变更人" sortable></vxe-column>
