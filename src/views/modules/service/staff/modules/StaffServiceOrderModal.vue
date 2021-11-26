@@ -265,10 +265,13 @@ export default {
       const { workplaceDeptParentIdes, username, orgCode } = this.userInfo
       this.visible = true
       this.form.resetFields()
+      this.serviceLevel ="3"
+      this.disabledLevel = false
       this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2)
       this.rowInfo.userName = username
       this.rowInfo.sysOrgCode = orgCode
     },
+    // 选择代理
     handleSelectUser() {
       this.$refs.selectSingleUserModal.select(0)
     },
@@ -296,6 +299,7 @@ export default {
         })
         .finally(() => {})
     },
+    // 提价内容
     handleOkConfirm: function () {
       let that = this
       this.$confirm({
@@ -306,7 +310,7 @@ export default {
         },
       })
     },
-    // 提交
+    // 提交方法
     okConfirm() {
       /** 触发表单验证 */
       this.getAllTable()
