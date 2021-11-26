@@ -10,6 +10,11 @@
       <vxe-column field="changeDataAfter" title="变更后数据" show-overflow></vxe-column>
       <vxe-column field="updateName" title="变更人" sortable></vxe-column>
       <vxe-column field="changeReason" title="变更原因" show-overflow></vxe-column>
+      <vxe-column title="操作">
+        <template #default='{ row }'>
+          <el-button type="primary" @click="toDetail(row)">查看详情</el-button>
+        </template>
+      </vxe-column>
     </vxe-table>
     <vxe-pager
       background
@@ -59,6 +64,16 @@ export default {
     pageChange(type){
       this.page.currentPage = type.currentPage
       this.page.pageSize = type.pageSize
+    },
+
+    toDetail(row){
+      this.$router.push({
+        path: "/conserResource/conserDetailHome",
+        query:{
+          id: row.id
+        }
+      })
+      this.$emit('changeKey', '1')
     }
   },
 }

@@ -1,11 +1,11 @@
 <template>
   <a-card :bordered="false">
-    <a-tabs default-active-key="1" @change="callback">
+    <a-tabs :default-active-key="1" :activeKey="intKey" @change="callback">
       <a-tab-pane key="1" tab="资源信息">
         <conserDetail v-if="intKey == '1'"></conserDetail>
       </a-tab-pane>
       <a-tab-pane key="2" tab="变更日志">
-        <changeInfo v-if="intKey == '2'"></changeInfo>
+        <changeInfo v-if="intKey == '2'" @changeKey="changeKey"></changeInfo>
       </a-tab-pane>
       <a-tab-pane key="3" tab="关联资源">
         <associatedResources v-if="intKey == '3'"></associatedResources>
@@ -24,18 +24,24 @@ export default {
     changeInfo,
     associatedResources
   },
-  props:{},
+  props:{
+  },
   data(){
     return {
       intKey: "1"
     }
   },
-  mounted(){},
+  mounted(){
+    
+  },
   methods:{
     callback(key) {
       // console.log(key);
       this.intKey = key
     },
+    changeKey(val){
+      this.callback(val)
+    }
   },
 }
 </script>
