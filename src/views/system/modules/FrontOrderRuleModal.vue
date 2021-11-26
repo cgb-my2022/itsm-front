@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    :title="operations === 1 ? '一线接单规则' : '二线接单规则'"
+    :title="roleParams[operations].title"
     :maskClosable="true"
     :width="drawerWidth"
     placement="right"
@@ -138,7 +138,8 @@ export default {
   },
   data() {
     return {
-      operations: 1,
+      // 0：一线 1：二线 2：vip
+      operations: 0,
       orderType: '', //工单类型
       title: "",
       // 表格数据
@@ -225,16 +226,24 @@ export default {
         usrRule: '/system/usrServiceOrderRule/usrRule', // 根据用户id查询接单规则
         userId: '/sys/user/generateUserId', // 引入生成添加用户情况下的url
         saveRule: '/system/usrServiceOrderRule/configFrontRule', // 保存接单规则
-        delRule: '/system/userOrderRule/delete'  //删除接单规则
+        delRule: '/system/userOrderRule/delete',  //删除接单规则
+        list: '/system/userOrderRule/list',  //运维人员接单列表
       },
-      urls: [
-        // 一线运维人员接单列表
+      roleParams: [
+        // 一线运维人员接单参数
         {
-          list: '/system/userOrderRule/frontList',
+          role: 'FRONTLINE_PERSONNEL',
+          title: '一线接单规则'
         },
-        // 二线运维人员接单列表
+        // 二线运维人员接单参数
         {
-          list: '/system/userOrderRule/supportList',
+          role: 'SUPPORT_PERSONNEL',
+          title: '二线接单规则'
+        },
+        // vip运维人员接单参数
+        {
+          role: 'SUPPORT_PERSONNEL',
+          title: 'VIP接单规则'
         },
       ],
       identity: '1',
@@ -269,10 +278,11 @@ export default {
     initLoad() {
       this.loading = true
       getAction(
-        this.urls[this.operations - 1].list, 
+        this.url.list, 
         { 
           orderType: this.orderType,
-          userId: this.userId
+          userId: this.userId,
+          role: this.roleParams[this.operations].role
         }).then((res) => {
         this.loading = false
         if (res.code === 200) {
@@ -282,11 +292,11 @@ export default {
     },
     // 添加业务
     handleAdd() {
-      this.$refs.addService.deal(this.dictOptions, this.operations, this.userId, null)
+      this.$refs.addService.deal(this.dictOptions, this.roleParams[this.operations].role, this.userId, null)
     },
     // 编辑业务
     handleEdit(record) {
-      this.$refs.addService.deal(this.dictOptions, this.operations, this.userId, record)
+      this.$refs.addService.deal(this.dictOptions, this.roleParams[this.operations].role, this.userId, record)
     },
     // 删除业务
     handleDel(record) {
@@ -369,7 +379,7 @@ export default {
       this.refresh()
       this.edit({ activitiSync: '1' })
     },
-    edit(record, operations = 1) {
+    edit(record, operations) {
       if (this.dictOptions.length === 1) {
         this.initDictData()
       }

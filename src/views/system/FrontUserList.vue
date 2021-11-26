@@ -318,7 +318,7 @@
         }
       },
       ruleForm(record) {
-        this.$refs.ruleForm.edit(record, 1);
+        this.$refs.ruleForm.edit(record, 0);
       },
       handleFrozen: function (id, status, username) {
         let that = this;

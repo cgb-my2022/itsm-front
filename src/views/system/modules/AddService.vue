@@ -144,6 +144,7 @@ export default {
       fromData: {
         id: null,
         userId: null,
+        userRole: null,
         orderType: '',
         catIds: [],
         catNames: '',
@@ -151,19 +152,10 @@ export default {
         departNames: '',
         ruleStatus: true,
       }, 
-      operations: 1,
-      url: [
-        //一线运维人员新增接单规则
-        {
-          add: '/system/userOrderRule/frontAdd',   
-          edit: '/system/userOrderRule/edit'
-        },
-        //二线运维人员新增接单规则
-        {
-          add: '/system/userOrderRule/supportAdd',   
-          edit: '/system/userOrderRule/edit'
-        }
-      ],
+      urls: {
+        add: '/system/userOrderRule/add',   
+        edit: '/system/userOrderRule/edit'
+      },
       dictUrl: '/sys/category/treeMap',
       departTree: [],
       dictOptions: [], // 工单类型
@@ -220,7 +212,7 @@ export default {
       this.fromData.catNames = ""  
     },
     // 添加初始化
-    deal(dictOptions, operations, userId, record) {
+    deal(dictOptions,  userRole, userId, record) {
       const option = JSON.parse(JSON.stringify(dictOptions))
       const arr = option.splice(1, option.length - 1)
       this.dictOptions = arr
@@ -250,7 +242,7 @@ export default {
           }
         }
       }
-      this.operations = operations
+      this.fromData.userRole =  userRole
       this.visible = true
     },
     //多选搜索过滤
@@ -280,13 +272,12 @@ export default {
     handleOkConfirm() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          const urls = this.url[this.operations-1]
           let params = this.setObj(this.fromData)
           params.catIds = params.catIds.join(",")
           params.departIds = params.departIds.join(",")
           params.ruleStatus = params.ruleStatus ? 1 : 0
           this.confirmLoading = true
-          const url = params.id ? urls.edit :  urls.add
+          const url = params.id ? this.urls.edit : this.urls.add
           const axo =  params.id ? putAction(url, params) : postAction(url, params)
           axo.then((res) => {
               this.confirmLoading = false

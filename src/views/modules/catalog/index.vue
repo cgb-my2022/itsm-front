@@ -25,7 +25,7 @@
             :tree-data="gData"
             @select="handleTreeSelect"
           >
-            <template #title="{ key: treeKey, title, catLevel }">
+            <!-- <template #title="{ key: treeKey, title, catLevel }">
               <a-dropdown :trigger="['contextmenu']">
                 <span class="dropdown-span" :title="title">{{ title }}</span>
                 <template #overlay>
@@ -45,7 +45,7 @@
                   </a-menu>
                 </template>
               </a-dropdown>
-            </template>
+            </template> -->
           </a-tree>
         </a-spin>
       </a-card>
@@ -152,13 +152,13 @@ export default {
           align: 'center',
           dataIndex: 'processName',
         },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          align: 'center',
-          width: 180,
-          scopedSlots: { customRender: 'action' },
-        },
+        // {
+        //   title: '操作',
+        //   dataIndex: 'action',
+        //   align: 'center',
+        //   width: 180,
+        //   scopedSlots: { customRender: 'action' },
+        // },
       ],
       url: '/sys/serviceCat/listByPid',
     }

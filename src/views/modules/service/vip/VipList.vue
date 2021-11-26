@@ -166,10 +166,10 @@ export default {
   mixins: [ServiceColumns],
   data() {
     return {
-      description: '服务工单管理页面',
+      description: 'vip工单管理页面',
       flowCode: 'onl_service_order',
       url: {
-        list: '/system/serviceOrder/supportLineList',
+        list: '/system/serviceOrderVip/vipSupList',
         receive: '/system/serviceOrder/supportReceiveOrder',
       },
       dictOptions: {},
