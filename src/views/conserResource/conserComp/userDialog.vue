@@ -42,7 +42,8 @@ export default {
   components:{},
   props:{
      userDialogVisible: false,
-     theIndex: null
+     theIndex: null,
+     secUserID: null
   },
   data(){
     return {
@@ -57,6 +58,7 @@ export default {
   },
   mounted(){
      this.getUser()
+     console.log(this.secUserID);
   },
   methods:{
      getUser(){
@@ -68,6 +70,11 @@ export default {
          .then(res=>{
             this.tableData = res.result.records
             this.page.totalResult = res.result.total
+            let sectable = this.tableData.find((item)=>{
+               return item.id == this.secUserID
+            })
+            this.$refs.xTable1.setRadioRow(sectable)
+
          })
      },
      userCancle(){
