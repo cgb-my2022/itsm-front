@@ -364,7 +364,27 @@ export default {
     fileType,
     userDialog
   },
-  props: {},
+  props: {
+    isShowButton: {
+      type: String,
+      default: '1'
+    },
+    detailId: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    detailId: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.resourceId = value
+          this.getType(value)
+        }
+      }
+    }
+  },
   data() {
     return {
       fileList: [],
@@ -408,9 +428,11 @@ export default {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
 
-    let secID = this.$route.query.id
-    this.resourceId = this.$route.query.id
-    this.getType(secID)
+    if (this.isShowButton === '1') {
+      let secID = this.$route.query.id
+      this.resourceId = this.$route.query.id
+      this.getType(secID)
+    }
   },
   methods: {
     getType(id) {
@@ -622,12 +644,17 @@ export default {
           // console.log(res)
           if (res.code == 200) {
             this.$message.success('修改成功')
-            this.$router.push({
-              name: 'conserResource-conserResource',
-              params: {
-                orderid: this.resourceId,
-              },
-            })
+            if(this.isShowButton === '1') {
+              this.$router.push({
+                name: 'conserResource-conserResource',
+                params: {
+                  orderid: this.resourceId,
+                },
+              })
+            } else {
+            console.log("111");
+              this.$emit("closeDetail", "2")
+            }
           } else {
             this.$message.success('修改失败')
           }
@@ -637,9 +664,13 @@ export default {
         })
     },
     cancleAddResource() {
-      this.$router.push({
-        name: 'conserResource-conserResource',
-      })
+      if(this.isShowButton === '1') {
+        this.$router.push({
+          name: 'conserResource-conserResource',
+        })
+      } else {
+        this.$emit("closeDetail", "1")
+      }
     },
   },
 }

@@ -71,7 +71,7 @@
           >
             <!-- 操作按钮 -->
             <span slot="action" slot-scope="text, record">
-              <a @click="bindEdite(record)">编辑</a>
+              <a @click="bindEdite(record.id)">编辑</a>
             </span>
           </a-table>
         </a-form-model-item>
@@ -129,6 +129,13 @@
       </div>
       <br />
     </a-card>
+    <!-- 资源详情 -->
+    <resources-detail 
+      :detailId="detailId" 
+      v-if="showDetail" 
+      ref="resourcesDetail" 
+      @closeDetail="closeDetail">
+    </resources-detail>
   </a-spin>
 </template>
 
@@ -144,6 +151,7 @@ import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { FormTypes, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import { validateTables, VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
 import { getAction } from '../../../../api/manage'
+import ResourcesDetail from '../common/ResourcesDetail'
 
 export default {
   mixins: [ServiceMixin, JEditableTableMixin],
@@ -155,6 +163,7 @@ export default {
   },
   name: 'ServiceOrderFormFrontLine',
   props: ['formData'],
+  components: { ResourcesDetail },
   data() {
     return {
       labelCol: {
@@ -247,7 +256,9 @@ export default {
           width: 140,
           scopedSlots: { customRender: 'action' },
         },
-      ]
+      ],
+      showDetail: false,
+      detailId: ""
     }
   },
   watch: {
@@ -420,7 +431,6 @@ export default {
         this.url.getResourceListById,
         { id: this.userInfo.id }
       ).then(res => {
-        console.log(res);
         this.loadingTable = false
         if (res.result) {
           this.dataSource = res.result
@@ -430,8 +440,15 @@ export default {
       })
     },
     //先关资源编辑
-    bindEdite() {
-
+    bindEdite(id) {
+      this.detailId = id
+      this.showDetail = true
+    },
+    closeDetail(data) {
+      if (data === '2') {
+        this.getResources()
+      }
+      this.showDetail = false
     }
   },
   created() {

@@ -378,6 +378,7 @@ export default {
       immediate: true,
       handler(value) {
         if (value) {
+          this.resourceId = value
           this.getType(value)
         }
       }
