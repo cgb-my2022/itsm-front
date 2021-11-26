@@ -96,6 +96,7 @@
             :data="upData"
             :on-remove="handleUploadRemove"
             :limit="1"
+            :on-error="handleUpError"
             :on-success="handleUpSuccess"
             :before-upload="beforeAvatarUpload"
             :file-list="fileList">
@@ -429,12 +430,14 @@ export default {
       return extension || extension2
     },
     handleUpSuccess(res, file){
-      this.$message.success('上传成功')
       this.uploadDialogVisible = false
       this.fileList = []
       this.upFile = null
       this.getDefaultTree(sessionStorage.getItem('treeid'))
       
+    },
+    handleUpError(){
+      this.$message.error('上传失败')
     },
 
     // handleUploadChange(info){

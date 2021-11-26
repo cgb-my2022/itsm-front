@@ -13,6 +13,7 @@
                 v-if="userDialogVisible" 
                 :userDialogVisible="userDialogVisible"
                 :theIndex="index"
+                :secUserID="userID"
                 @userCancle="userCancle"
                 @userSure="userSure"
             ></userDialog>
@@ -421,7 +422,8 @@ export default {
 
       ourSecOptions: [],
       userDialogVisible: false,
-      userID: null
+      userID: null,
+      resourceTypeId: null,
     }
   },
   mounted() {
@@ -438,6 +440,9 @@ export default {
     getType(id) {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
+          // console.log(res);
+          this.userID = res.result.useUser
+          this.resourceTypeId = res.result.resourceTypeId
           let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
           this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
@@ -635,7 +640,7 @@ export default {
         publicResourceMap: this.defalutData,
         customizeResourceMap: this.ourData.length > 0? this.ourData : null,
         allResourceMap: this.defalutData.concat(this.ourData),
-        resourceTypeId: sessionStorage.getItem('treeid'),
+        resourceTypeId: this.resourceTypeId,
         id: this.resourceId,
         useUser: this.userID
       }
