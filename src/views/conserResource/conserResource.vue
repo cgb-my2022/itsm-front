@@ -281,6 +281,7 @@ export default {
           id: row.id
         }
       })
+      sessionStorage.setItem('resourceTableID', row.id)
     },
     toEdit(row){
       this.$router.push({

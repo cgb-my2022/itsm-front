@@ -427,9 +427,27 @@ export default {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
     if (this.isShowButton === '1') {
-      let secID = this.$route.query.id
-      this.resourceId = this.$route.query.id
-      this.getType(secID)
+      if(this.$route.query.id){
+        let secID = this.$route.query.id
+        this.resourceId = this.$route.query.id
+        this.getType(secID)
+      }
+      // 如果是从变更记录跳转过来
+      if(this.$route.params.data){
+        let result = JSON.parse(this.$route.params.data.changeDataAfter)
+        // console.log(result);
+        let dafaultData = []
+        let cusData = []
+        result.forEach(item=>{
+          if(item.groupName == "公共属性"){
+            dafaultData.push(item)
+          }else{
+            cusData.push(item)
+          }
+        })
+        this.defalutData = dafaultData
+        this.ourData = cusData
+      } 
     }
   },
   methods: {
@@ -535,19 +553,19 @@ export default {
     },
     // 打开tree的dialog
     // ouropenTreeDialog(row, index){
-    //    this.ourTreeValue = row
-    //    this.ourTreeIndex = index
-    //    this.ourtreeDialogVisible = true
-    // },
-    // ourtreeCancleClose(val, index){
-    //    this.ourtreeDialogVisible = val.flag
-    //    this.ourData[index].values = JSON.stringify(val.treeDatas)
-    // },
-    // // 树形结构数据
-    // ourtreeSureClose(val, index){
-    //    this.ourtreeDialogVisible = val.flag
-    //    console.log(val)
-    //    this.ourData[index].values = JSON.stringify(val.treeDatas)
+      //    this.ourTreeValue = row
+      //    this.ourTreeIndex = index
+      //    this.ourtreeDialogVisible = true
+      // },
+      // ourtreeCancleClose(val, index){
+      //    this.ourtreeDialogVisible = val.flag
+      //    this.ourData[index].values = JSON.stringify(val.treeDatas)
+      // },
+      // // 树形结构数据
+      // ourtreeSureClose(val, index){
+      //    this.ourtreeDialogVisible = val.flag
+      //    console.log(val)
+      //    this.ourData[index].values = JSON.stringify(val.treeDatas)
     // },
 
     ourHandleNodeClick(data, res, index) {
