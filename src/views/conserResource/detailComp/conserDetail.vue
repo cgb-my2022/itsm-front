@@ -433,9 +433,10 @@ export default {
         this.getType(secID)
       }
       // 如果是从变更记录跳转过来
-      if(this.$route.params.data){
-        let result = JSON.parse(this.$route.params.data.changeDataAfter)
-        // console.log(result);
+      if(sessionStorage.getItem('changeInfoValues')){
+        let result = JSON.parse(sessionStorage.getItem('changeInfoValues'))
+
+        console.log(result);
         let dafaultData = []
         let cusData = []
         result.forEach(item=>{
@@ -684,6 +685,9 @@ export default {
       this.$router.push({
          name:'conserResource-conserResource',
       })
+      if(sessionStorage.getItem('changeInfoValues')){
+        sessionStorage.removeItem('changeInfoValues')
+      }
    } 
 
   },
