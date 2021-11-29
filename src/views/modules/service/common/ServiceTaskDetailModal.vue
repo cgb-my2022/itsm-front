@@ -7,7 +7,6 @@
     :bodyStyle="bodyStyle"
     style="top: 0px;min-height: 500px;"
     :footer="null"
-    aria-disabled="true"
     @cancel="handleModalCancel">
     <a-spin :spinning="confirmLoading">
       <div style="margin-top: 5px">
@@ -82,7 +81,12 @@
         ).then(res => {
           this.visible = true;
           if (res.code === 200) {
-            this.formData = res.result
+            let result = res.result
+            Object.keys(result.serviceOrder).forEach((item) => {
+              result[item] = result.serviceOrder[item]
+            })
+            this.formData = result
+            this.visible = true
           }
         })
       },

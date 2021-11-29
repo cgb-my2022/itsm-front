@@ -443,7 +443,7 @@ export default {
       this.loadingTable = true
       getAction(
         this.url.getResourceListById,
-        { id: this.userInfo.id }
+        { id: this.formData.userId }
       ).then(res => {
         this.loadingTable = false
         if (res.result) {

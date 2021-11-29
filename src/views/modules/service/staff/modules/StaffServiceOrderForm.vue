@@ -34,7 +34,7 @@
       </div>
       <!-- 信息展示 -->
       <template v-if="tabIndex === 0">
-        <j-form-container>
+        <j-form-container :disabled="false">
           <table border="1px" id="staffLeaveTable">
             <tr>
               <td class="firstTr">发起人</td>
@@ -89,7 +89,24 @@
             <tr>
               <td class="firstTr">相关资源</td>
               <td class="firstTr" colspan="5">
-                <span class="text text-left">无</span>
+                <div class="td-flex text text-left">
+                  <span class="td-flex_span">{{ resources || '暂无'}}</span>
+                  <span v-if="resources" class="td-btn" @click="lookList">查看详细资源</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="firstTr">优先级</td>
+              <td class="firstTr" colspan="4">
+                <span class="text text-left" v-if="formData.serviceLevel == 1" style="color: red">{{
+                  setLevel(formData.serviceLevel)
+                }}</span>
+                <span class="text text-left" v-if="formData.serviceLevel == 2" style="color: orange">{{
+                  setLevel(formData.serviceLevel)
+                }}</span>
+                <span class="text text-left" v-if="formData.serviceLevel == 3" style="color: blue">{{
+                  setLevel(formData.serviceLevel)
+                }}</span>
               </td>
             </tr>
             <tr>
@@ -188,6 +205,8 @@
         <p v-else class="record-null">暂无流转记录</p>
       </template>
     </a-card>
+    <!-- 资源列表 -->
+    <resources-list ref="resourcesList" :resourcesList="resourcesList"></resources-list>
   </a-form>
 </template>
 
@@ -199,6 +218,7 @@ import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import { queryIdTree, queryDepartTreeList } from '@/api/api'
 import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
+import ResourcesList from '@/views/modules/service/common/ResourcesList'
 
 export default {
   name: 'ServiceOrderForm',
@@ -206,6 +226,7 @@ export default {
   mixins: [JEditableTableMixin],
   components: {
     JDictSelectTag,
+    ResourcesList
   },
   data() {
     return {
@@ -263,7 +284,13 @@ export default {
         serviceOrderAttach: {
           list: '/system/serviceOrder/queryServiceOrderAttachByMainId',
         },
+        getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
       },
+      // 相关资源
+      resources: null,
+      resourcesList: [],
+      // 优先级
+      dictOptions: []
     }
   },
   computed: {
@@ -276,6 +303,7 @@ export default {
         return file || []
       }
     },
+    // 当前处理人
     setRealname() {
       return function (arr, status) {
         if (arr.indexOf(status) != -1) {
@@ -284,12 +312,50 @@ export default {
         return false
       }
     },
+    // 根据等级id设置等级
+    setLevel() {
+      return function (text) {
+        if (this.dictOptions.length > 0) {
+          const findItem = this.dictOptions.find((item) => item.value == text)
+          return findItem.text || findItem.title
+        } else {
+          return ''
+        }
+      }
+    }
   },
   created() {
+    this.getResources()
     this.queryDepartTree()
     this.edit(this.formData.serviceOrder)
+    // 优先级
+    this.initDictData("EVENT_LEVEL", "dictOptions")
   },
   methods: {
+    // 获取相关资源
+    getResources() {
+      this.resourcesList = []
+      this.resources = null
+      if(!this.formData.userId) return;
+      getAction(
+        this.url.getResourceListById,
+        { id: this.formData.userId }
+      ).then(res => {
+        if (res.result && res.result.length > 0) {
+          let resources = []
+          res.result.forEach(item => {
+            resources.push(item.name)
+          })
+          this.resourcesList = res.result
+          this.resources = resources.join("、")
+        }
+      })
+    },
+    // 查看详细资源 
+    lookList() {
+      console.log("333");
+      this.$refs.resourcesList.add()
+    },
     // 切换内容
     chagenTab(index) {
       if (this.tabIndex === index) return
@@ -391,8 +457,24 @@ export default {
 .firstTr {
   padding: 12px;
 }
+.td-btn {
+  height: 32px;
+  line-height: 32px;
+  padding: 0 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  text-align: center;
+  color: #fff;
+  background-color: #1890FF;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.td-btn:hover {
+  opacity: 0.8;
+}
 .text {
   color: rgba(0, 0, 0, 0.65);
+  font-size: 12px;
 }
 .text-left {
   text-align: left;
@@ -401,6 +483,16 @@ export default {
 .tag-beyond {
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.td-flex {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.td-flex .td-flex_span {
+  display: inline-block;
+  flex: 1;
+  padding-right: 20px;
 }
 /* 流转记录 */
 .record-null {

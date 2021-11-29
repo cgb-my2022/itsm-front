@@ -263,11 +263,16 @@ export default {
   },
   methods: {
     add() {
-      const { workplaceDeptParentIdes, username, orgCode } = this.userInfo
+      const { workplaceDeptParentIdes, username, orgCode, isLeader } = this.userInfo
       this.visible = true
       this.form.resetFields()
-      this.serviceLevel ="3"
-      this.disabledLevel = false
+      if (isLeader) {
+        this.serviceLevel ="1"
+        this.disabledLevel = true
+      } else {
+        this.serviceLevel ="3"
+        this.disabledLevel = false
+      }
       this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2)
       this.rowInfo.userName = username
       this.rowInfo.sysOrgCode = orgCode
@@ -289,13 +294,13 @@ export default {
           })
           this.rowInfo.userName = data.username
           this.rowInfo.sysOrgCode = res.result.orgCode
-          const myDeptParentIdes = JSON.parse(res.result.myDeptParentIdes)
-          if(myDeptParentIdes.length > 2) {
-            this.serviceLevel = "3"
-            this.disabledLevel = false
-          } else {
+          const isLeader = res.result.isLeader
+          if(isLeader) {
             this.serviceLevel = "1"
             this.disabledLevel = true
+          } else {
+            this.serviceLevel = "3"
+            this.disabledLevel = false
           }
         })
         .finally(() => {})

@@ -36,7 +36,6 @@ export default {
   },
   methods: {
     handleCancel(data) {
-      console.log("222");
       this.$emit("closeDetail", data)
     }
   }
