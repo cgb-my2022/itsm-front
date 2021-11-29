@@ -134,11 +134,12 @@
                   }}</span>
                   <span class="text text-left" v-else-if="setRealname([10], model.orderStatusDetail)">{{ model.frontlineDelegateName }}</span>
                   <span class="text text-left" v-else-if="setRealname([11], model.orderStatusDetail)">{{ model.supportDelegateName }}</span>
-                  <span class="text text-left" v-else-if="setRealname([8, 9, 14], model.orderStatusDetail)">{{ model.solRealName }}</span>
+                  <span class="text text-left" v-else-if="setRealname([8, 9, 14, 24], model.orderStatusDetail)">{{ model.solRealName }}</span>
                   <span class="text text-left" v-else-if="setRealname([6, 7, 13], model.orderStatusDetail)">{{
                     model.supportUserRealname
                   }}</span>
-                  <span class="text text-left" v-else></span>
+                  <span class="text text-left" v-else-if="setRealname([21, 22, 23], model.orderStatusDetail)">{{ model.vipDelegateName }}</span>
+                  <span v-else></span>
               </td>
             </tr>
             <tr>
