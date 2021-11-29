@@ -57,7 +57,7 @@
                 v-decorator="['serviceLevel', { initialValue: serviceLevel, rules: [{ required: true, message: '请选择优先级!' }] }]"
               >
                 <template v-for="item in dictOptions">
-                  <a-radio :key="item.value" :value="item.value">{{item.text || item.title}}</a-radio>
+                  <a-radio :disabled="item.value === '1' && !isLeader" :key="item.value" :value="item.value">{{item.text || item.title}}</a-radio>
                 </template>
               </a-radio-group>
             </a-form-item>
@@ -253,7 +253,8 @@ export default {
       // 优先级
       serviceLevel: "3", //默认值
       disabledLevel: false, //是否可修改
-      dictOptions: []  //列表
+      dictOptions: [],  //列表
+      isLeader: false
     }
   },
   created() {
@@ -266,6 +267,7 @@ export default {
       const { workplaceDeptParentIdes, username, orgCode, isLeader } = this.userInfo
       this.visible = true
       this.form.resetFields()
+      this.isLeader = isLeader
       if (isLeader) {
         this.serviceLevel ="1"
         this.disabledLevel = true
@@ -295,6 +297,7 @@ export default {
           this.rowInfo.userName = data.username
           this.rowInfo.sysOrgCode = res.result.orgCode
           const isLeader = res.result.isLeader
+          this.isLeader = isLeader
           if(isLeader) {
             this.serviceLevel = "1"
             this.disabledLevel = true
