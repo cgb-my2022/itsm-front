@@ -111,6 +111,7 @@
                     rules: [{ type: 'array', required: true, message: '请选择当前所在公司/园区' }],
                   },
                 ]"
+                autocomplete='off'
                 :options="departTree"
                 :showSearch="true"
                 :fieldNames="{ label: 'title', value: 'id', children: 'children' }"
@@ -299,7 +300,7 @@ export default {
         })
         .finally(() => {})
     },
-    // 提价内容
+    // 提交内容
     handleOkConfirm: function () {
       let that = this
       this.$confirm({

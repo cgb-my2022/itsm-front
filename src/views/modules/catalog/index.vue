@@ -38,7 +38,7 @@
                       <a-icon type="zoom-out" />
                       <span>删除</span>
                     </a-menu-item>
-                    <a-menu-item v-show="catLevel != 4" key="3">
+                    <a-menu-item key="3">
                       <a-icon type="zoom-in" />
                       <span>添加下级</span>
                     </a-menu-item>
@@ -214,6 +214,7 @@ export default {
     },
     // 选择全部
     checkAll() {
+      this.selectedRowKeys = []
       this.selectedKeys = []
       this.showAll = true
       this.getList()
@@ -314,6 +315,7 @@ export default {
     handleTreeSelect(selectedKeys, event) {
       if (selectedKeys.length > 0 && this.selectedKeys[0] !== selectedKeys[0]) {
         this.selectedKeys = [selectedKeys[0]]
+        this.selectedRowKeys = []
         this.showAll = false
         this.getList()
       }

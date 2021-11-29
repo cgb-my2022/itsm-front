@@ -59,7 +59,7 @@
             "
           />
         </a-form-model-item>
-        <a-form-model-item ref="solution" label="相关资源" prop="solution">
+        <a-form-model-item ref="solution" label="相关资源">
           <a-table
             ref="table"
             bordered
@@ -115,7 +115,7 @@
         <template v-if="formData.orderStatusDetail === 6 || formData.orderStatusDetail === 13">
           <a-button type="primary" @click="handleResolved('supportresolve')">已解决</a-button>
         </template>
-        <!-- 二线解决工单 -->
+        <!-- vip解决工单 -->
         <template v-if="formData.orderStatusDetail === 21 || formData.orderStatusDetail === 23">
           <a-button type="primary" @click="handleResolved('vipResolveOrder')">已解决</a-button>
         </template>

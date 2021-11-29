@@ -33,7 +33,6 @@ export const JEditableTableMixin = {
      */
      initDictData(dictCode, obj="dictOptions") {
       let data = {}
-      console.log(dictCode);
       //优先从缓存中读取字典配置
       if (getDictItemsFromCache(dictCode)) {
         data[obj] = getDictItemsFromCache(dictCode)
