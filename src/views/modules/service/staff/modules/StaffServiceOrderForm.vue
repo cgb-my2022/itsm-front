@@ -290,7 +290,7 @@ export default {
       resources: null,
       resourcesList: [],
       // 优先级
-      dictOptions: []
+      optionLevel: []
     }
   },
   computed: {
@@ -315,8 +315,8 @@ export default {
     // 根据等级id设置等级
     setLevel() {
       return function (text) {
-        if (this.dictOptions.length > 0) {
-          const findItem = this.dictOptions.find((item) => item.value == text)
+        if (this.optionLevel.length > 0) {
+          const findItem = this.optionLevel.find((item) => item.value == text)
           return findItem.text || findItem.title
         } else {
           return ''
@@ -329,7 +329,7 @@ export default {
     this.queryDepartTree()
     this.edit(this.formData.serviceOrder)
     // 优先级
-    this.initDictData("EVENT_LEVEL", "dictOptions")
+    this.initDictData("service_level", "optionLevel")
   },
   methods: {
     // 获取相关资源
