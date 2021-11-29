@@ -38,7 +38,7 @@
 <script>
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import ResourcesDetail from '@/views/modules/service/common/ResourcesDetail'
+import ResourcesDetail from '@/views/modules/events/modules/ResourcesDetail'
 
 export default {
   mixins: [JEditableTableMixin, JeecgListMixin],
