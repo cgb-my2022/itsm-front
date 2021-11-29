@@ -462,7 +462,9 @@ export default {
         this.userID = row.id
     },
     handleAvatarSuccess(obj, res, file) {
-      res.values = JSON.stringify(obj.fileList)
+      if(obj.file.status == "done"){
+        res.values = obj.file.response.message
+      }
       res.fileList = JSON.stringify(obj.fileList)
     },
     handleRemove(obj) {
@@ -527,7 +529,10 @@ export default {
 
     // 自定义属性部分----------------------------------------------
     ourhandleAvatarSuccess(obj, res, file) {
-      res.values = JSON.stringify(obj.fileList)
+      // res.values = JSON.stringify(obj.fileList)
+      if(obj.file.status == "done"){
+        res.values = obj.file.response.message
+      }
       res.fileList = JSON.stringify(obj.fileList)
     },
     ourhandleRemove(obj) {
