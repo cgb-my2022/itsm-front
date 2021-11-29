@@ -18,6 +18,7 @@
             >
             <vxe-column type="radio" width="60"></vxe-column>
             <vxe-column field="realname" title="姓名"></vxe-column>
+            <vxe-column field="username" title="用户名"></vxe-column>
          </vxe-table>
          <br>
          <vxe-pager

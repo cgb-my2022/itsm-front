@@ -6,15 +6,18 @@
       >
       <vxe-column field="createTime" title="变更时间" sortable></vxe-column>
       <!-- <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column> -->
-      <vxe-column field="changeDataBefore" title="变更前数据" show-overflow></vxe-column>
-      <vxe-column field="changeDataAfter" title="变更后数据" show-overflow></vxe-column>
-      <vxe-column field="updateName" title="变更人" sortable></vxe-column>
-      <vxe-column field="changeReason" title="变更原因" show-overflow></vxe-column>
-      <vxe-column title="操作">
+      <vxe-column title="变更前数据" >
         <template #default='{ row }'>
-          <el-button type="primary" @click="toDetail(row)">查看详情</el-button>
+          <div class="showTips" @click="toDetail(row.changeDataBefore)"> {{ row.changeDataBefore }} </div>
         </template>
       </vxe-column>
+      <vxe-column field="changeDataAfter" title="变更后数据" >
+        <template #default='{ row }'>
+          <div class="showTips" @click="toDetail(row.changeDataAfter)"> {{ row.changeDataAfter }} </div>
+        </template>
+      </vxe-column>
+      <vxe-column field="updateName" title="变更人" sortable></vxe-column>
+      <vxe-column field="changeReason" title="变更原因" show-overflow></vxe-column>
     </vxe-table>
     <vxe-pager
       background
@@ -69,16 +72,28 @@ export default {
     },
 
     toDetail(row){
+      // return
       this.$router.push({
         name: "conserResource-conserDetailHome",
-        params:{
-          data: row
-        }
+        // params:{
+        //   data: row
+        // }
       })
+      sessionStorage.setItem('changeInfoValues', row)
       this.$emit('changeKey', '1')
     }
   },
 }
 </script>
 <style scoped>
+.showTips {
+  width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.showTips:hover {
+  color: #409eff;
+}
 </style>

@@ -31,9 +31,7 @@ export default {
       intKey: "1"
     }
   },
-  mounted(){
-    
-  },
+  mounted(){},
   methods:{
     callback(key) {
       // console.log(key);
