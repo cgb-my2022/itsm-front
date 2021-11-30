@@ -340,6 +340,9 @@ export default {
         eventCatFullName: '',
         currentUserId: ''
       }
+      this.$nextTick(() => {
+         this.$refs.resourcesList.initData()
+      })
     },
     // 选项业务
     changeCat(value, label) {

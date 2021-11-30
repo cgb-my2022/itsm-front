@@ -5,6 +5,7 @@
     :width="1200"
     :visible="visible"
     :loading="loadingList"
+    :bodyStyle="bodyStyle"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
@@ -66,7 +67,12 @@ export default {
         disableMixinCreated: true,
         visible: false,
         refKeys: ['serviceOrderAttach' ],
-        selectedRowKeys: []
+        selectedRowKeys: [],
+        bodyStyle: {
+          paddingBottom: '70px',
+          height: (window.innerHeight - 200) + 'px',
+          'overflow-y': 'auto',
+        },
     }
   },
   created() {
@@ -74,8 +80,8 @@ export default {
   },
   methods: {
     add(list) {
-        this.selectedRowKeys = list
-        this.visible = true
+      this.selectedRowKeys = list
+      this.visible = true
     },
     initData() {
         this.loadingList = true
