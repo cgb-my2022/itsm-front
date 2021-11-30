@@ -435,9 +435,11 @@ export default {
       this.fileList = []
       this.upFile = null
       this.getDefaultTree(sessionStorage.getItem('treeid'))
+      this.$message.success('导入成功')
       
     },
-    handleUpError(){
+    handleUpError(err, file, fileList){
+      // console.log(err);
       this.$message.error('上传失败')
     },
 

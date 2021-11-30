@@ -8,7 +8,7 @@
       @change="handleTextChange()"
       :style="{width: '80%'}"
       ></el-input>
-    <span class="propTips" title="小数的最大长度限制的是用户在本输入框输入数字整数部分加小数部分的总长度。">?</span>
+    <span v-if="isShowTip" class="propTips" title="小数的最大长度限制的是用户在本输入框输入数字整数部分加小数部分的总长度。">?</span>
   </div>
 </template>
 
@@ -18,7 +18,11 @@ export default {
   props:{
     getData: null,
     theIndex: null,
-    propMaxLength: null
+    propMaxLength: null,
+    isShowTip:{
+      type: Boolean,
+      default: false
+    }
   },
   data(){
     return {

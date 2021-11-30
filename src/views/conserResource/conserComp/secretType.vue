@@ -4,6 +4,7 @@
       v-model="textValue" 
       :maxlength="propMaxLength"
       show-word-limit
+      :type="isSecret? 'password': 'text'"
       @change="handleTextChange"
       :style="{width: '80%'}"
       ></el-input>
@@ -16,7 +17,11 @@ export default {
   props:{
     getData: null,
     theIndex: null,
-    propMaxLength: null
+    propMaxLength: null,
+    isSecret: {
+      type: Boolean,
+      default: true
+    }
   },
   data(){
     return {
