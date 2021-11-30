@@ -153,7 +153,8 @@
         selectedRowKeys: [],
         selectedRows: [],
         type: "radio",
-        eventParams: {}
+        eventParams: {},
+        flag: null,
       }
     },
     created() {
@@ -161,11 +162,11 @@
     },
     methods: {
       searchQuery(){
-        this.loadData(1);
+        this.loadData();
       },
       searchReset(){
         this.queryParam={};
-        this.loadData(1);
+        this.loadData();
       },
       handleCancel() {
         this.visible = false;
@@ -181,13 +182,14 @@
       select(flag, values={}) {
         this.visible = true;
         this.eventParams = values
-        this.loadData(flag);
+        this.flag = flag
+        this.loadData();
       },
-      loadData (flag){
+      loadData (){
 
         var params = this.getQueryParams();//查询条件
-        if(flag){
-          params.flag = flag;
+        if(this.flag){
+          params.flag = this.flag;
         }
         getAction(this.url,params).then((res)=>{
           if(res.success){

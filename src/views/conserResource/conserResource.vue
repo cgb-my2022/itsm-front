@@ -96,6 +96,7 @@
             :data="upData"
             :on-remove="handleUploadRemove"
             :limit="1"
+            :on-error="handleUpError"
             :on-success="handleUpSuccess"
             :before-upload="beforeAvatarUpload"
             :file-list="fileList">
@@ -170,7 +171,9 @@ export default {
       upFile: null,
       upData: {
         id: null
-      }
+      },
+
+      outPutId: null
     }
   },
   mounted(){
@@ -278,6 +281,7 @@ export default {
           id: row.id
         }
       })
+      sessionStorage.setItem('resourceTableID', row.id)
     },
     toEdit(row){
       this.$router.push({
@@ -367,11 +371,17 @@ export default {
     },
 
     outResourceFile(){
-      let selectRecords = this.$refs.xTable1.getCheckboxRecords()
-      if(selectRecords.length === 0){
-        this.$message.error('请选择数据进行导出')
-        return
-      }
+      // this.outPutId = null
+      // let selectRecords = this.$refs.xTable1.getCheckboxRecords()
+      // if(selectRecords.length == 0){
+      //   this.$message.error('请选择数据')
+      //   return
+      // }
+      // if(selectRecords.length > 1){
+      //   this.$message.error('不支持批量导出')
+      //   return
+      // }
+      // this.outPutId = selectRecords[0].id
       outResource({id: sessionStorage.getItem('treeid')})
         .then(res=>{
           const _res = res;
@@ -421,12 +431,20 @@ export default {
       return extension || extension2
     },
     handleUpSuccess(res, file){
-      this.$message.success('上传成功')
+      if(res.code == 500){
+        this.$message.error('导入失败')
+        this.uploadDialogVisible = false
+        return
+      }
       this.uploadDialogVisible = false
       this.fileList = []
       this.upFile = null
       this.getDefaultTree(sessionStorage.getItem('treeid'))
+      this.$message.success('导入成功')
       
+    },
+    handleUpError(res, file, fileList){
+      this.$message.error('上传失败')
     },
 
     // handleUploadChange(info){

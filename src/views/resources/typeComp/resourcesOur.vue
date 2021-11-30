@@ -17,6 +17,7 @@
          <vxe-column field="attrName" title="属性名称"></vxe-column>
          <vxe-column title="数据类型">
             <template slot-scope="scope">
+                  <div class="ourClass">
                   {{ scope.row.attrType == 1? "文本"
                      : scope.row.attrType == 2? "文本区域"
                      : scope.row.attrType == 3? "下拉文本"
@@ -31,6 +32,7 @@
                      : scope.row.attrType == 12?"附件"
                      : ""
                   }}
+                  </div>
                </template>
          </vxe-column>
          <vxe-column field="optionalValue" title="可选值"></vxe-column>
@@ -97,10 +99,10 @@ export default {
         this.$emit('closeOur', false)
      },
      ourtSure(){
-        if(this.$refs.xTableOur.getCheckboxRecords().length == 0){
-           this.$message.error('请选择属性')
-           return
-        }
+      //   if(this.$refs.xTableOur.getCheckboxRecords().length == 0){
+      //      this.$message.error('请选择属性')
+      //      return
+      //   }
         let res = {
            resCheck: this.$refs.xTableOur.getCheckboxRecords(),
            flag: false
@@ -111,4 +113,8 @@ export default {
 }
 </script>
 <style scoped>
+.ourClass{
+   height: 40px;
+   line-height: 15px;
+}
 </style>

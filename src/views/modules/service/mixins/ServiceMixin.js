@@ -108,6 +108,12 @@ export const ServiceMixin = {
                 if (orderType === 2) {
                     info.eventContent = selectedOptions[len - 1].catName
                 }
+                if (this.vipParams) {
+                    this.vipParams.catId = value[len - 1]
+                    this.selectUserOK({
+                        realname: ""
+                    })
+                }
             } else {
                 info.serviceCatIds = ""
                 info.serviceCatId = ""

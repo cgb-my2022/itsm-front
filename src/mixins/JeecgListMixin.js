@@ -7,6 +7,7 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction, downFile, getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ajaxGetDictItems, getDictItemsFromCache } from '@/api/api'
 
 export const JeecgListMixin = {
   data() {
@@ -61,6 +62,29 @@ export const JeecgListMixin = {
       }
   },
   methods: {
+    /**
+     * 获取数据字典的内容
+     * @param {*} dictCode 数据字典的key
+     * @param {*} obj     data对应的key
+     * @returns 
+     */
+    setDic(dictCode, obj="dictOptions") {
+      let data = {}
+      //优先从缓存中读取字典配置
+      if (getDictItemsFromCache(dictCode)) {
+        data[obj] = getDictItemsFromCache(dictCode)
+        Object.assign(this, data)
+        return
+      }
+      //根据字典Code, 初始化字典数组
+      ajaxGetDictItems(dictCode, null).then((res) => {
+        if (res.success) {
+          data[obj] = res.result
+          Object.assign(this, data)
+        }
+      })
+    },
+    // 初始化列表数据
     loadData(arg) {
       if (!this.url.list) {
         this.$message.error('请设置url.list属性!')

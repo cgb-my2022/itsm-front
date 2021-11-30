@@ -62,7 +62,18 @@
         <el-button type="primary" @click="sureDelDialog">确 定</el-button>
       </span>
     </el-dialog>
-        
+
+    <el-dialog
+      title="批量删除"
+      :visible.sync="delModeDialogVisible"
+      width="30%"
+      >
+      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) .确认删除吗?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="delModeDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureModeDelDialog">确 定</el-button>
+      </span>
+    </el-dialog>        
   </a-card>
 </template>
 
@@ -80,7 +91,8 @@ export default {
       },
       tableData: [],
       delDialogVisible: false,
-      delid: null
+      delid: null,
+      delModeDialogVisible: false
 
 
     }
@@ -124,6 +136,10 @@ export default {
         this.$message.error('请选择数据在进行删除')
         return
       }
+      this.delModeDialogVisible = true
+    },
+    sureModeDelDialog(){
+      let selectRecords = this.$refs.xTree.getCheckboxRecords();
       let ids = []
       selectRecords.forEach(item => {
         ids.push(item.id)
@@ -132,9 +148,10 @@ export default {
         .then(res=>{
           if(res.code == 200){
             this.$message.success('删除成功')
+            this.delModeDialogVisible = false
             this.initTree()
           }else{
-            this.$message.error('删除失败')
+            this.$message.error(res.message)
           }
         })
     },

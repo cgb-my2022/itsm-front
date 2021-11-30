@@ -139,7 +139,7 @@
           <a-col :xs="24" :sm="12">
             <a-form-item label="关联资源" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-button @click="handleAdd()" type="primary">添加</a-button>
-              <a-button @click="handleDel()" type="primary" style="margin-left: 10px">删除</a-button>
+              <a-button @click="handleDel(1)" type="primary" style="margin-left: 10px">删除</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -151,27 +151,18 @@
                 bordered
                 size="middle"
                 rowKey="id"
+                :scroll="scroll"
                 :columns="columns"
                 :dataSource="dataSource"
-                :pagination="ipagination"
+                :pagination="false"
                 :loading="loading"
                 :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                 @change="handleTableChange"
               >
-                <template slot="dictText" slot-scope="text">
-                  <span>{{ text }}</span>
-                </template>
                 <span slot="action" slot-scope="text, record">
-                  <a @click="handleDetail(record)">详情</a>
+                  <a @click="handleDetail(record.id)">详情</a>
                   <a-divider type="vertical" />
-                  <a-popconfirm
-                    title="确认删除该接单规则?"
-                    ok-text="确定"
-                    cancel-text="取消"
-                    @confirm="handleDel(record)"
-                  >
-                    <a href="#" style="color: red">删除</a>
-                  </a-popconfirm>
+                  <a href="#" @click="handleDel(2, record.id)" style="color: red">删除</a>
                 </span>
               </a-table>
             </a-form-item>
@@ -195,7 +186,17 @@
           </a-col>
         </a-row>
       </a-form>
-      <biz-service-select-single-user-modal :url="url.assignList" ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
+      <!-- 选择处理人 -->
+      <events-user ref="eventsUser" @selectFinished="selectUserOK"></events-user>
+      <!-- 资源列表 -->
+      <resources-list ref="resourcesList" @selectOk="selectOk"></resources-list>
+      <!-- 资源详情 -->
+      <resources-detail 
+        :detailId="detailId" 
+        v-if="showDetail" 
+        ref="resourcesDetail" 
+        @closeDetail="showDetail=false">
+      </resources-detail>
     </a-spin>
   </a-modal>
 </template>
@@ -210,64 +211,50 @@ import ARow from 'ant-design-vue/es/grid/Row'
 import { postAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
 import JDate from '@/components/jeecg/JDate.vue'
-import BizServiceSelectSingleUserModal from '@/views/modules/service/common/BizServiceSelectSingleUserModal.vue';
+import ResourcesList from './ResourcesList'
+import ResourcesDetail from './ResourcesDetail'
+import EventsUser from './EventsUser'
 
 export default {
   name: 'ServiceOrderModal',
   mixins: [JEditableTableMixin, JeecgListMixin],
   components: {
-    BizServiceSelectSingleUserModal,
     ARow,
     JDictSelectTag,
     JDate,
+    ResourcesList,
+    ResourcesDetail,
+    EventsUser
   },
   props: ['categoryOptions'],
   data() {
     return {
       refKeys: ['serviceOrderAttach'],
       dictOptions: [],
+      scroll: { y: 230 },
       columns: [
-        {
+       {
           title: '名称 ',
           align: 'center',
-          dataIndex: 'username',
+          dataIndex: 'name',
           ellipsis: true,
         },
         {
           title: '描述',
           align: 'center',
-          dataIndex: 'realname',
+          dataIndex: 'describes',
           ellipsis: true,
         },
-        {
-          title: 'IP',
-          align: 'center',
-          dataIndex: 'avatar',
-        },
-
         {
           title: '资源类型',
           align: 'center',
-          dataIndex: 'sex_dictText',
+          dataIndex: 'resourceTypeId',
           ellipsis: true,
-        },
-        {
-          title: '资源分组',
-          align: 'center',
-          dataIndex: 'birthday',
-          ellipsis: true,
-        },
-        {
-          title: '状态',
-          align: 'center',
-          width: 80,
-          dataIndex: 'dictText',
-          scopedSlots: { customRender: 'dictText' },
         },
         {
           title: '使用人',
           align: 'center',
-          dataIndex: 'person',
+          dataIndex: 'useUserName',
         },
         {
           title: '操作',
@@ -325,14 +312,17 @@ export default {
       },
       url: {
         userInfo: '/sys/user/userInfo',
-        add: '/sys/event/addAndSubmit',
-        assignList: '/sys/event/assignList',  //处理人员列表
+        add: '/sys/event/addAndSubmit'
       },
       fromData: {
         eventCatFullName: '',
         currentUserId: ''
       },
-      disabledName: true
+      disabledName: true,
+      dataSource: [],
+      selectedRowKeys: [],
+      detailId: "",
+      showDetail: false
     }
   },
   computed: {
@@ -346,18 +336,63 @@ export default {
     add() {
       this.visible = true
       this.form.resetFields()
+      this.dataSource = []
+      this.selectedRowKeys = []
+      this.fromData = {
+        eventCatFullName: '',
+        currentUserId: ''
+      }
+      this.$nextTick(() => {
+         this.$refs.resourcesList.initData()
+      })
     },
     // 选项业务
     changeCat(value, label) {
       this.fromData.eventCatFullName = label.join(' ')
       this.disabledName = value ? false : true
+      this.selectUserOK({
+        realname: "",
+        currentUserId: ""
+      })
     },
     // 添加资源
-    handleAdd() {},
+    handleAdd() {
+      let list = []
+      if (this.dataSource.length > 0) {
+        this.dataSource.forEach(item => {
+          list.push(item.id)
+        })
+      }
+      this.$refs.resourcesList.add(list)
+    },
+    selectOk(data) {
+      this.dataSource = JSON.parse(JSON.stringify(data))
+    },
     // 删除资源
-    handleDel() {},
+    handleDel(type, id) {
+      let list = []
+      if(type === 1) {
+        if (this.selectedRowKeys.length > 0) {
+          list = JSON.parse(JSON.stringify(this.selectedRowKeys))
+        } else {
+          this.$message.warning("请勾选需要删除的关联资源！")
+        }
+      } else {
+        list = [id]
+      }
+      if (list.length === 0) return
+      list.forEach(item => {
+        const findIndex = this.dataSource.findIndex(citem => citem.id === item)
+        this.dataSource.splice(findIndex, 1)
+        const findIndex1 = this.selectedRowKeys.findIndex(citem => citem === item)
+        this.selectedRowKeys.splice(findIndex1, 1)
+      })
+    },
     // 查看资源
-    handleDetail() {},
+    handleDetail(id) {
+      this.detailId = id
+      this.showDetail = true
+    },
     // 选择处理人
     handleSelect(e) {
       e.srcElement.blur()
@@ -368,7 +403,7 @@ export default {
             catId: values.eventCatId,
             companyCode: myDeptParentIdes[1]
           }
-          this.$refs.selectSingleUserModal.select(1, params);
+          this.$refs.eventsUser.select(params);
         } else {
           this.$message.warn("请先选择事件分类！")
         }
@@ -391,6 +426,16 @@ export default {
           params.eventTime = params.eventTime + ' ' + '00:00:00'
           params.sysOrgCode = this.userInfo.orgCode
           params.deptName = this.userInfo.myDeptParentNames
+          // 关联资源内容
+          if (this.dataSource.length > 0) {
+            let relateSource = [], relateSourceNames = []
+            this.dataSource.forEach(item => {
+              relateSource.push(item.id)
+              relateSourceNames.push(item.name)
+            })
+            params.relateSource = relateSource.join(",")
+            params.relateSourceNames = relateSourceNames.join("、")
+          }
           Object.assign(params, this.fromData)
           this.confirmLoading = true
           postAction(this.url.add, params)

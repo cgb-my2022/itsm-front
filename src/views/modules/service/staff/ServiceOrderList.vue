@@ -35,7 +35,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
@@ -92,6 +92,12 @@
             @click="uploadFile(text)">
             下载
           </a-button>
+        </template>
+        <!-- 优先级 -->
+        <template slot="serviceLevel" slot-scope="text">
+          <span v-if="text == 1" style="color:red;">{{setLevel(text)}}</span>
+          <span v-if="text == 2" style="color:orange;">{{setLevel(text)}}</span>
+          <span v-if="text == 3" style="color:blue;">{{setLevel(text)}}</span>
         </template>
         <!-- 工单状态 -->
         <template slot="status" slot-scope="text, record">
@@ -190,91 +196,16 @@
 </template>
 
 <script>
-  import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import { ServiceMixin } from './mixins/ServiceMixin'
-  import StaffServiceOrderModal from './modules/StaffServiceOrderModal'
-  import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import JDate from '@/components/jeecg/JDate.vue'
-  import '@/assets/less/TableExpand.less'
+  import { ServiceColumns } from '@/views/modules/service/mixins/ServiceColumns'
   import { postAction, putAction } from '@/api/manage'
-  import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
 
   export default {
     name: 'ServiceOrderList',
-    mixins: [JeecgListMixin, ServiceMixin],
-    components: {
-      JDictSelectTag,
-      JDate,
-      StaffServiceOrderModal,
-      ServiceProcessInstPicModal,
-      ServiceTaskDetailModal,
-      ServiceTaskDealModal
-    },
+    mixins: [ServiceColumns],
     data () {
       return {
         description: '服务工单管理页面',
         flowCode: 'onl_service_order',
-        // 表头
-        columns: [
-          {
-            title: '编号',
-            dataIndex: 'id',
-            align: 'center',
-            width: 190
-          },
-          {
-            title: '请求内容',
-            dataIndex: 'eventContent',
-            ellipsis: true,
-            align: 'center',
-          },
-          {
-            title: '所属业务',
-            align: 'center',
-            ellipsis: true,
-            dataIndex: 'serviceCatFullName'
-          },
-          {
-            title: '工单状态',
-            align: 'center',
-            dataIndex: 'orderStatus_dictText',
-            width: 140,
-            scopedSlots: { customRender: 'status' }
-          },
-          {
-            title: '创建人',
-            align: 'center',
-            dataIndex: 'realName'
-          },
-          {
-            title: '创建人所属部门',
-            align: 'center',
-            dataIndex: 'deptName',
-            ellipsis: true
-          },
-          {
-            title: '创建日期',
-            align: 'center',
-            sorter: true,
-            dataIndex: 'createTime'
-          },
-          {
-            title: '处理人',
-            align: 'center',
-            dataIndex: 'frontlineUserRealname',
-            scopedSlots: { customRender: 'realname' }
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: 'center',
-            fixed: 'right',
-            width: 130,
-            scopedSlots: { customRender: 'action' }
-          }
-        ],
         url: {
           list: '/system/serviceOrder/myCompanylist',
           delete: '/system/serviceOrder/delete',
@@ -292,22 +223,6 @@
         formData: {},
         path: ''
       }
-    },
-    computed: {
-      importExcelUrl: function() {
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
-      setRealname() {
-        return function(arr, status) {
-          if(arr.indexOf(status) != -1) {
-            return true
-          }
-          return false
-        }
-      }
-    },
-    mounted() {
-      this.getCatalog()
     },
     methods: {
       initDictConfig() {

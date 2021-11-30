@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+  import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import ARow from 'ant-design-vue/es/grid/Row'
   export default {

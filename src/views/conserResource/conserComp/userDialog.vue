@@ -7,7 +7,7 @@
          :before-close="userCancle"
          >
          <div style="margin-bottom: 10px;">
-            <el-input style="width: 40%; margin-right: 10px" v-model="searchValue"></el-input>
+            <el-input placeholder="请输入姓名" style="width: 40%; margin-right: 10px" v-model="searchValue"></el-input>
             <el-button type="primary" @click="getUser">搜 索</el-button>
          </div>
          <vxe-table
@@ -18,6 +18,7 @@
             >
             <vxe-column type="radio" width="60"></vxe-column>
             <vxe-column field="realname" title="姓名"></vxe-column>
+            <vxe-column field="username" title="用户名"></vxe-column>
          </vxe-table>
          <br>
          <vxe-pager
@@ -42,7 +43,8 @@ export default {
   components:{},
   props:{
      userDialogVisible: false,
-     theIndex: null
+     theIndex: null,
+     secUserID: null
   },
   data(){
     return {
@@ -57,6 +59,7 @@ export default {
   },
   mounted(){
      this.getUser()
+     console.log(this.secUserID);
   },
   methods:{
      getUser(){
@@ -68,6 +71,11 @@ export default {
          .then(res=>{
             this.tableData = res.result.records
             this.page.totalResult = res.result.total
+            let sectable = this.tableData.find((item)=>{
+               return item.id == this.secUserID
+            })
+            this.$refs.xTable1.setRadioRow(sectable)
+
          })
      },
      userCancle(){

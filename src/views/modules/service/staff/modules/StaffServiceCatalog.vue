@@ -47,7 +47,7 @@
 
 <script>
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
-import { ServiceMixin } from '../mixins/ServiceMixin'
+import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
 import ARow from 'ant-design-vue/es/grid/Row'
 import {  postAction, getAction } from '@/api/manage'
 import pick from 'lodash.pick'

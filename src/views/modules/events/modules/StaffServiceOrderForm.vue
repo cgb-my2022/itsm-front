@@ -1,159 +1,169 @@
 <template>
-  <a-form :form="form">
-    <a-card id="staffCard" style="margin: 0 auto; max-width: 750px">
-      <!-- 状态内容 -->
-      <a-tag color="cyan">
-        {{ setStatus(formData.orderStatus) }}
-      </a-tag>
-      <template v-if="formData.orderStatus === 3">
-        <a-tag color="red" class="tag-beyond"> 已转给{{formData.currentUserName}}处理 </a-tag>
-      </template>
-      <!-- 头部 -->
-      <span id="staffLeaveTitle">事件工单</span>
-      <div class="form-top">
-        <ul>
-          <li
-            v-for="(item, index) in tabList"
-            :key="index"
-            :class="[index === tabIndex ? 'li-active1' : 'li-active2']"
-            @click="chagenTab(index)"
-          >
-            {{ item }}
-          </li>
-        </ul>
-        <span class="form-top_num">事件ID：{{formData.id}}</span>
-      </div>
-      <!-- 信息展示 -->
-      <template v-if="tabIndex === 0">
-        <j-form-container>
-          <table border="1px" id="staffLeaveTable">
-            <tr>
-              <td class="firstTr">发起人</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.createName}}</span>
-              </td>
-              <td class="firstTr">事件发生日期</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.eventTime}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">办公电话</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.phoneNo}}</span>
-              </td>
-              <td class="firstTr">开单方式</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.openType === 1 ? '正常开单' : '事后补单'}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">部门</td>
-              <td class="firstTr" colspan="5">
-                <span class="fs-12 text-left">{{formData.deptName}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">地点</td>
-              <td class="firstTr" colspan="4">
-                <span class="fs-12 text-left">{{formData.workplaceDetail}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">事件来源</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.eventSource === 1 ? '监控平台 ' : '用户报告'}}</span>
-              </td>
-              <td class="firstTr">事件分类</td>
-              <td class="firstTr">
-                <span class="fs-12">{{formData.eventCatFullName}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">紧急程度</td>
-              <td class="firstTr" colspan="4">
-                <span class="td-left" v-if="formData.eventLevel == 1" style="color:red;">{{setLevel(formData.eventLevel)}}</span>
-                <span class="td-left" v-if="formData.eventLevel == 2" style="color:orange;">{{setLevel(formData.eventLevel)}}</span>
-                <span class="td-left" v-if="formData.eventLevel == 3" style="color:blue;">{{setLevel(formData.eventLevel)}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">事件标题</td>
-              <td class="firstTr" colspan="5">
-                <span class="fs-12 text-left">{{formData.eventTitle}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">事件描述</td>
-              <td class="firstTr" colspan="5">
-                <span class="fs-12 text-left">{{formData.eventDesc}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">关联资源</td>
-              <td class="firstTr" colspan="5">
-                <!-- <div class="td-flex">
-                  <span>路由器0987、路由器0943</span>
-                  <a-button type="primary">查看详细资源</a-button>
-                </div> -->
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">处理人</td>
-              <td class="firstTr" colspan="4">
-                <span class="fs-12 text-left">{{formData.currentUserName}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">问题原因</td>
-              <td class="firstTr" colspan="4">
-                <span class="fs-12 text-left">{{formData.reason}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">解决方案</td>
-              <td class="firstTr" colspan="4">
-                <span class="fs-12 text-left">{{formData.solution}}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="firstTr">解决事件工单附件</td>
-              <td class="firstTr" colspan="5">
-                <!-- 子表单区域 -->
-                <a-spin :spinning="confirmLoading">
-                  <j-editable-table
-                    :ref="refKeys[0]"
-                    :loading="serviceOrderAttachTable.loading"
-                    :columns="serviceOrderAttachTable.columns"
-                    :dataSource="setFlie(formData.ywAttaches)"
-                    :maxHeight="300"
-                    :rowNumber="true"
-                  />
-                </a-spin>
-              </td>
-            </tr>
-          </table>
-        </j-form-container>
-      </template>
-      <!-- 流转记录 -->
-      <template v-if="tabIndex === 1">
-        <a-timeline v-if="formData.orderTracks && formData.orderTracks.length > 0" class="time-line">
-          <template v-for="item in formData.orderTracks">
-            <a-timeline-item :key="item.id">
-              <div class="record-list">
-                <p class="record-list_time">{{ item.createTime }}</p>
-                <div class="record-list_right">
-                  <p class="record-list_title">{{ item.title }}</p>
-                  <p class="record-list_content" v-if="item.content">{{ item.content }}</p>
+  <div>
+    <a-form :form="form">
+      <a-card id="staffCard" style="margin: 0 auto; max-width: 750px">
+        <!-- 状态内容 -->
+        <a-tag color="cyan">
+          {{ setStatus(formData.orderStatus) }}
+        </a-tag>
+        <template v-if="formData.orderStatus === 3">
+          <a-tag color="red" class="tag-beyond"> 已转给{{ formData.currentUserName }}处理 </a-tag>
+        </template>
+        <!-- 头部 -->
+        <span id="staffLeaveTitle">事件工单</span>
+        <div class="form-top">
+          <ul>
+            <li
+              v-for="(item, index) in tabList"
+              :key="index"
+              :class="[index === tabIndex ? 'li-active1' : 'li-active2']"
+              @click="chagenTab(index)"
+            >
+              {{ item }}
+            </li>
+          </ul>
+          <span class="form-top_num">事件ID：{{ formData.id }}</span>
+        </div>
+        <!-- 信息展示 -->
+        <template v-if="tabIndex === 0">
+          <j-form-container :disabled="false">
+            <table slot="detail" border="1px" id="staffLeaveTable">
+              <tr>
+                <td class="firstTr">发起人</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.createName }}</span>
+                </td>
+                <td class="firstTr">事件发生日期</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.eventTime }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">办公电话</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.phoneNo }}</span>
+                </td>
+                <td class="firstTr">开单方式</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.openType === 1 ? '正常开单' : '事后补单' }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">部门</td>
+                <td class="firstTr" colspan="5">
+                  <span class="fs-12 text-left">{{ formData.deptName }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">地点</td>
+                <td class="firstTr" colspan="4">
+                  <span class="fs-12 text-left">{{ formData.workplaceDetail }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">事件来源</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.eventSource === 1 ? '监控平台 ' : '用户报告' }}</span>
+                </td>
+                <td class="firstTr">事件分类</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{ formData.eventCatFullName }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">紧急程度</td>
+                <td class="firstTr" colspan="4">
+                  <span class="td-left" v-if="formData.eventLevel == 1" style="color: red">{{
+                    setLevel(formData.eventLevel)
+                  }}</span>
+                  <span class="td-left" v-if="formData.eventLevel == 2" style="color: orange">{{
+                    setLevel(formData.eventLevel)
+                  }}</span>
+                  <span class="td-left" v-if="formData.eventLevel == 3" style="color: blue">{{
+                    setLevel(formData.eventLevel)
+                  }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">事件标题</td>
+                <td class="firstTr" colspan="5">
+                  <span class="fs-12 text-left">{{ formData.eventTitle }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">事件描述</td>
+                <td class="firstTr" colspan="5">
+                  <span class="fs-12 text-left">{{ formData.eventDesc }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">关联资源</td>
+                <td class="firstTr" colspan="5">
+                  <div v-if="formData.relateSourceNames" class="td-flex fs-12 text-left">
+                    <span>{{ formData.relateSourceNames }}</span>
+                    <a-button type="primary" @click="lookList">查看详细资源</a-button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">处理人</td>
+                <td class="firstTr" colspan="4">
+                  <span class="fs-12 text-left">{{formData.solRealName}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">问题原因</td>
+                <td class="firstTr" colspan="4">
+                  <span class="fs-12 text-left">{{ formData.reason }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">解决方案</td>
+                <td class="firstTr" colspan="4">
+                  <span class="fs-12 text-left">{{ formData.solution }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="firstTr">解决事件工单附件</td>
+                <td class="firstTr" colspan="5">
+                  <!-- 子表单区域 -->
+                  <a-spin :spinning="confirmLoading">
+                    <j-editable-table
+                      :ref="refKeys[0]"
+                      :loading="serviceOrderAttachTable.loading"
+                      :columns="serviceOrderAttachTable.columns"
+                      :dataSource="setFlie(formData.ywAttaches)"
+                      :maxHeight="300"
+                      :rowNumber="true"
+                    />
+                  </a-spin>
+                </td>
+              </tr>
+            </table>
+          </j-form-container>
+        </template>
+        <!-- 流转记录 -->
+        <template v-if="tabIndex === 1">
+          <a-timeline v-if="formData.orderTracks && formData.orderTracks.length > 0" class="time-line">
+            <template v-for="item in formData.orderTracks">
+              <a-timeline-item :key="item.id">
+                <div class="record-list">
+                  <p class="record-list_time">{{ item.createTime }}</p>
+                  <div class="record-list_right">
+                    <p class="record-list_title">{{ item.title }}</p>
+                    <p class="record-list_content" v-if="item.content">{{ item.content }}</p>
+                  </div>
                 </div>
-              </div>
-            </a-timeline-item>
-          </template>
-        </a-timeline>
-        <p v-else class="record-null">暂无流转记录</p>
-      </template>
-    </a-card>
-  </a-form>
+              </a-timeline-item>
+            </template>
+          </a-timeline>
+          <p v-else class="record-null">暂无流转记录</p>
+        </template>
+      </a-card>
+    </a-form>
+    <!-- 查看资源 -->
+    <events-resources :ids="formData.relateSource" ref="eventsResources"></events-resources>
+  </div>
 </template>
 
 <script>
@@ -164,13 +174,15 @@ import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import { queryIdTree, queryDepartTreeList } from '@/api/api'
 import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
+import EventsResources from './EventsResources'
 
 export default {
   name: 'ServiceOrderForm',
-  props: ["formData", "dictStatus", "dictOptions"],
+  props: ['formData', 'dictStatus', 'dictOptions'],
   mixins: [JEditableTableMixin],
   components: {
     JDictSelectTag,
+    EventsResources,
   },
   data() {
     return {
@@ -214,7 +226,7 @@ export default {
             type: FormTypes.fileView,
             token: true,
             responseName: 'message',
-            width: '200px',
+            width: '100%',
             placeholder: '请输入${title}',
             defaultValue: '',
             actionButton: false,
@@ -233,10 +245,10 @@ export default {
   },
   computed: {
     setFlie() {
-      return function(list) {
+      return function (list) {
         let file = []
         if (list && list.length > 0) {
-          file = list.filter(item => item.attachUrl != null)
+          file = list.filter((item) => item.attachUrl != null)
         }
         return file || []
       }
@@ -245,10 +257,10 @@ export default {
     setLevel() {
       return function (text) {
         if (this.dictOptions.length > 0) {
-          const findItem = this.dictOptions.find(item => item.value == text)
+          const findItem = this.dictOptions.find((item) => item.value == text)
           return findItem.text || findItem.title
         } else {
-          return ""
+          return ''
         }
       }
     },
@@ -256,19 +268,23 @@ export default {
     setStatus() {
       return function (text) {
         if (this.dictStatus.length > 0) {
-          const findItem = this.dictStatus.find(item => item.value == text)
+          const findItem = this.dictStatus.find((item) => item.value == text)
           return findItem.text || findItem.title
         } else {
-          return ""
+          return ''
         }
       }
-    }
+    },
   },
   created() {
     this.queryDepartTree()
     this.edit(this.formData.serviceOrder)
   },
   methods: {
+    // 查看关联资源
+    lookList() {
+      this.$refs.eventsResources.add()
+    },
     // 切换内容
     chagenTab(index) {
       if (this.tabIndex === index) return
@@ -311,7 +327,7 @@ export default {
     /** 调用完edit()方法之后会自动调用此方法 */
     editAfter() {
       // this.statusName = this.getStatus(this.formData.serviceOrder.orderStatus)
-      this.statusName = "已接单"
+      this.statusName = '已接单'
     },
     /** 整理成formData */
     classifyIntoFormData(allValues) {
@@ -368,7 +384,6 @@ export default {
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 10px;
   box-sizing: border-box;
 }
 .tag-beyond {

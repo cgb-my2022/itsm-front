@@ -18,13 +18,13 @@
             <a-form-item label="事件分类">
               <a-tree-select
                 style="width: 100%"
-                :value="catIds"
+                :value="eventCatFullName"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 placeholder="请选择"
                 allow-clear
                 :tree-data="categoryOptions"
                 tree-default-expand-all
-                :replace-fields="{ title: 'title', value: 'id', key: 'id', children: 'children' }"
+                :replace-fields="{ title: 'title', value: 'title', key: 'title', children: 'children' }"
                 :filterTreeNode="searchFilterTreeNode"
                 @change="changeCat"
               >
@@ -60,7 +60,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset1" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
@@ -109,7 +109,7 @@
         <span slot="action" slot-scope="text, record">
           <template v-if="userInfo.id === record.currentUserId">
             <!-- 事件办理页面 并且是自己的未完成的单 -->
-            <template v-if="typeList === 2 && record.orderStatus !== 7">
+            <template v-if="typeList === 2 && record.orderStatus < 6">
               <a @click="bindBtn(1,record)">办理</a>
               <a-divider type="vertical" />
             </template>
@@ -236,11 +236,11 @@ export default {
           dataIndex: 'createTime',
         },
         {
-          title: '受理人',
+          title: '处理人',
           align: 'center',
           width: 140,
           sorter: true,
-          dataIndex: 'currentUserName'
+          dataIndex: 'solRealName'
         },
         {
           title: '操作',
@@ -259,7 +259,7 @@ export default {
         id: '',
         approved: '',
       },
-      catIds: "",
+      eventCatFullName: "",
       categoryOptions: [], //事件类型内容
       sortName: true
     }
@@ -309,22 +309,6 @@ export default {
       // 工单状态
       this.setDic("SERVICE_ORDER_STATUS", "dictStatus")
     },
-    setDic(dictCode, obj) {
-      let data = {}
-      //优先从缓存中读取字典配置
-      if (getDictItemsFromCache(dictCode)) {
-        data[obj] = getDictItemsFromCache(dictCode)
-        Object.assign(this, data)
-        return
-      }
-      //根据字典Code, 初始化字典数组
-      ajaxGetDictItems(dictCode, null).then((res) => {
-        if (res.success) {
-          data[obj] = res.result
-          Object.assign(this, data)
-        }
-      })
-    },
     // 初始化工单类型
     initDictData() {
       let dictCode = 'B04'
@@ -365,7 +349,7 @@ export default {
           const that = this
           that.$confirm({
             title: '确认',
-            content: '确问题已经解决了吗?',
+            content: '确认问题已经解决了吗?',
             onOk: function () {
               postAction(that.url.confirmOrderResolved, {
                 id: record.id, version: record.version
@@ -385,18 +369,15 @@ export default {
       }
     },
     // 重置
-    searchReset1() {
-      Object.keys(this.queryParam).forEach(item => {
-        if (item != 'queryAll') {
-          this.queryParam[item] = ""
-        }
-      })
-      this.loadData(1);
+    bindReset() {
+      this.eventCatFullName = ""
+      this.queryParam.eventCatFullName = ""
+      this.searchReset()
     },
     // 选项业务
     changeCat(value, label) {
-      this.catIds = value
-      this.queryParam.catIds = value
+      this.eventCatFullName = value
+      this.queryParam.eventCatFullName = value
     }
   },
 }

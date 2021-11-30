@@ -13,6 +13,7 @@
                 v-if="userDialogVisible" 
                 :userDialogVisible="userDialogVisible"
                 :theIndex="index"
+                :secUserID="userID"
                 @userCancle="userCancle"
                 @userSure="userSure"
             ></userDialog>
@@ -60,6 +61,7 @@
           <!-- 小数 -->
           <floatType
             v-if="item.attrType == 5"
+            :isShowTip="isShowTip"
             class="common"
             :getData="item.values"
             :propMaxLength="item.maxLength"
@@ -79,6 +81,7 @@
           <secretType
             v-if="item.attrType == 7"
             class="common"
+            :isSecret="isSecret"
             :getData="item.values"
             :propMaxLength="item.maxLength"
             :theIndex="index"
@@ -216,6 +219,7 @@
           <!-- 小数 -->
           <floatType
             v-if="item.attrType == 5"
+            :isShowTip="isShowTip"
             class="common"
             :getData="item.values"
             :propMaxLength="item.maxLength"
@@ -235,6 +239,7 @@
           <secretType
             v-if="item.attrType == 7"
             class="common"
+            :isSecret="isSecret"
             :getData="item.values"
             :propMaxLength="item.maxLength"
             :theIndex="index"
@@ -364,9 +369,31 @@ export default {
     fileType,
     userDialog
   },
-  props: {},
+  props: {
+    isShowButton: {
+      type: String,
+      default: '1'
+    },
+    detailId: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    detailId: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.resourceId = value
+          this.getType(value)
+        }
+      }
+    }
+  },
   data() {
     return {
+      isShowTip: true,
+      isSecret: false,
       fileList: [],
       treeProps: {
         value: 'id',
@@ -401,24 +428,31 @@ export default {
 
       ourSecOptions: [],
       userDialogVisible: false,
-      userID: null
+      userID: null,
+      resourceTypeId: null,
     }
   },
   mounted() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
 
-    let secID = this.$route.query.id
-    this.resourceId = this.$route.query.id
-    this.getType(secID)
+    if (this.isShowButton === '1') {
+      let secID = this.$route.query.id
+      this.resourceId = this.$route.query.id
+      this.getType(secID)
+    }
   },
   methods: {
     getType(id) {
       detailResource({ id }).then((res) => {
         if (res.code == 200) {
+          // console.log(res);
+          this.userID = res.result.useUser
+          this.resourceTypeId = res.result.resourceTypeId
           let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
-          console.log(defalutRes);
+                  console.log(this.defalutData);
+
           this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
         }
       })
@@ -436,7 +470,9 @@ export default {
         this.userID = row.id
     },
     handleAvatarSuccess(obj, res, file) {
-      res.values = JSON.stringify(obj.fileList)
+      if(obj.file.status == "done"){
+        res.values = obj.file.response.message
+      }
       res.fileList = JSON.stringify(obj.fileList)
     },
     handleRemove(obj) {
@@ -501,7 +537,10 @@ export default {
 
     // 自定义属性部分----------------------------------------------
     ourhandleAvatarSuccess(obj, res, file) {
-      res.values = JSON.stringify(obj.fileList)
+      // res.values = JSON.stringify(obj.fileList)
+      if(obj.file.status == "done"){
+        res.values = obj.file.response.message
+      }
       res.fileList = JSON.stringify(obj.fileList)
     },
     ourhandleRemove(obj) {
@@ -567,22 +606,22 @@ export default {
 
     // 确认按钮
     addSourceSure() {
-      let defaultFlag = false
-      let ourDataFlag = false
-      this.defalutData.forEach((item) => {
-        if (!item.values || item.values == "[]") {
-          defaultFlag = true
-        }
-      })
-      this.ourData.forEach((item) => {
-        if (!item.values || item.values == "[]") {
-          ourDataFlag = true
-        }
-      })
-      if (defaultFlag || ourDataFlag) {
-        this.$message.error('请完善属性信息')
-        return
-      }
+      // let defaultFlag = false
+      // let ourDataFlag = false
+      // this.defalutData.forEach((item) => {
+      //   if (!item.values || item.values == "[]") {
+      //     defaultFlag = true
+      //   }
+      // })
+      // this.ourData.forEach((item) => {
+      //   if (!item.values || item.values == "[]") {
+      //     ourDataFlag = true
+      //   }
+      // })
+      // if (defaultFlag || ourDataFlag) {
+      //   this.$message.error('请完善属性信息')
+      //   return
+      // }
       // let typeFlag = true
       // this.ourData.forEach(item=>{
         //    if(item.attrType == 9){
@@ -614,7 +653,7 @@ export default {
         publicResourceMap: this.defalutData,
         customizeResourceMap: this.ourData.length > 0? this.ourData : null,
         allResourceMap: this.defalutData.concat(this.ourData),
-        resourceTypeId: sessionStorage.getItem('treeid'),
+        resourceTypeId: this.resourceTypeId,
         id: this.resourceId,
         useUser: this.userID
       }
@@ -623,12 +662,17 @@ export default {
           // console.log(res)
           if (res.code == 200) {
             this.$message.success('修改成功')
-            this.$router.push({
-              name: 'conserResource-conserResource',
-              params: {
-                orderid: this.resourceId,
-              },
-            })
+            if(this.isShowButton === '1') {
+              this.$router.push({
+                name: 'conserResource-conserResource',
+                params: {
+                  orderid: this.resourceId,
+                },
+              })
+            } else {
+            console.log("111");
+              this.$emit("closeDetail", "2")
+            }
           } else {
             this.$message.success('修改失败')
           }
@@ -638,9 +682,13 @@ export default {
         })
     },
     cancleAddResource() {
-      this.$router.push({
-        name: 'conserResource-conserResource',
-      })
+      if(this.isShowButton === '1') {
+        this.$router.push({
+          name: 'conserResource-conserResource',
+        })
+      } else {
+        this.$emit("closeDetail", "1")
+      }
     },
   },
 }

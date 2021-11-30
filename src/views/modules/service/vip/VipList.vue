@@ -127,15 +127,11 @@
         </template>
         <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
-          <template v-if="record.orderStatusDetail == 5">
-            <a @click="handleClaim(record)">接单</a>
-            <a-divider type="vertical" />
-          </template>
-          <template v-else-if="record.orderStatusDetail == 6 || record.orderStatusDetail == 13">
+          <template v-if="record.orderStatusDetail == 21 || record.orderStatusDetail == 23">
             <a @click="handleProcess(record)">办理</a>
             <a-divider type="vertical" />
           </template>
-          <template v-else-if="record.orderStatusDetail == 7">
+          <template v-else-if="record.orderStatusDetail == 22">
             <a @click="handleProcess(record)">解挂</a>
             <a-divider type="vertical" />
           </template>
@@ -166,10 +162,10 @@ export default {
   mixins: [ServiceColumns],
   data() {
     return {
-      description: '服务工单管理页面',
+      description: 'vip工单管理页面',
       flowCode: 'onl_service_order',
       url: {
-        list: '/system/serviceOrder/supportLineList',
+        list: '/system/serviceOrderVip/vipSupList',
         receive: '/system/serviceOrder/supportReceiveOrder',
       },
       dictOptions: {},

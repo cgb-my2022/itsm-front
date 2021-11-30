@@ -69,7 +69,7 @@
         bordered
         rowKey="id"
         class="j-table-force-nowrap"
-        :columns="columns"
+        :columns="columns1"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
@@ -95,6 +95,12 @@
             下载
           </a-button>
         </template>
+        <!-- 优先级 -->
+        <template slot="serviceLevel" slot-scope="text">
+          <span v-if="text == 1" style="color:red;">{{setLevel(text)}}</span>
+          <span v-if="text == 2" style="color:orange;">{{setLevel(text)}}</span>
+          <span v-if="text == 3" style="color:blue;">{{setLevel(text)}}</span>
+        </template>
         <!-- 工单状态 -->
         <template slot="status" slot-scope="text, record">
           <span class="order-status">
@@ -105,14 +111,16 @@
             <span>{{text}}</span>
           </span>
         </template>
-        <!-- 处理人 -->
+        <!-- 处理人 --> 
         <template slot="realname" slot-scope="text, record">
-          <!-- <span v-if="setRealname([2],record.orderStatusDetail)"></span> -->
-          <span v-if="setRealname([3,4,5,12],record.orderStatusDetail)">{{record.frontlineUserRealname}}</span>
-          <span v-else-if="setRealname([10],record.orderStatusDetail)">{{record.frontlineDelegateName}}</span>
-          <span v-else-if="setRealname([11],record.orderStatusDetail)">{{record.supportDelegateName}}</span>
-          <span v-else-if="setRealname([8,9,14],record.orderStatusDetail)">{{record.solRealName}}</span>
-          <span v-else-if="setRealname([6,7,13],record.orderStatusDetail)">{{record.supportUserRealname}}</span>
+          <span v-if="setRealname([3, 4, 5, 12], record.orderStatusDetail)">{{
+            record.frontlineUserRealname
+          }}</span>
+          <span v-else-if="setRealname([10], record.orderStatusDetail)">{{ record.frontlineDelegateName }}</span>
+          <span v-else-if="setRealname([11], record.orderStatusDetail)">{{ record.supportDelegateName }}</span>
+          <span v-else-if="setRealname([8, 9, 14, 24], record.orderStatusDetail)">{{ record.solRealName }}</span>
+          <span v-else-if="setRealname([6, 7, 13], record.orderStatusDetail)">{{ record.supportUserRealname }}</span>
+          <span v-else-if="setRealname([21, 22, 23], record.orderStatusDetail)">{{ record.vipDelegateName }}</span>
           <span v-else></span>
         </template>
         <!-- 操作按钮 -->
@@ -205,29 +213,16 @@
 </template>
 
 <script>
-  import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import { ServiceMixin } from './mixins/ServiceMixin'
-  import StaffServiceOrderModal from './modules/StaffServiceOrderModal'
-  import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import JDate from '@/components/jeecg/JDate.vue'
-  import '@/assets/less/TableExpand.less'
+  import { ServiceColumns } from '@/views/modules/service/mixins/ServiceColumns'
+
   import { postAction, putAction } from '@/api/manage'
-  import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal';
   import StaffServiceCatalog from './modules/StaffServiceCatalog'
   import StaffServiceEvaluation from './modules/StaffServiceEvaluation'
   import StaffServiceBack from './modules/StaffServiceBack'
   export default {
     name: 'StaffServiceOrderList',
-    mixins: [JeecgListMixin, ServiceMixin],
+    mixins: [ServiceColumns],
     components: {
-      JDictSelectTag,
-      JDate,
-      StaffServiceOrderModal,
-      ServiceProcessInstPicModal,
-      ServiceTaskDetailModal,
-      ServiceTaskDealModal,
       StaffServiceCatalog,
       StaffServiceEvaluation,
       StaffServiceBack
@@ -237,7 +232,7 @@
         description: '服务工单管理页面',
         flowCode: 'onl_service_order',
         // 表头
-        columns: [
+        columns1: [
           {
             title: '请求内容',
             dataIndex: 'eventContent',
@@ -251,6 +246,14 @@
             dataIndex: 'serviceCatFullName'
           },
           {
+            title: '优先级',
+            align: 'center',
+            dataIndex: 'serviceLevel',
+            width: 140,
+            sorter: true,
+            scopedSlots: { customRender: 'serviceLevel' },
+          },
+          {
             title: '工单状态',
             align: 'center',
             dataIndex: 'orderStatus_dictText',
@@ -258,7 +261,7 @@
             scopedSlots: { customRender: 'status' }
           },
           {
-            title: '创建人',
+            title: '发起人',
             align: 'center',
             width: 140,
             dataIndex: 'realName'
@@ -302,22 +305,6 @@
           approved: ''
         }
       }
-    },
-    computed: {
-      importExcelUrl: function() {
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
-      setRealname() {
-        return function(arr, status) {
-          if(arr.indexOf(status) != -1) {
-            return true
-          }
-          return false
-        }
-      }
-    },
-    mounted() {
-      this.getCatalog()
     },
     methods: {
       initDictConfig() {

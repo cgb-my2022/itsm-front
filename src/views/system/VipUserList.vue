@@ -93,7 +93,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="ruleForm(record)" >负责区域</a>
+          <a @click="ruleForm(record)" >接单规则</a>
          <!-- <a-divider type="vertical" v-has="'user:edit'"/>
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -138,7 +138,8 @@
     <!-- table区域-end -->
 
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-    <order-rule-modal ref="ruleForm" ></order-rule-modal>
+    <!-- 接单规则 -->
+    <order-rule-modal ref="ruleForm"></order-rule-modal>
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
@@ -152,7 +153,7 @@
 
 <script>
   import UserModal from './modules/UserModal'
-  import OrderRuleModal from './modules/FrontSupOrderRuleModal'
+  import OrderRuleModal from './modules/FrontOrderRuleModal'
   import PasswordModal from './modules/PasswordModal'
   import { putAction, getFileAccessHttpUrl } from '@/api/manage';
   import { frozenBatch } from '@/api/api'
@@ -225,14 +226,14 @@
           {
             title: '手机号码',
             align: 'center',
-            width: 100,
+            width: 160,
             dataIndex: 'phone'
           },
           {
             title: '部门',
             align: 'center',
-            width: 180,
             ellipsis: true,
+            width: 180,
             dataIndex: 'orgCode'
           },
           {
@@ -252,7 +253,7 @@
         ],
         url: {
           syncUser: '/process/extActProcess/doSyncUser',
-          list: '/sys/user/frontSuplist',
+          list: '/sys/user/viplist',
           delete: '/sys/user/delete',
           deleteBatch: '/sys/user/deleteBatch',
           exportXlsUrl: '/sys/user/exportXls',
@@ -317,7 +318,7 @@
         }
       },
       ruleForm(record) {
-        this.$refs.ruleForm.edit(record);
+        this.$refs.ruleForm.edit(record, 2);
       },
       handleFrozen: function (id, status, username) {
         let that = this;
@@ -360,5 +361,8 @@
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
+  .ant-table-row-cell-break-word {
+    line-height: 1.5em;
+  }
 </style>

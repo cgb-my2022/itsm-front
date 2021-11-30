@@ -14,6 +14,7 @@
               <a-col :span="24">
                 <a-form-item label="选择业务" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-cascader 
+                    :allowClear="false"
                     placeholder="请选择"  
                     :field-names="{ label: 'title', value: 'id', children: 'children' }"
                     :show-search="{ filter }"
@@ -73,20 +74,30 @@
         </a-input-search>
       </a-form-item>
     </div> -->
+    <!-- 其他人员选择 -->
     <biz-service-select-single-user-modal ref="selectSingleUserModal" @selectFinished="selectUserOK"></biz-service-select-single-user-modal>
+    <!-- vip人员选择 -->
+    <service-user :url="vipUrl" ref="serviceUser" @selectFinished="selectUserOK"></service-user>
   </a-modal>
 </template>
 
 <script>
   import BizServiceSelectSingleUserModal from './BizServiceSelectSingleUserModal.vue';
-  import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+  import ServiceUser from '@/views/modules/events/modules/EventsUser'
+  import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import ARow from 'ant-design-vue/es/grid/Row'
   import pick from 'lodash.pick'
   export default {
     mixins: [ServiceMixin, JEditableTableMixin],
-    components: { BizServiceSelectSingleUserModal, ARow },
+    components: { BizServiceSelectSingleUserModal, ARow, ServiceUser },
     name: 'BizServiceTaskSelectEntrusterModal',
+    props: {
+      isVip: {
+        type: Boolean,
+        default: false
+      }
+    },
     data() {
       return {
         disableSubmit: false,
@@ -117,6 +128,8 @@
           orderType: ""
         },
         orderStatusDetail: 0,
+        vipUrl: "/system/usrServiceOrderRule/frontSup",
+        vipParams: null
       }
     },
     computed: {
@@ -144,12 +157,14 @@
             delete rowInfo.orderType
             rowInfo.transferReason = values.transferReason
             rowInfo.username = this.userData.username
+            rowInfo.flag = this.serviceParam.flag
             this.$emit('selectFinished', rowInfo);
             this.visible = false;
           }
         });
       },
       selectUserOK: function(data) {
+        console.log(data);
         let fieldval = pick(this.model)
         fieldval.userName = data.realname
         this.$nextTick(() => {
@@ -158,16 +173,40 @@
         this.userData = data;
       },
 
-      select(flag, formData) {
+      select(flag, formData, vipUrl) {
         this.visible = true;
         this.serviceParam.flag = flag;
         this.rowInfo.orderType = formData.orderType
         this.orderStatusDetail = formData.orderStatusDetail
+        if (vipUrl) {
+          this.vipUrl =  vipUrl
+          if (flag === 1) {
+            this.vipParams = {
+              deptId: formData.sysComCode
+            }
+          } else {
+            this.vipParams = {
+              departId: formData.sysComCode,
+              catId: formData.serviceCatId,
+              role: 'FRONTLINE_PERSONNEL'
+            }
+          }
+        }
         this.showCatalog(formData)
       },
       handleSelect(e) {
         e.srcElement.blur()
-        this.$refs.selectSingleUserModal.select(this.serviceParam.flag);
+        if (this.isVip) {
+          // 选择主管
+          if (this.serviceParam.flag != 1 && !this.vipParams.catId) {
+            this.$message.warn("请先选择事件分类！")
+            return
+          } else {
+            this.$refs.serviceUser.select(this.vipParams)
+          }
+        } else {
+          this.$refs.selectSingleUserModal.select(this.serviceParam.flag)
+        }
       },
       hqUserSelectReset() {
         // this.hqUserSelectList = {};

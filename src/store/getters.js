@@ -15,9 +15,7 @@ const getters = {
   enhanceJs:(state) => (code) => {
     state.enhance.enhanceJs[code] = Vue.ls.get(ENHANCE_PRE+code);
     return state.enhance.enhanceJs[code]
-  },
-  catalogId: state => state.info.catalogId,
-
+  }
 }
 
 export default getters

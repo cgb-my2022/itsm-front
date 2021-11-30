@@ -59,7 +59,7 @@
             "
           />
         </a-form-model-item>
-        <a-form-model-item ref="solution" label="相关资源" prop="solution">
+        <a-form-model-item ref="solution" label="相关资源">
           <a-table
             ref="table"
             bordered
@@ -71,7 +71,7 @@
           >
             <!-- 操作按钮 -->
             <span slot="action" slot-scope="text, record">
-              <a @click="bindEdite(record)">编辑</a>
+              <a-button :disabled="disabledSolution" @click="bindEdite(record.id)">编辑</a-button>
             </span>
           </a-table>
         </a-form-model-item>
@@ -109,13 +109,16 @@
       <div style="margin-top: 20px; text-align: center">
         <!-- 一线解决工单 -->
         <template v-if="formData.orderStatusDetail === 3 || formData.orderStatusDetail === 12">
-          <a-button type="primary" @click="handleResolved(1)">已解决</a-button>
+          <a-button type="primary" @click="handleResolved('frontresolve')">已解决</a-button>
         </template>
         <!-- 二线解决工单 -->
         <template v-if="formData.orderStatusDetail === 6 || formData.orderStatusDetail === 13">
-          <a-button type="primary" @click="handleResolved(2)">已解决</a-button>
+          <a-button type="primary" @click="handleResolved('supportresolve')">已解决</a-button>
         </template>
-
+        <!-- vip解决工单 -->
+        <template v-if="formData.orderStatusDetail === 21 || formData.orderStatusDetail === 23">
+          <a-button type="primary" @click="handleResolved('vipResolveOrder')">已解决</a-button>
+        </template>
         <!--<template v-if="model.processModel==1">
         <template v-for="(item,index) in resultObj.transitionList">
           <a-button type="primary" @click="handleProcessComplete(item.nextnode)">{{ item.Transition }}</a-button>
@@ -129,6 +132,13 @@
       </div>
       <br />
     </a-card>
+    <!-- 资源详情 -->
+    <resources-detail 
+      :detailId="detailId" 
+      v-if="showDetail" 
+      ref="resourcesDetail" 
+      @closeDetail="closeDetail">
+    </resources-detail>
   </a-spin>
 </template>
 
@@ -139,10 +149,13 @@ import JUpload from '@/components/jeecg/JUpload'
 import { initDictOptions } from '@/components/dict/JDictSelectUtil'
 import { postAction } from '@/api/manage'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
-import { ServiceMixin } from '../staff/mixins/ServiceMixin'
+import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { FormTypes, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import { validateTables, VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
+import { getAction } from '../../../../api/manage'
+import ResourcesDetail from '../common/ResourcesDetail'
+
 export default {
   mixins: [ServiceMixin, JEditableTableMixin],
   components: {
@@ -153,10 +166,17 @@ export default {
   },
   name: 'ServiceOrderFormFrontLine',
   props: ['formData'],
+  components: { ResourcesDetail },
   data() {
     return {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 14 },
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 4 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 18 },
+      },
       rules: {
         serviceCatIds: [{ required: true, message: '请选择业务', trigger: 'change' }],
         reason: [
@@ -172,8 +192,11 @@ export default {
       remnant: 500,
       url: {
         upload: window._CONFIG['domianURL'] + '/sys/common/upload',
-        frontresolve: '/system/serviceOrder/frontresolveOrder',
-        supportresolve: '/system/serviceOrder/supportresolveOrder',
+        frontresolve: '/system/serviceOrder/frontresolveOrder',  //一线解决
+        supportresolve: '/system/serviceOrder/supportresolveOrder', //二线解决
+        vipResolveOrder: '/system/serviceOrderVip/vipResolveOrder', //二线解决
+        getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
+        getResourcePermission: '/sys/permission/getResourcePermission',  //资源编辑权限
       },
       fileList: [],
       headers: {},
@@ -221,7 +244,7 @@ export default {
       columns: [
         {
           title: '资源名称',
-          dataIndex: 'orderType',
+          dataIndex: 'name',
           ellipsis: true,
           align: 'center'
         },
@@ -229,7 +252,7 @@ export default {
           title: '资源描述',
           align: 'center',
           ellipsis: true,
-          dataIndex: 'catNames',
+          dataIndex: 'describes',
         },
         {
           title: '操作',
@@ -238,7 +261,10 @@ export default {
           width: 140,
           scopedSlots: { customRender: 'action' },
         },
-      ]
+      ],
+      showDetail: false,
+      detailId: "",
+      disabledSolution: true
     }
   },
   watch: {
@@ -273,6 +299,15 @@ export default {
               this.rowInfo[item] = info[item]
           })
 
+      })
+    },
+    // 是否可以编辑资源 
+    pesourcePermission() {
+      getAction(this.url.getResourcePermission).then(res => {
+        if (res.code == 200) {
+          const result = res.result
+          this.disabledSolution = result.length === 0 ? true : false
+        }
       })
     },
     setNc(newVal) {
@@ -324,8 +359,8 @@ export default {
       this.model.fileList = JSON.stringify(this.fileList)
       console.log('-----fileList-----', this.model.fileList)
     },
-    // 已解决(type 1:一线  2：二线)
-    handleResolved(type) {
+    // 已解决(type 1:一线  2：二线 3：vip)
+    handleResolved(url) {
       const that = this
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
@@ -333,7 +368,6 @@ export default {
             title: '提示',
             content: '确认提交吗?',
             onOk: function () {
-              const url = type === 1 ? 'frontresolve' : 'supportresolve'
               that.okConfirm(url)
             }
           })
@@ -404,9 +438,31 @@ export default {
       this.setNc(this.serviceOrderModel.serviceCatIds)
       return ncList;
     },
+    // 获取相关资源
+    getResources() {
+      this.loadingTable = true
+      getAction(
+        this.url.getResourceListById,
+        { id: this.formData.userId }
+      ).then(res => {
+        this.loadingTable = false
+        if (res.result) {
+          this.dataSource = res.result
+        }
+      }).finally( () => {
+        this.loadingTable = false
+      })
+    },
     //先关资源编辑
-    bindEdite() {
-
+    bindEdite(id) {
+      this.detailId = id
+      this.showDetail = true
+    },
+    closeDetail(data) {
+      if (data === '2') {
+        this.getResources()
+      }
+      this.showDetail = false
     }
   },
   created() {
@@ -416,6 +472,10 @@ export default {
     /*this.currTask = this.formData.bizTaskList[0];
       this.model.taskId = this.currTask.id;
       this.getProcessTaskTransInfo(this.formData); */
+    // 获取相关资源
+    this.getResources()
+    // 资源是否可以编辑
+    this.pesourcePermission()
     // 获取业务
     this.getCatalog(3)
     // 获取二级业务

@@ -24,16 +24,36 @@
                         </a-form-item>
                     </a-col>
                     <a-col :span="24">
-                        <a-form-item label="服务目录权限" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
-                            <a-radio-group :disabled="disabled" name="radioGroup" v-decorator="['permission', {initialValue:  permission}]">
-                                <a-radio :value="1">公有</a-radio>
-                                <a-radio :value="0">私有</a-radio>
+                        <a-form-item label="关联流程" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
+                            <div style="display:flex;">
+                                <a-input
+                                autocomplete="off"
+                                @click="handleSelect"
+                                placeholder="点击选择关联流程"
+                                v-decorator="['processName', {
+                                    initialValue: rowInfo.processName || serviceInfo.processName,
+                                    rules: [{ required: true, message: '请选择关联流程!' }]
+                                }]">
+                                </a-input>
+                                <a-button icon="search" @click="handleSelect">选择</a-button>
+                            </div>
+                        </a-form-item>
+                    </a-col>
+                    <a-col :span="24">
+                        <a-form-item label="调用权限" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
+                            <a-radio-group :disabled="disabled" name="radioGroup" v-decorator="['permission', {initialValue:  permission,  rules: [{ required: true, message: '请选择调用权限!' }] }]">
+                                <a-radio :value="1" style="margin:10px 0;">公有</a-radio><br/>
+                                <a-radio :value="0">
+                                    <span>私有</span>
+                                    <span class="radio-txt">通过服务目录发起服务请求时，不可使用！</span>
+                                </a-radio>
                             </a-radio-group>
                         </a-form-item>
                     </a-col>
                 </a-row>
             </a-form>
         </a-spin>
+        <associated-process ref="associatedProcess" @selectFinished="selectFinished"></associated-process>
     </a-modal>
 </template>
 
@@ -41,6 +61,8 @@
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import ARow from 'ant-design-vue/es/grid/Row'
 import { addServiceCat, putServiceCat, getServiceInfo } from '@/api/api'
+import AssociatedProcess from './AssociatedProcess'
+import pick from 'lodash.pick'
 export default {
     name: "ServiceInfo",
     props: {
@@ -49,10 +71,13 @@ export default {
         },
         rowInfo: {
             type: Object,
+        },
+        serviceInfo: {
+            type: Object
         }
     },
     mixins: [JEditableTableMixin],
-    components: { ARow },
+    components: { ARow, AssociatedProcess },
     watch: {
        paramsInfo: {
             handler(newVal) {
@@ -62,6 +87,9 @@ export default {
                     this.disabled = false
                     this.permission = newVal.id ? this.rowInfo.permission : 1
                 }
+                Object.keys(this.selectInfo).forEach(item => {
+                    this.selectInfo[item] = newVal.id ? this.rowInfo[item] : this.serviceInfo[item]
+                })
             },
             immediate: true
         }
@@ -80,7 +108,12 @@ export default {
             },
             addDefaultRowNum: 1,
             disabled: false,
-            permission: 1
+            permission: 1,
+            selectInfo: {
+                processId: '', 
+                processName: '', 
+                processRelationCode: ''
+            }
         }
     },
     methods: {
@@ -109,6 +142,29 @@ export default {
                 this.disabled = false
             }
         },
+        // 选择关联流程
+        handleSelect(e) {
+            e.srcElement.blur()
+            this.$refs.associatedProcess.select(this.selectInfo.processId);
+        },
+        selectFinished(data) {
+            this.selectInfo = JSON.parse(JSON.stringify(data))
+            this.form.setFieldsValue({
+                processName: data.processName
+            })
+        },
+         /** 调用完edit()方法之后会自动调用此方法 */
+        editAfter() {
+            let fieldval = pick(
+                this.model,
+                'catName',
+                'processName',
+                'catInfo'
+            )
+            this.$nextTick(() => {
+                this.form.setFieldsValue(fieldval)
+            })
+        },
         // 提交
         handleOkConfirm(e) {
             e.preventDefault();
@@ -120,7 +176,7 @@ export default {
         },
         requestMethods(values){
             this.confirmLoading = true
-            let params = Object.assign({}, this.paramsInfo, values) 
+            let params = Object.assign({}, this.paramsInfo, values, this.selectInfo) 
             const axo = this.paramsInfo.id ? 
                 putServiceCat(params) :
                 addServiceCat(params)
@@ -140,3 +196,11 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.radio-txt {
+    display: inline-block;
+    margin-left: 10px;
+    color: #FEC7A0;
+}
+</style>

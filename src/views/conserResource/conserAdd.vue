@@ -45,11 +45,11 @@
                   </el-select>
                </div>
                <!-- 小数 -->
-               <floatType v-if="item.attrType == 5" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="getFloat"></floatType>
+               <floatType v-if="item.attrType == 5" :isShowTip="isShowTip" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="getFloat"></floatType>
                <!-- 整数 -->
                <intType v-if="item.attrType == 6" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonInt="getInt"></intType>
                <!-- 密文 -->
-               <secretType v-if="item.attrType == 7" class="common" :propMaxLength="item.maxLength"  :theIndex="index" @sonSecret="getSecret"></secretType>
+               <secretType v-if="item.attrType == 7" :isSecret="isSecret"  class="common" :propMaxLength="item.maxLength"  :theIndex="index" @sonSecret="getSecret"></secretType>
                <!-- MAC -->
                <MACType v-if="item.attrType == 8" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonMAC="getMAC"></MACType>
                <!-- IP -->
@@ -159,11 +159,11 @@
                   </el-select>
                </div>
                <!-- 小数 -->
-               <floatType v-if="item.attrType == 5" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="ourgetFloat"></floatType>
+               <floatType v-if="item.attrType == 5" :isShowTip="isShowTip" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonFloat="ourgetFloat"></floatType>
                <!-- 整数 -->
                <intType v-if="item.attrType == 6" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonInt="ourgetInt"></intType>
                <!-- 密文 -->
-               <secretType v-if="item.attrType == 7" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonSecret="ourgetSecret"></secretType>
+               <secretType v-if="item.attrType == 7" :isSecret="isSecret" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonSecret="ourgetSecret"></secretType>
                <!-- MAC -->
                <MACType v-if="item.attrType == 8" class="common" :propMaxLength="item.maxLength" :theIndex="index" @sonMAC="ourgetMAC"></MACType>
                <!-- IP -->
@@ -267,6 +267,8 @@ export default {
   props:{},
   data(){
     return {
+       isSecret: false,
+       isShowTip: true,
        treeProps:{
           value: 'id',
           label: 'label',
@@ -409,7 +411,6 @@ export default {
                      item.values = ""
                   })
                   this.defalutData = res.result.publicAttr
-
                   res.result.customizeAttr? res.result.customizeAttr : []
                   res.result.customizeAttr.forEach(item=>{
                      item.values = ""
@@ -434,7 +435,10 @@ export default {
          this.userID = row.id
       },
       handleAvatarSuccess(obj, res, file){
-         res.values = JSON.stringify(obj.fileList)
+         // res.values = JSON.stringify(obj.fileList)
+         if(obj.file.status == "done"){
+            res.values = obj.file.response.message
+         }
          res.fileList = JSON.stringify(obj.fileList)
       },
       // // 打开tree的dialog
@@ -497,7 +501,10 @@ export default {
 
       // 自定义属性部分----------------------------------------------
       ourhandleAvatarSuccess(obj, res, file){
-         res.values = JSON.stringify(obj.fileList)
+         // res.values = JSON.stringify(obj.fileList)
+         if(obj.file.status == "done"){
+            res.values = obj.file.response.message
+         }
          res.fileList = JSON.stringify(obj.fileList)
       },
       // 打开tree的dialog
@@ -558,22 +565,22 @@ export default {
 
       // 确认按钮
       addSourceSure(){
-         let defaultFlag = false
-         let ourDataFlag = false
-         this.defalutData.forEach((item) => {
-            if (!item.values || item.values == "[]") {
-               defaultFlag = true
-            }
-         })
-         this.ourData.forEach((item) => {
-            if (!item.values || item.values == "[]") {
-               ourDataFlag = true
-            }
-         })
-         if (defaultFlag || ourDataFlag) {
-            this.$message.error('请完善属性信息')
-            return
-         }
+         // let defaultFlag = false
+         // let ourDataFlag = false
+         // this.defalutData.forEach((item) => {
+         //    if (!item.values || item.values == "[]") {
+         //       defaultFlag = true
+         //    }
+         // })
+         // this.ourData.forEach((item) => {
+         //    if (!item.values || item.values == "[]") {
+         //       ourDataFlag = true
+         //    }
+         // })
+         // if (defaultFlag || ourDataFlag) {
+         //    this.$message.error('请完善属性信息')
+         //    return
+         // }
 
          let fetchObj = {
             publicResourceMap: this.defalutData,
@@ -595,7 +602,7 @@ export default {
                      }
                   })
                }else{
-                  this.$message.success('新增失败')
+                  this.$message.error('新增失败')
                }
             }).catch(err=>{
                console.log(err);

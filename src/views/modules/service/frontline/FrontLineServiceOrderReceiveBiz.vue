@@ -100,6 +100,12 @@
             下载
           </a-button>
         </template>
+        <!-- 优先级 -->
+        <template slot="serviceLevel" slot-scope="text">
+          <span v-if="text == 1" style="color:red;">{{setLevel(text)}}</span>
+          <span v-if="text == 2" style="color:orange;">{{setLevel(text)}}</span>
+          <span v-if="text == 3" style="color:blue;">{{setLevel(text)}}</span>
+        </template>
         <!-- 工单状态 -->
         <template slot="status" slot-scope="text, record">
           <span class="order-status">
@@ -115,14 +121,14 @@
         </template>
         <!-- 处理人 -->
         <template slot="realname" slot-scope="text, record">
-          <!-- <span v-if="setRealname([2], record.orderStatusDetail)"></span> -->
           <span v-if="setRealname([3, 4, 5, 12], record.orderStatusDetail)">{{
             record.frontlineUserRealname
           }}</span>
           <span v-else-if="setRealname([10], record.orderStatusDetail)">{{ record.frontlineDelegateName }}</span>
           <span v-else-if="setRealname([11], record.orderStatusDetail)">{{ record.supportDelegateName }}</span>
-          <span v-else-if="setRealname([8, 9, 14], record.orderStatusDetail)">{{ record.solRealName }}</span>
+          <span v-else-if="setRealname([8, 9, 14, 24], record.orderStatusDetail)">{{ record.solRealName }}</span>
           <span v-else-if="setRealname([6, 7, 13], record.orderStatusDetail)">{{ record.supportUserRealname }}</span>
+          <span v-else-if="setRealname([21, 22, 23], record.orderStatusDetail)">{{ record.vipDelegateName }}</span>
           <span v-else></span>
         </template>
         <span slot="action" slot-scope="text, record">
@@ -157,113 +163,22 @@
 </template>
 
 <script>
-import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { ServiceMixin } from '../staff/mixins/ServiceMixin'
-import StaffServiceOrderModal from '../staff/modules/StaffServiceOrderModal'
-import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import JDate from '@/components/jeecg/JDate.vue'
-import '@/assets/less/TableExpand.less'
+import { ServiceColumns } from '@/views/modules/service/mixins/ServiceColumns'
 import { postAction, getAction } from '@/api/manage'
-import ServiceProcessInstPicModal from '../common/ServiceProcessInstPicModal'
-import ServiceTaskDealModal from '../common/ServiceTaskDealModal'
-import ServiceTaskDetailModal from '../common/ServiceTaskDetailModal'
 
 export default {
   name: 'FrontLineServiceOrderList',
-  mixins: [JeecgListMixin, ServiceMixin],
-  components: {
-    JDictSelectTag,
-    JDate,
-    StaffServiceOrderModal,
-    ServiceProcessInstPicModal,
-    ServiceTaskDealModal,
-    ServiceTaskDetailModal,
-  },
+  mixins: [ServiceColumns],
   data() {
     return {
       description: '服务工单管理页面',
       flowCode: 'onl_service_order',
-      // 表头
-      columns: [
-        {
-          title: '编号',
-          dataIndex: 'id',
-          align: 'center',
-          width: 190,
-        },
-        {
-          title: '请求内容',
-          dataIndex: 'eventContent',
-          ellipsis: true,
-          align: 'center',
-        },
-        {
-          title: '所属业务',
-          align: 'center',
-          ellipsis: true,
-          dataIndex: 'serviceCatFullName',
-        },
-        {
-          title: '工单状态',
-          align: 'center',
-          dataIndex: 'orderStatus_dictText',
-          width: 140,
-          scopedSlots: { customRender: 'status' },
-        },
-        {
-          title: '创建人',
-          align: 'center',
-          dataIndex: 'realName',
-        },
-        {
-          title: '创建人所属部门',
-          align: 'center',
-          dataIndex: 'deptName',
-          ellipsis: true,
-        },
-        {
-          title: '创建日期',
-          align: 'center',
-          sorter: true,
-          dataIndex: 'createTime',
-        },
-        {
-          title: '处理人',
-          align: 'center',
-          dataIndex: 'frontlineUserRealname',
-          scopedSlots: { customRender: 'realname' },
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          align: 'center',
-          fixed: 'right',
-          width: 150,
-          scopedSlots: { customRender: 'action' },
-        },
-      ],
       url: {
         list: '/system/serviceOrder/frontLineList',
         receive: '/system/serviceOrder/receiveOrder',
       },
       dictOptions: {},
     }
-  },
-  computed: {
-    importExcelUrl: function () {
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
-    setRealname() {
-      return function (arr, status) {
-        if (arr.indexOf(status) != -1) {
-          return true
-        }
-        return false
-      }
-    },
-  },
-  created() {
-    this.getCatalog()
   },
   methods: {
     initDictConfig() {},

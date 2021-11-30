@@ -1,6 +1,6 @@
 <template>
    <a-card :bordered="false">
-      <div style="font-weight: bold">{{ resourceTypeTitle }}</div>
+      <div style="font-weight: bold">{{ this.theType==0?'资源类型新增':this.theType==1?'资源类型详情':"资源类型修改"  }}</div>
       <div class="resourceTitle">基本信息</div>
       <div class="reLine"></div>
       <!-- 基本信息 -->
@@ -111,7 +111,6 @@ export default {
       infoId: null,
       sourceId: null, //tree 选中
       parentName: "",
-      resourceTypeTitle:"增加资源类型",
       formData: {
          fatherName: undefined,
          fatherId: null,
@@ -251,13 +250,12 @@ export default {
          if(this.multipleSelection.length === 0){
             this.$message.error('请选择自定属性')
             return
-         }
-         for(var i = 0; i < this.tableData.length; i++){
-             for(var k = 0; k < this.multipleSelection.length; k++){
-               if(this.tableData[i].id == this.multipleSelection[k].id){
-                  this.tableData.splice(i, 1)
-               }
-            }
+         }   
+         for(var k = 0; k < this.multipleSelection.length; k++){
+            const findindex = this.tableData.findIndex(item=>{
+               return this.multipleSelection[k].id == item.id
+            })
+            this.tableData.splice(findindex, 1)
          }
 
       },
