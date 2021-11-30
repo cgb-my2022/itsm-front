@@ -16,6 +16,7 @@
         <a-tree
           v-model="checkedKeys"
           checkable
+          checkStrictly="false"
           :tree-data="departTree"
           @check="onCheck"
         />
