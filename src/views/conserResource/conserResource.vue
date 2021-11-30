@@ -431,6 +431,11 @@ export default {
       return extension || extension2
     },
     handleUpSuccess(res, file){
+      if(res.code == 500){
+        this.$message.error('导入失败')
+        this.uploadDialogVisible = false
+        return
+      }
       this.uploadDialogVisible = false
       this.fileList = []
       this.upFile = null
@@ -438,8 +443,7 @@ export default {
       this.$message.success('导入成功')
       
     },
-    handleUpError(err, file, fileList){
-      // console.log(err);
+    handleUpError(res, file, fileList){
       this.$message.error('上传失败')
     },
 
