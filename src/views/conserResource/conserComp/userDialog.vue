@@ -7,7 +7,7 @@
          :before-close="userCancle"
          >
          <div style="margin-bottom: 10px;">
-            <el-input style="width: 40%; margin-right: 10px" v-model="searchValue"></el-input>
+            <el-input placeholder="请输入姓名" style="width: 40%; margin-right: 10px" v-model="searchValue"></el-input>
             <el-button type="primary" @click="getUser">搜 索</el-button>
          </div>
          <vxe-table
