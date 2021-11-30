@@ -20,7 +20,8 @@ switch (process.env.VUE_APP_CURENV) {
         onlinePreviewDomainURL = "http://fileview.jeecg.com/onlinePreview"
         break;
     case "development":
-        domianURL = "http://172.16.100.145:8080/jeecg-boot";
+        // domianURL = "http://172.16.100.145:8080/jeecg-boot";
+        domianURL = "http://172.0.0.1:8080/jeecg-boot";
         casPrefixUrl = "http://cas.example.org:8443/cas";
         onlinePreviewDomainURL = "http://fileview.jeecg.com/onlinePreview"
         break;
