@@ -103,8 +103,8 @@
 
       </a-row>
     </a-spin>
-    <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
-    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <!-- <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal> -->
+    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" />
     <service-task-detail-modal ref="taskDetailModal" />
   </div>
 </template>
@@ -197,7 +197,6 @@
     methods: {
       ...mapGetters(['nickname', 'welcome']),
       loadData() {
-        console.log("222");
         this.mock();
         this.toDoEvents();
         this.ongoingEvents();
@@ -218,8 +217,6 @@
         var params = { flowCode: this.flowCode, dataId: record.id };// 查询条件
         getAction(url, params).then((res) => {
           if (res.success) {
-            console.log('获取流程节点信息', res);
-            console.log('表单数据', res.result.records)
             var data = {
               dataId: res.result.dataId,
               orderStatus: record.orderStatus,
@@ -234,8 +231,6 @@
             }
             this.formData = data;
             this.path = res.result.formUrl;
-            console.log('------获取流程节点信息>>', data);
-            console.log('------流程表单地址>>', this.formUrl);
             this.$refs.taskDealModal.deal(data, this.formUrl);
             this.loading = false;
           }
@@ -314,7 +309,6 @@
         })
       },
       taskOk() {
-        console.log('流程办理完成')
        // this.loadData()
         this.toDoEvents();
         this.ongoingEvents();

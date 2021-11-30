@@ -4,7 +4,7 @@
       <a-row type="flex">
 
         <a-col :flex="5" >
-          <a-card-grid class="tubg" @click="toServiceOrderDelegate" style="cursor: pointer">
+          <a-card-grid class="tubg" @click="toServiceOrderReceiveList" style="cursor: pointer">
             <div >
               <a-icon type="clock-circle" style="margin-right: 5px"/><span>历史事件</span>
             </div>
@@ -16,47 +16,13 @@
 
     <a-spin :spinning="loading">
       <a-row type="flex" justify="start" :gutter="3">
-        <a-col style="padding-top: 10px;" :sm="24" :lg="12">
-          <div class="card-head">
-            <p class="card-head-p1">
-              <span class="card-head-p1-span1">新的待办</span> <span class="card-head-p1-span2">({{ dataSource1Size }})</span>
-            </p>
-            <p class="card-head-p2" @click="toServiceOrderDelegate">
-              更多 <a-icon type="double-right" />
-            </p>
-          </div>
-          <div class="card-tb">
-
-            <a-table
-              :columns="columns"
-              :dataSource="dataSource1"
-              :pagination="false">
-              <template slot="ellipsisText" slot-scope="text">
-                <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-              </template>
-
-              <!-- <span slot="action" slot-scope="text, record">
-                <template v-if="record.bpmStatus === '1'">
-                  <a @click="startProcess(record)">提交流程</a>
-                  <a-divider type="vertical"/>
-                </template>
-                <a @click="showDetailServiceOrder(record)">详情</a>
-              </span>-->
-
-              <span slot="action" slot-scope="text, record">
-                  <a @click="handleProcess(record)">转办</a>
-              </span>
-
-            </a-table>
-          </div>
-        </a-col>
 
         <a-col style="padding-top: 10px;" :sm="24" :lg="12">
           <div class="card-head">
             <p class="card-head-p1">
               <span class="card-head-p1-span1">在办事件</span> <span class="card-head-p1-span2">({{ dataSource2Size }})</span>
             </p>
-            <p class="card-head-p2" @click="toServiceOrderDelegate">
+            <p class="card-head-p2" @click="toServiceOrderReceiveList">
               更多 <a-icon type="double-right" />
             </p>
           </div>
@@ -79,12 +45,7 @@
               </span>-->
 
               <span slot="action" slot-scope="text, record">
-                <template v-if="showClaimButton(record.frontlineUserName)">
-                  <a @click="handleClaim(record)">接单</a>
-                  <a-divider type="vertical" />
-                  <a @click="showDetailServiceOrder(record)">详情</a>
-                </template>
-                <template v-else>
+                <template>
                   <a @click="handleProcess(record)">办理</a>
                 </template>
               </span>
@@ -94,9 +55,9 @@
         </a-col>
       </a-row>
     </a-spin>
-    <!-- <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal> -->
+    <!-- <staff-serviceOrder-modal ref="modalForm" @closeLoad="taskOk"></staff-serviceOrder-modal> -->
     <service-task-deal-modal ref="taskDealModal" @ok="taskOk" />
-    <service-task-detail-modal ref="taskDetailModal" />
+    <!-- <service-task-detail-modal ref="taskDetailModal" /> -->
   </div>
 </template>
 
@@ -158,8 +119,9 @@
           }
         ],
         url: {
-          delegateList: '/system/serviceOrder/delegateList',
-          list: '/system/serviceOrder/delegateList',
+          receiveList: '/system/serviceOrder/frontLinereceiveList',
+          frontLineOnDoList: '/system/serviceOrderVip/vipDelegateList',
+          list: '/system/serviceOrder/frontLinereceiveList',
           receive: '/system/serviceOrder/receiveOrder'
         }
       }
@@ -171,7 +133,8 @@
       ...mapGetters(['nickname', 'welcome']),
       loadData() {
         this.mock();
-        this.toDoEvents();
+        // this.toDoEvents();
+        this.ongoingEvents();
       },
       showClaimButton(assignee) {
         if (!assignee) {
@@ -181,7 +144,7 @@
       },
       // 办理
       handleProcess(record) {
-        this.$refs.taskDealModal.title = '转办'; 
+        this.$refs.taskDealModal.title = '办理';
         this.$refs.taskDealModal.deal(record.id);
       },
       getBizProcessNodeInfo(record) {
@@ -218,8 +181,8 @@
         const path = 'modules/service/staff/modules/StaffServiceOrderForm';
         this.$refs.taskDetailModal.deal(record.id, path);
       },
-      toServiceOrderDelegate() {
-        this.$router.replace('/service/delegate')
+      toServiceOrderReceiveList() {
+        this.$router.replace('/service/vipList')
       },
       getTipColor(rd) {
         let num = rd.restDay
@@ -245,10 +208,10 @@
         this.dataSource1 = [];
         //待办
         var params = {
-          orderStatusDetail: 10
         };
-        getAction(this.url.delegateList, params).then((res) => {
+        getAction(this.url.receiveList, params).then((res) => {
           if (res.success) {
+            console.log(res);
             this.dataSource1Size = res.result.total;
             if (this.dataSource1Size <= 5) {
               this.dataSource1 = res.result.records;
@@ -263,34 +226,26 @@
           this.loading = false;
         })
       },
-      taskOk() {
-        //this.loadData()
-        this.toDoEvents();
-        this.ongoingEvents();
-      },
-      // 接单
-      handleClaim(record) {
-        var that = this;
-        this.$confirm({
-          title: '确认接单吗',
-          content: '是否接单?',
-          onOk: function() {
-            var param = {
-              id: record.id,
-              version: record.version
-            }
-            postAction(that.url.receive, param).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.toDoEvents();
-                that.ongoingEvents();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
+
+      // 在办事件
+      ongoingEvents() {
+        this.dataSource2 = [];
+        var params = {
+        };
+        getAction(this.url.frontLineOnDoList, params).then((res) => {
+          if (res.success) {
+            this.dataSource2Size = res.result.total;
+            this.dataSource2 = res.result.records;
           }
-        });
+          if (res.code === 510) {
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
+      taskOk() {
+        this.loadData()
+      }
     }
   }
 </script>

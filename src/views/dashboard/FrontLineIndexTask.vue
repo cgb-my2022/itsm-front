@@ -101,8 +101,8 @@
         </a-col>
       </a-row>
     </a-spin>
-    <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
-    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <!-- <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal> -->
+    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" />
     <service-task-detail-modal ref="taskDetailModal" />
   </div>
 </template>

@@ -107,8 +107,12 @@
               </tr>
               <tr>
                 <td class="firstTr">处理人</td>
-                <td class="firstTr" colspan="4">
-                  <span class="fs-12 text-left">{{formData.solRealName}}</span>
+                <td class="firstTr">
+                  <span class="fs-12">{{formData.solRealName}}</span>
+                </td>
+                <td class="firstTr">处理时间</td>
+                <td class="firstTr">
+                  <span class="fs-12">{{formData.confirmTime}}</span>
                 </td>
               </tr>
               <tr>

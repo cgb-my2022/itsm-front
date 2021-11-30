@@ -1,10 +1,11 @@
 <template>
   <div>
-    <a-tabs type="card" @change="callback">
+    <a-tabs type="card" @change="callback" :activeKey="indexStyle">
       <a-tab-pane v-if="frontline" tab="一线" :key="1"></a-tab-pane>
       <a-tab-pane v-if="supportline" tab="二线" :key="2"></a-tab-pane>
       <a-tab-pane v-if="frontlinesup" tab="一线主管" :key="3"></a-tab-pane>
       <a-tab-pane v-if="supportlinesup" tab="二线主管" :key="4"></a-tab-pane>
+      <a-tab-pane v-if="vipline" tab="VIP" :key="5"></a-tab-pane>
       <a-tab-pane tab="员工" :key="0"></a-tab-pane>
     </a-tabs>
     <!-- 一线 -->
@@ -15,6 +16,8 @@
     <front-line-sup-index-task v-if="indexStyle === 3" ref="tab3"></front-line-sup-index-task>
     <!-- 二线主管 -->
     <support-line-sup-index-task v-if="indexStyle === 4" ref="tab4"></support-line-sup-index-task>
+    <!-- VIP -->
+    <vip-line v-if="indexStyle === 5" ref="tab5"></vip-line>
     <!-- 员工 -->
     <index-task v-if="indexStyle === 0" ref="tab0"></index-task>
     <!--<div style="width: 100%;text-align: left;margin-top: 20px;margin-bottom: 20px">
@@ -46,6 +49,7 @@ import FrontLineIndexTask from './FrontLineIndexTask'
 import FrontLineSupIndexTask from './FrontLineSupIndexTask'
 import SupportLineIndexTask from './SupportLineIndexTask'
 import SupportLineSupIndexTask from './SupportLineSupIndexTask'
+import VipLine from './VipLine'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -56,6 +60,7 @@ export default {
     FrontLineSupIndexTask,
     SupportLineIndexTask,
     SupportLineSupIndexTask,
+    VipLine
   },
   data() {
     return {
@@ -63,6 +68,7 @@ export default {
       frontlinesup: false,
       supportline: false,
       supportlinesup: false,
+      vipline: false,
       indexTask: false,
       indexStyle: 0
     }
@@ -90,6 +96,11 @@ export default {
         this.supportlinesup = true
         if (indexStyle === 0) {
           indexStyle = 4
+        }
+      } else if (roles[j] === 'VIP_SUP') {
+        this.vipline = true
+        if (indexStyle === 0) {
+          indexStyle = 5
         }
       }
       this.indexStyle = indexStyle
