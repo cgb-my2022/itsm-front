@@ -99,10 +99,10 @@ export default {
         this.$emit('closeOur', false)
      },
      ourtSure(){
-        if(this.$refs.xTableOur.getCheckboxRecords().length == 0){
-           this.$message.error('请选择属性')
-           return
-        }
+      //   if(this.$refs.xTableOur.getCheckboxRecords().length == 0){
+      //      this.$message.error('请选择属性')
+      //      return
+      //   }
         let res = {
            resCheck: this.$refs.xTableOur.getCheckboxRecords(),
            flag: false
