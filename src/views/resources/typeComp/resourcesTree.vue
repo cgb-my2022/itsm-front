@@ -14,11 +14,11 @@
          <vxe-column type="radio" width="60"></vxe-column>
          <vxe-table-column field="name" title="名称"></vxe-table-column>
          <vxe-table-column field="describes" title="描述"></vxe-table-column>
-         <vxe-table-column field="" title="可继承" width="100">
+         <!-- <vxe-table-column field="" title="可继承" width="100">
             <template #default="{ row }">
                {{ row.inherit == 0? '否': '是' }}
             </template>
-         </vxe-table-column>
+         </vxe-table-column> -->
          <vxe-table-column  title="用户自定义" width="100">
             <template #default="{ row }">
                {{ row.builtIn == 0? '否': '是' }}

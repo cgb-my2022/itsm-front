@@ -56,7 +56,7 @@
       :visible.sync="delDialogVisible"
       width="30%"
       >
-      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) .确认删除吗?</span>
+      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) ，确认删除吗?</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="delDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sureDelDialog">确 定</el-button>
@@ -68,7 +68,7 @@
       :visible.sync="delModeDialogVisible"
       width="30%"
       >
-      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) .确认删除吗?</span>
+      <span>系统自动删除所选类型的所有子类型，同时删除相关的资源关系，删除类型操作不可回退(类型下存在资源实例时不可删除) ，确认删除吗?</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="delModeDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sureModeDelDialog">确 定</el-button>
