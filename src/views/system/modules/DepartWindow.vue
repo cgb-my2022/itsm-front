@@ -16,6 +16,7 @@
         <a-tree
           v-model="checkedKeys"
           checkable
+          checkStrictly="false"
           :tree-data="departTree"
           @check="onCheck"
         />
@@ -83,6 +84,7 @@
         form:this.$form.createForm(this),
         url: {
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
+          disableIds:"/system/usrServiceOrderRule/disableIds"
         },
       }
     },
@@ -94,6 +96,7 @@
       },
       edit (record) {
         this.departList = [];
+        
         this.queryDepartTree();
         this.form.resetFields();
         this.visible = true;
@@ -153,30 +156,53 @@
         }
       },
       queryDepartTree(){
-        queryIdTree().then((res)=>{
-          if(res.success){
-            if (this.twoType === 1) {
-              const result = res.result
-              let list = []
-              result.forEach((item, index) => {
-                list.push({
-                  children: [],
-                  key: item.key,
-                  title: item.title
-                })
-                item.children.forEach(citem => {
-                  list[index].children.push({
-                    key: citem.key,
-                    title: citem.title
-                  })
-                })
+         let param = {
+          userId:this.userId
+        }
+        getAction(this.url.disableIds,param).then((res)=>{
+                if(res.success){
+                  
+                  let disableIdArr = res.result;
+                    queryIdTree().then((res)=>{
+                        if(res.success){
+                          if (this.twoType === 1) {
+                            const result = res.result
+                            let list = []
+                            result.forEach((item, index) => {
+                              let disableStatus = false;
+                              if(disableIdArr.indexOf(item.key)!=-1){
+                                disableStatus = true; 
+                              }
+                              list.push({
+                                children: [],
+                                key: item.key,
+                                title: item.title,
+                                disabled: disableStatus
+                              })
+                              item.children.forEach(citem => {
+                                 let cdisableStatus = false;
+                              if(disableIdArr.indexOf(citem.key)!=-1){
+                                cdisableStatus = true; 
+                              }
+                                list[index].children.push({
+                                  key: citem.key,
+                                  title: citem.title,
+                                  disabled: cdisableStatus
+                                })
+                              })
+                            })
+                            this.departTree = list
+                          } else {
+                            this.departTree = res.result;
+                          }
+                        }
+                    })
+
+
+                }
               })
-              this.departTree = list
-            } else {
-              this.departTree = res.result;
-            }
-          }
-        })
+
+        
       },
       modalFormOk(){
 
