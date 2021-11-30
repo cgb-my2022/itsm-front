@@ -349,7 +349,7 @@ export default {
           const that = this
           that.$confirm({
             title: '确认',
-            content: '确问题已经解决了吗?',
+            content: '确认问题已经解决了吗?',
             onOk: function () {
               postAction(that.url.confirmOrderResolved, {
                 id: record.id, version: record.version
