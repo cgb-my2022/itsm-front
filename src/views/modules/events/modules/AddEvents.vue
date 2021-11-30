@@ -151,9 +151,10 @@
                 bordered
                 size="middle"
                 rowKey="id"
+                :scroll="scroll"
                 :columns="columns"
                 :dataSource="dataSource"
-                :pagination="ipagination"
+                :pagination="false"
                 :loading="loading"
                 :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                 @change="handleTableChange"
@@ -230,6 +231,7 @@ export default {
     return {
       refKeys: ['serviceOrderAttach'],
       dictOptions: [],
+      scroll: { y: 230 },
       columns: [
        {
           title: '名称 ',
