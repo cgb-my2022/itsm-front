@@ -86,7 +86,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="avatarslot" slot-scope="text, record, index">
+        <template slot="avatarslot" slot-scope="text, record">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
@@ -232,6 +232,7 @@
             title: '部门',
             align: 'center',
             width: 180,
+            ellipsis: true,
             dataIndex: 'orgCode'
           },
           {

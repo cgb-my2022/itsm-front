@@ -362,7 +362,4 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less';
-  .ant-table-row-cell-break-word {
-    line-height: 1.5em;
-  }
 </style>
