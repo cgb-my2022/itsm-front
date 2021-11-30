@@ -61,6 +61,7 @@
           <!-- 小数 -->
           <floatType
             v-if="item.attrType == 5"
+            :isShowTip="isShowTip"
             class="common"
             :getData="item.values"
             :propMaxLength="item.maxLength"
@@ -80,6 +81,7 @@
           <secretType
             v-if="item.attrType == 7"
             class="common"
+            :isSecret="isSecret"
             :getData="item.values"
             :propMaxLength="item.maxLength"
             :theIndex="index"
@@ -217,6 +219,7 @@
           <!-- 小数 -->
           <floatType
             v-if="item.attrType == 5"
+            :isShowTip="isShowTip"
             class="common"
             :getData="item.values"
             :propMaxLength="item.maxLength"
@@ -236,6 +239,7 @@
           <secretType
             v-if="item.attrType == 7"
             class="common"
+            :isSecret="isSecret"
             :getData="item.values"
             :propMaxLength="item.maxLength"
             :theIndex="index"
@@ -388,6 +392,8 @@ export default {
   },
   data() {
     return {
+      isShowTip: true,
+      isSecret: false,
       fileList: [],
       treeProps: {
         value: 'id',
@@ -445,6 +451,8 @@ export default {
           this.resourceTypeId = res.result.resourceTypeId
           let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
+                  console.log(this.defalutData);
+
           this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
         }
       })
