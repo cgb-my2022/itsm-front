@@ -288,23 +288,18 @@ export default {
       postAction(this.url.userInfo, params)
         .then((res) => {
           this.defaultWorkplaceDeparts = JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2)
+          const isLeader = res.result.isLeader
+          this.disabledLevel = isLeader
+          this.isLeader = isLeader
           this.form.setFieldsValue({
             realName: data.realname,
             deptName: res.result.myDeptParentNames,
             workplaceDetail: res.result.workplaceDetail,
             workplaceDepartids: this.defaultWorkplaceDeparts,
+            serviceLevel: isLeader ? '1' : '3'
           })
           this.rowInfo.userName = data.username
           this.rowInfo.sysOrgCode = res.result.orgCode
-          const isLeader = res.result.isLeader
-          this.isLeader = isLeader
-          if(isLeader) {
-            this.serviceLevel = "1"
-            this.disabledLevel = true
-          } else {
-            this.serviceLevel = "3"
-            this.disabledLevel = false
-          }
         })
         .finally(() => {})
     },
