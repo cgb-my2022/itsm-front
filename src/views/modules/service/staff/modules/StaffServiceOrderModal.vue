@@ -287,8 +287,13 @@ export default {
       var params = '&username=' + data.username
       postAction(this.url.userInfo, params)
         .then((res) => {
-          this.defaultWorkplaceDeparts = JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2)
+          if (res.code != 0) {
+            this.$message.warning(res.message)
+            return
+          }
+          this.defaultWorkplaceDeparts = res.result.workplaceDeptParentIdes ? JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2) : []
           const isLeader = res.result.isLeader
+          const form = this.form.getFieldsValue(['serviceLevel'])
           this.disabledLevel = isLeader
           this.isLeader = isLeader
           this.form.setFieldsValue({
@@ -296,7 +301,7 @@ export default {
             deptName: res.result.myDeptParentNames,
             workplaceDetail: res.result.workplaceDetail,
             workplaceDepartids: this.defaultWorkplaceDeparts,
-            serviceLevel: isLeader ? '1' : '3'
+            serviceLevel: isLeader ? '1' :  form.serviceLevel === '1' ? '3' : form.serviceLevel
           })
           this.rowInfo.userName = data.username
           this.rowInfo.sysOrgCode = res.result.orgCode
