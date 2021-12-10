@@ -327,6 +327,14 @@
         @treeSureClose="ourtreeSureClose"
       ></treeType>
     </div>
+    <!-- 变更原因 -->
+    <div>
+      <div class="resourceTitle">变更原因</div>
+      <div class="reLine"></div>
+      <div style="margin-top: 20px; margin-left: 20px">
+        <span>变更原因：</span><el-input v-model="changeReason" placeholder="请输入变更原因" style="width: 350px"></el-input>
+      </div>
+    </div>
     <div class="bottomSumbit">
       <el-button @click="cancleAddResource">取消</el-button>
       <el-button type="primary" @click="addSourceSure">确认</el-button>
@@ -430,6 +438,7 @@ export default {
       userDialogVisible: false,
       userID: null,
       resourceTypeId: null,
+      changeReason: '例行变更'
     }
   },
   mounted() {
@@ -451,9 +460,8 @@ export default {
           this.resourceTypeId = res.result.resourceTypeId
           let defalutRes = JSON.parse(res.result.publicResource)?JSON.parse(res.result.publicResource):[]
           this.defalutData = defalutRes
-                  console.log(this.defalutData);
-
           this.ourData = JSON.parse(res.result.customizeResource)?JSON.parse(res.result.customizeResource):[]
+          this.changeReason = res.result.changeReason
         }
       })
     },
@@ -655,7 +663,8 @@ export default {
         allResourceMap: this.defalutData.concat(this.ourData),
         resourceTypeId: this.resourceTypeId,
         id: this.resourceId,
-        useUser: this.userID
+        useUser: this.userID,
+        changeReason: this.changeReason
       }
       editResource(fetchObj)
         .then((res) => {
@@ -670,11 +679,11 @@ export default {
                 },
               })
             } else {
-            console.log("111");
+            // console.log("111");
               this.$emit("closeDetail", "2")
             }
           } else {
-            this.$message.success('修改失败')
+            this.$message.error('修改失败')
           }
         })
         .catch((err) => {
