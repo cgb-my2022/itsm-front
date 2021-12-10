@@ -96,7 +96,7 @@
       @cancel="visible=false"
     >
       <p v-if="deleteInfo.type === 2">该目录下存在<span style="color: red;">{{deleteInfo.len}}个子级</span>，确认要删除该目录及全部子级？删除后数据不可恢复，请谨慎操作！</p>
-      <p v-if="deleteInfo.type === 1">您确认删除选中的<span style="color: red;">{{deleteInfo.len}}条目录及旗下的全部子级？</span>删除后数据不可恢复，请谨慎操作！</p>
+      <p v-if="deleteInfo.type === 1">您确认删除选中的<span style="color: red;">{{deleteInfo.len}}条目录及其下的全部子级？</span>删除后数据不可恢复，请谨慎操作！</p>
     </a-modal>
     <!-- 添加/编辑 服务目录 -->
     <service-info
