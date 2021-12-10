@@ -5,15 +5,15 @@
       :data="tableData.slice((page.currentPage-1)*page.pageSize,page.currentPage*page.pageSize)"
       >
       <vxe-column field="createTime" title="变更时间" sortable></vxe-column>
-      <!-- <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column> -->
+      <vxe-column field="changeAttr" title="变更属性" sortable></vxe-column>
       <vxe-column title="变更前数据" >
         <template #default='{ row }'>
-          <div class="showTips" @click="toDetail(row.changeDataBefore)"> {{ row.changeDataBefore }} </div>
+          <div class="showTips">{{ row.changeDataBefore }}</div>
         </template>
       </vxe-column>
       <vxe-column field="changeDataAfter" title="变更后数据" >
         <template #default='{ row }'>
-          <div class="showTips" @click="toDetail(row.changeDataAfter)"> {{ row.changeDataAfter }} </div>
+          <div class="showTips">{{ row.changeDataAfter }}</div>
         </template>
       </vxe-column>
       <vxe-column field="updateName" title="变更人" sortable></vxe-column>
@@ -56,7 +56,7 @@ export default {
     getHis(id){
       searchResourceHis({id})
         .then(res=>{
-          // console.log(res);
+          console.log(res);
           if(res.code == 200){
             this.tableData = res.result
             this.page.totalResult = res.result.length

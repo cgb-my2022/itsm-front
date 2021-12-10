@@ -503,6 +503,7 @@ export default {
             ENAME: row.enName,
             disc: row.describes
          }
+         this.handleTypeChange()
          this.activeData = {
             textValue: row.attrType == 1? row.maxLength:"" ,//文本
             textAreaValue:  row.attrType == 2? row.maxLength:"" , //文本区域
