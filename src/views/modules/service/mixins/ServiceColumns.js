@@ -70,6 +70,7 @@ export const ServiceColumns = {
                 {
                     title: '创建日期',
                     align: 'center',
+                    width: 200,
                     sorter: true,
                     dataIndex: 'createTime',
                 },
@@ -78,6 +79,12 @@ export const ServiceColumns = {
                     align: 'center',
                     dataIndex: 'frontlineUserRealname',
                     scopedSlots: { customRender: 'realname' },
+                },
+                {
+                    title: '完成时间',
+                    align: 'center',
+                    width: 200,
+                    dataIndex: 'comfirmTime',
                 },
                 {
                     title: '操作',

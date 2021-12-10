@@ -281,6 +281,12 @@
             scopedSlots: { customRender: 'realname' }
           },
           {
+            title: '完成时间',
+            align: 'center',
+            width: 200,
+            dataIndex: 'comfirmTime',
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align: 'center',

@@ -13,6 +13,7 @@
             <a-row>
               <a-col :span="24">
                 <a-form-item label="选择业务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <!-- :disabled="this.rowInfo.orderType==2" -->
                   <a-cascader 
                     :allowClear="false"
                     placeholder="请选择"  
@@ -22,7 +23,6 @@
                         rules: [{ required: true, message: '请选择业务!' }]
                     }]"
                     :options="quickOptions"
-                    :disabled="this.rowInfo.orderType==2"
                     change-on-select 
                     expand-trigger="hover"
                     @change="catalogChange"/>

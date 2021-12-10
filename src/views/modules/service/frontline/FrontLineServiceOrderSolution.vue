@@ -9,6 +9,7 @@
         :wrapper-col="wrapperCol"
       >
         <a-form-model-item ref="reason" label="选择业务" prop="serviceCatIds">
+          <!-- :disabled="this.rowInfo.orderType==2" -->
           <a-cascader
             placeholder="请选择"
             :field-names="{ label: 'title', value: 'id', children: 'children' }"
@@ -17,7 +18,6 @@
             :options="quickOptions"
             change-on-select
             expand-trigger="hover"
-            :disabled="this.rowInfo.orderType==2"
             @change="catalogChange"
           />
         </a-form-model-item>

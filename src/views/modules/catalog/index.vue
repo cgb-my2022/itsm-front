@@ -25,11 +25,11 @@
             :tree-data="gData"
             @select="handleTreeSelect"
           >
-            <template #title="{ key: treeKey, title, catLevel, }">
+            <template #title="{ key: treeKey, title, catLevel, children}">
               <a-dropdown :trigger="['contextmenu']">
                 <span class="dropdown-span" :title="title">{{ title }}</span>
                 <template #overlay>
-                  <a-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, catLevel)">
+                  <a-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey, catLevel,children)">
                     <a-menu-item key="1">
                       <a-icon type="edit" />
                       <span>编辑</span>
@@ -88,6 +88,16 @@
         </a-table>
       </a-card>
     </a-col>
+    <!-- 删除含有子集的目录提示 -->
+    <a-modal
+      title="提示"
+      :visible="visible"
+      @ok="delServiceMethods(deleteInfo.ids, deleteInfo.type)"
+      @cancel="visible=false"
+    >
+      <p v-if="deleteInfo.type === 2">该目录下存在<span style="color: red;">{{deleteInfo.len}}个子级</span>，确认要删除该目录及全部子级？删除后数据不可恢复，请谨慎操作！</p>
+      <p v-if="deleteInfo.type === 1">您确认删除选中的<span style="color: red;">{{deleteInfo.len}}条目录及旗下的全部子级？</span>删除后数据不可恢复，请谨慎操作！</p>
+    </a-modal>
     <!-- 添加/编辑 服务目录 -->
     <service-info
       ref="modalForm"
@@ -112,6 +122,9 @@ export default {
   data() {
     return {
       description: '服务目录页面',
+      // 提示
+      visible: false,
+      deleteInfo: {},
       // 左侧信息
       searchData: {
         catName: '',
@@ -221,33 +234,44 @@ export default {
     },
     // 刪除列表选择的
     deleteList() {
-      if (this.selectedRowKeys.length > 0) {
+      const len = this.selectedRowKeys.length
+      if ( len > 0) {
         const delList = this.selectedRowKeys.join(",")
-        this.delMethods(delList, 1)
+        this.deleteInfo = {
+          ids: delList, type: 1, len: len
+        }
+        this.visible = true
       } else {
         this.$message.warning("请勾选需要删除的服务目录！")
       }
     },
-    delMethods(ids, type) {
+    // 删除提示
+    delMethods(ids, type, content) {
       this.$confirm({
         title: '删除',
-        content: '确定删除该目录?',
+        content,
         okText: '确定',
         cancelText: '取消',
         type: 'warning',
         onOk: async () => {
-          delServiceInfo({ ids }).then((res) => {
-            if (type === 1) {
-              this.selectedRowKeys = []
-            } else {
-              if (this.selectedKeys[0] === ids) {
-                this.selectedKeys = []
-              }
-            }
-            this.closeLoad()
-          })
+          this.delServiceMethods(ids, type)
         },
         onCancel() {},
+      })
+    },
+    // 公用删除方法
+    delServiceMethods(ids, type) {
+      delServiceInfo({ ids }).then((res) => {
+        if (type === 1) {
+          this.selectedRowKeys = []
+        } else {
+          if (this.selectedKeys[0] === ids) {
+            this.selectedKeys = []
+          }
+        }
+        this.visible = false
+        this.deleteInfo = {}
+        this.closeLoad()
       })
     },
     handleSubmit: function (title) {
@@ -274,7 +298,7 @@ export default {
       this.handleSubmit(title)
     },
     // 选择事项
-    onContextMenuClick(treeKey, menuKey, catLevel) {
+    onContextMenuClick(treeKey, menuKey, catLevel, children) {
       switch (menuKey) {
         // 编辑
         case '1':
@@ -282,7 +306,17 @@ export default {
           break
         // 删除
         case '2':
-          this.delMethods(treeKey, 2)
+          if (children && children.length > 0) {
+            // 存在子集
+            const lenArr = this.setArr(children, [])
+            this.deleteInfo = {
+              ids: treeKey, type: 2, len: lenArr.length
+            }
+            this.visible = true
+          } else {
+            // 没有子集
+            this.delMethods(treeKey, 2, '确定删除该目录?')
+          }
           break
         // 添加
         case '3':
@@ -291,6 +325,15 @@ export default {
         default:
           break
       }
+    },
+    setArr(data, arr) {
+      if (data && data.length > 0) {
+        data.forEach( item => {
+          arr.push(item.id)
+          this.setArr(item.children, arr)
+        })
+      } 
+      return arr;
     },
     // 获取详情
     detailMethods(id, catLevel, menuKey) {
