@@ -23,11 +23,19 @@
 
         <p>
           <a-form :form="form" @submit="handleSubmit">
+            <a-form-item label="用户名" v-bind="formItemLayout">
+              <a-input
+                disabled
+                v-decorator="['username',{initialValue:userInfo().username}]"
+                placeholder="请输入用户名"></a-input>
+            </a-form-item>
+            <!-- rules: [
+                  { required: true, message: '请输入手机号' },
+                ] -->
             <a-form-item label="手机号" v-bind="formItemLayout">
               <a-input
-                v-decorator="['phone',{initialValue:userInfo().phone,rules: [
-                  { required: true, message: '请输入手机号' },
-                ]}]"
+                disabled
+                v-decorator="['phone',{initialValue:userInfo().phone}]"
                 placeholder="请输入手机号"></a-input>
             </a-form-item>
             <a-form-item label="工作地点部门" v-bind="formItemLayout">
