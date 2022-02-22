@@ -13,6 +13,7 @@ const user = {
     welcome: '',
     avatar: '',
     permissionList: [],
+    knowledgeRelease: false,
     info: {}
   },
 
@@ -30,6 +31,9 @@ const user = {
     },
     SET_PERMISSIONLIST: (state, permissionList) => {
       state.permissionList = permissionList
+    },
+    SET_KNOWLEDGERELEASE: (state, knowledgeRelease) => {
+      state.knowledgeRelease = knowledgeRelease
     },
     SET_INFO: (state, info) => {
       state.info = info
@@ -123,6 +127,7 @@ const user = {
           sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData));
           if (menuData && menuData.length > 0) {
             // update--begin--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
+            let knowledgeRelease = false
             menuData.forEach((item, index) => {
               if (item['children']) {
                 let hasChildrenMenu = item['children'].filter((i) => {
@@ -132,9 +137,17 @@ const user = {
                   item['hidden'] = true
                 }
               }
+              // 判断是否有发布知识的权限
+              if (item.name === 'knowledge') {
+                if  (item['children']) {
+                  const findRelease = item.children.findIndex(citem => citem.path === '/knowledge/release')
+                  knowledgeRelease = findRelease === -1 ? false : true
+                }
+              }
             })
             console.log(' menu show json ', menuData)
             // update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
+            commit('SET_KNOWLEDGERELEASE', knowledgeRelease)
             commit('SET_PERMISSIONLIST', menuData)
           } else {
             reject('getPermissionList: permissions must be a non-null array !')

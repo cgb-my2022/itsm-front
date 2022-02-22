@@ -198,13 +198,15 @@
     <!-- 流程图 -->
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
     <!-- 详情 -->
-    <service-task-detail-modal ref="taskDetailModal"></service-task-detail-modal>
+    <service-task-detail-modal ref="taskDetailModal" @knowledge="bindKnowledge"></service-task-detail-modal>
     <!-- 办理 -->
-    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" />
+    <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" @knowledge="bindKnowledge"/>
     <!-- 评价 -->
     <staff-service-evaluation ref="serviceEvaluation" @closeLoad="taskOk"></staff-service-evaluation>
     <!-- 退回 -->
     <staff-service-back ref="serviceBack" @closeLoad="taskOk"></staff-service-back>
+    <!-- 发布知识 -->
+    <knowledge-info ref="knowledgeInfo"></knowledge-info>
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
@@ -214,7 +216,6 @@
 
 <script>
   import { ServiceColumns } from '@/views/modules/service/mixins/ServiceColumns'
-
   import { postAction, putAction } from '@/api/manage'
   import StaffServiceCatalog from './modules/StaffServiceCatalog'
   import StaffServiceEvaluation from './modules/StaffServiceEvaluation'

@@ -36,12 +36,22 @@
                     </a-col>
                     <a-col :span="24">
                         <a-form-item label="相关知识" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
-                            <div class="des-catalog">暂无相关知识</div>
+                            <div v-if="knowledgeList.length === 0" class="des-catalog">暂无相关知识</div>
+                            <template v-else v-for="(item, index) in knowledgeList">
+                                <a-tag v-if="index < 4"  :key="item.id" @click="checkKnowledge(item.id)">
+                                    {{item.title}}
+                                </a-tag>
+                            </template>
+                            <a-tag v-if="knowledgeList.length > 3"  @click="moreKnowledge">
+                                查看更多 >>
+                            </a-tag>
                         </a-form-item>
                     </a-col>
                 </a-row>
             </a-form>
         </a-spin>
+        <!-- 知识详情 -->
+        <knowledge-detail :showPage="showPage" :rowInfo="knowledge" @service="detailClose"></knowledge-detail>
     </a-modal>
 </template>
 
@@ -51,6 +61,7 @@ import { ServiceMixin } from '@/views/modules/service/mixins/ServiceMixin'
 import ARow from 'ant-design-vue/es/grid/Row'
 import {  postAction, getAction } from '@/api/manage'
 import pick from 'lodash.pick'
+
 export default {
     name: "StaffServiceCatalog",
     mixins: [JEditableTableMixin, ServiceMixin],
@@ -70,16 +81,17 @@ export default {
             addDefaultRowNum: 1,
             url: {
                 add: '/system/serviceOrder/addAndSubmit',
-                mostServiceCat: '/system/serviceOrder/mostServiceCat'
+                mostServiceCat: '/system/serviceOrder/mostServiceCat',
             },
             rowInfo: {
                 orderType: 2,
                 eventContent: "" //事件内容
             },
+            serviceCatId: "",
             mostService: []
         }
     },
-    created() {
+    created() { 
         this.getServiceCat()
         this.getCatalog(2)
     },
@@ -157,5 +169,8 @@ export default {
 <style scoped>
 .des-catalog {
     font-size: 12px;
+}
+.ant-tag {
+    cursor: pointer;
 }
 </style>

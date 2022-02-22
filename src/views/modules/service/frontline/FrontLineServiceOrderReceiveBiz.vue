@@ -153,12 +153,17 @@
 
     <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-deal-modal ref="taskDealModal" @ok="taskOk"></service-task-deal-modal>
-    <service-task-detail-modal ref="taskDeatilModal"></service-task-detail-modal>
+    <!-- 办理 -->
+    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" @knowledge="bindKnowledge"></service-task-deal-modal>
+    <!-- 详情 -->
+    <service-task-detail-modal ref="taskDeatilModal" @knowledge="bindKnowledge"></service-task-detail-modal>
+    <!-- 发布知识 -->
+    <knowledge-info ref="knowledgeInfo"></knowledge-info>
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->
     <!--<process-module/>-->
+
   </a-card>
 </template>
 
@@ -256,6 +261,7 @@ export default {
     taskOk() {
       this.loadData()
     },
+    
   },
 }
 </script>

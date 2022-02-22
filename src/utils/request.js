@@ -103,7 +103,11 @@ service.interceptors.request.use(config => {
 
 // response interceptor
 service.interceptors.response.use((response) => {
-    return response.data
+    const result = response.data
+    // if (result.code != 200 || result.code != 0) {
+    //   notification.error({ message: result.message, description: '拒绝访问',duration: 4})
+    // }
+    return result
   }, err)
 
 const installer = {

@@ -76,6 +76,31 @@
               </a-tree-select>
             </a-form-model-item>
           </a-col>
+          <a-col v-if="fromData.orderType == 3" :span="24">
+            <a-form-model-item ref="catIds" label="问题分类" prop="catIds">
+              <a-tree-select
+                show-search
+                style="width: 100%"
+                :value="fromData.catIds"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                placeholder="请选择"
+                allow-clear
+                multiple
+                :maxTagCount="4"
+                :tree-data="problemOptions"
+                tree-checkable
+                tree-default-expand-all
+                :replace-fields="{ title: 'title', value: 'id', key: 'id', children: 'children' }"
+                :filterTreeNode="searchFilterTreeNode"
+                @change="changeCat"
+                @blur="
+                  () => {
+                    $refs.catIds.onFieldBlur()
+                  }
+                ">
+              </a-tree-select>
+            </a-form-model-item>
+          </a-col>
           <a-col :span="24">
             <a-form-model-item ref="departIds" label="负责公司/园区" prop="departIds">
               <a-tree-select
@@ -120,7 +145,7 @@ import { ajaxGetCategoryItems, getDictItemsFromCache, queryIdTree } from '@/api/
 
 export default {
   name: 'StaffServiceEvaluation',
-  mixins: [ServiceMixin],
+  mixins: [ServiceMixin], 
   data() {
     return {
       labelCol: {
@@ -159,29 +184,52 @@ export default {
       dictUrl: '/sys/category/treeMap',
       departTree: [],
       dictOptions: [], // 工单类型
-      categoryOptions: []  //事件类型内容
+      categoryOptions: [],  //事件类型内容
+      problemOptions: [],  //问题工单分类内容
     }
   },
   created() {
     this.getCatalog(3)
-    this.initDictData()
+    this.initDictData("B04", "categoryOptions", 1)
+    this.initDictData("B05", "problemOptions", 1)
     this.queryDepartTree()
   },
   methods: {
-    // 初始化工单类型
-    initDictData() {
-      let dictCode = 'B04'
-      // 优先从缓存中读取字典配置
-      if (getDictItemsFromCache(dictCode, 1)) {
-        this.categoryOptions = getDictItemsFromCache(dictCode, 1).children      
+    /**
+     * 获取数据字典的内容
+     * @param {*} dictCode 数据字典的key
+     * @param {*} obj       data对应的key
+     * @param {*} type      对应数据字典数据的取值对象   0：sysAllDictItems  1：sysAllCategoryItems
+     * @returns 
+     */
+    initDictData(dictCode, obj="dictOptions", type=0) {
+      let data = {}
+      //优先从缓存中读取字典配置
+      if (getDictItemsFromCache(dictCode, type)) {
+        if (type === 0) {
+          data[obj] = getDictItemsFromCache(dictCode, type)
+        } else if (type === 1){
+          data[obj] = getDictItemsFromCache(dictCode, type).children
+        }
+        Object.assign(this, data)
         return
       }
-      // 根据字典Code, 初始化字典数组
-      ajaxGetCategoryItems().then((res) => {
-        if (res.success) {
-          this.categoryOptions = res.result[dictCode].children
-        }
-      })
+      //根据字典Code, 初始化字典数组
+      if (type === 0) {
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            data[obj] = res.result
+            Object.assign(this, data)
+          }
+        })
+      } else if (type === 1) {
+        ajaxGetCategoryItems().then((res) => {
+          if (res.success) {
+            data[obj] = res.result[dictCode].children
+            Object.assign(this, data)
+          }
+        })
+      }  
     },
     // 获取公司/园区
     queryDepartTree(){

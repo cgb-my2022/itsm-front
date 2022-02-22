@@ -1,8 +1,11 @@
+import KnowledgeDetail from '@/views/modules/knowledge/common/KnowledgeDetail.vue'
 import { getServiceCat } from '@/api/api'
+import { getAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
 import pick from 'lodash.pick'
 
 export const ServiceMixin = {
+    components: { KnowledgeDetail },
     data() {
         return {
             // 服务目录搜索条件
@@ -19,7 +22,17 @@ export const ServiceMixin = {
                 serviceCatId: "",  //服务目录id
                 serviceCatIds: "",  //每一级别的id
                 serviceCatFullName: "", // 服务目录全级名称
-            }
+            },
+            url: {
+                serviceSearch: '/know/knowledgeInfo/serviceSearch',  //服务请求关联知识查询
+                knowledgeDetail: '/know/knowledgeManage/detail', //知识详情
+            },
+            // 关联知识使用
+            eventContent: "",
+            serviceCatId: "",
+            knowledgeList: [],
+            knowledge: {},
+            showPage: false
         }
     },
     computed: {
@@ -31,6 +44,38 @@ export const ServiceMixin = {
               }
               return false
             }
+        }
+    },
+    watch: {
+        serviceCatId: {
+            handler(newVal) {
+                const orderType = this.rowInfo.orderType
+                if (orderType == 1 || orderType == 2) {
+                    if (newVal) {
+                        this.getKnowledge()
+                    } else {
+                        this.knowledgeList = []
+                    }
+                }
+            },
+            immediate: true
+        },
+        eventContent: {
+            handler(newVal) {
+                this.getKnowledge()
+            },
+            immediate: true
+        },
+        visible: {
+            handler(newVal) {
+                if (!newVal) {
+                    this.knowledgeList = []
+                    this.showPage = false
+                    this.serviceCatId = false
+                    this.eventContent = ""
+                }
+            },
+            immediate: true
         }
     },
     methods: {
@@ -125,6 +170,46 @@ export const ServiceMixin = {
             Object.keys(info).forEach(item => {
                 this.rowInfo[item] = info[item]
             })
+            if (orderType === 2 || orderType === 1) {
+                this.serviceCatId = info.serviceCatId
+            }
+        },
+        // 获取相关知识
+        getKnowledge() {
+            if (!this.serviceCatId) return
+            const orderType = this.rowInfo.orderType
+            const keywords = orderType == 2 ? this.rowInfo.eventContent : this.eventContent
+            const params = {
+                size: 4,
+                serviceCatId: this.serviceCatId,  
+                keywords: keywords ? keywords : ""
+            } 
+            getAction(
+                this.url.serviceSearch, 
+                params
+            ).then(res => {
+                if (res.success) {
+                    this.knowledgeList = res.result
+                } else {
+                    this.knowledgeList = []
+                }
+            })
+        },
+        // 查看知识
+        checkKnowledge(id) {
+            getAction(this.url.knowledgeDetail + '/' + id).then((res) => {
+                if (res.success) {
+                  this.knowledge = res.result.knowledgeManage
+                  this.showPage = true
+                }
+            })
+        },
+        detailClose() {
+            this.showPage = false
+        },
+        // 更多知识
+        moreKnowledge() {
+            this.$router.replace('/knowledge/list')
         },
         // 过滤服务目录
         filter(inputValue, path) {

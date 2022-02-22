@@ -144,8 +144,10 @@
 
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" />
-    <service-task-detail-modal ref="taskDeatilModal" />
+    <service-task-deal-modal ref="taskDealModal" @ok="taskOk" @knowledge="bindKnowledge"/>
+    <service-task-detail-modal ref="taskDeatilModal" @knowledge="bindKnowledge"/>
+    <!-- 发布知识 -->
+    <knowledge-info ref="knowledgeInfo"></knowledge-info>
     <!-- 弹出框 -->
     <!--<his-task-deal-modal ref="taskDealModal" :path="path" :formData="formData"></his-task-deal-modal>
     <task-notify-modal ref="taskNotifyModal"></task-notify-modal>-->

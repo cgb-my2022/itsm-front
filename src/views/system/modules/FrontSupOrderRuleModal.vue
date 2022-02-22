@@ -42,7 +42,7 @@
         </a-form-item>
       </a-form>
     </a-spin>
-    <depart-window :twoType="1" ref="departWindow" @ok="modalFormOk"></depart-window>
+    <depart-window :twoType="1" ref="departWindow" @ok="modalFormOk" :role="role"></depart-window>
 
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-popconfirm title="确定放弃设置？" @confirm="handleCancel" okText="确定" cancelText="取消">
@@ -68,6 +68,13 @@
 
   export default {
     name: 'UserModal',
+    props: {
+      // 角色
+      role: {
+        type: String,
+        required: true
+      }
+    },
     components: {
       JImageUpload,
       departWindow,
@@ -204,7 +211,8 @@
         this.refresh();
         this.edit({ activitiSync: '1' });
       },
-      edit (record) {
+      edit (record, title) {
+        this.title = title
         this.initDictData();
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
@@ -220,9 +228,9 @@
       //
       loadRules() {
         let that = this;
-        getAction(that.url.usrRule, { usrId: that.userId }).then((res) => {
+        getAction(that.url.usrRule, { usrId: that.userId, role: that.role }).then((res) => {
           if(res.result){
-            that.checkedDepartKeys =  res.result.frontSupRuleDepart.split(',');
+            that.checkedDepartKeys = res.result.frontSupRuleDepart ? res.result.frontSupRuleDepart.split(',') : [];
             that.checkedDepartNameString = res.result.frontSupRuleDepartNames;
             this.form.setFieldsValue({ checkedDepartNameString: that.checkedDepartNameString })
           }
@@ -251,7 +259,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            var params = '&deptIds=' + this.checkedDepartKeys.join(',') + '&departNames=' + this.checkedDepartNameString + '&usrId=' + this.userId ;
+            var params = '&deptIds=' + this.checkedDepartKeys.join(',') + '&departNames=' + this.checkedDepartNameString + '&usrId=' + this.userId + '&role=' + that.role;
             postAction(that.url.saveRule, params).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);

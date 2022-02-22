@@ -52,6 +52,11 @@
       twoType: {
         type: Number,
         default: 2
+      },
+      // 角色
+      role: {
+        type: String,
+        default: ""
       }
     },
     components: {
@@ -91,6 +96,7 @@
     methods: {
       add (checkedDepartKeys,userId) {
         this.checkedKeys = checkedDepartKeys;
+        console.log(checkedDepartKeys);
         this.userId = userId;
         this.edit({});
       },
@@ -119,7 +125,7 @@
           if (!err) {
             that.confirmLoading = true;
             if(this.userId == null){
-              getAction(this.url.userId).then((res)=>{
+              getAction(this.url.userId, { role: this.role }).then((res)=>{
                 if(res.success){
                   let formData = {userId:res.result,
                   departIdList:this.departList}
@@ -157,7 +163,8 @@
       },
       queryDepartTree(){
          let param = {
-          userId:this.userId
+          userId:this.userId,
+          role: this.role
         }
         getAction(this.url.disableIds,param).then((res)=>{
                 if(res.success){

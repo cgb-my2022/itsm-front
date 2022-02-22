@@ -7,9 +7,12 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction, downFile, getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { ajaxGetDictItems, getDictItemsFromCache } from '@/api/api'
+import { ajaxGetDictItems, getDictItemsFromCache, ajaxGetCategoryItems } from '@/api/api'
+// 发布知识使用
+import KnowledgeInfo from '@/views/modules/service/common/KnowledgeInfo.vue'
 
 export const JeecgListMixin = {
+  components: { KnowledgeInfo },
   data() {
     return {
       // token header
@@ -65,24 +68,42 @@ export const JeecgListMixin = {
     /**
      * 获取数据字典的内容
      * @param {*} dictCode 数据字典的key
-     * @param {*} obj     data对应的key
+     * @param {*} obj       data对应的key
+     * @param {*} type      对应数据字典数据的取值对象   0：sysAllDictItems  1：sysAllCategoryItems
      * @returns 
      */
-    setDic(dictCode, obj="dictOptions") {
+    setDic(dictCode, obj="dictOptions", type=0) {
       let data = {}
       //优先从缓存中读取字典配置
-      if (getDictItemsFromCache(dictCode)) {
-        data[obj] = getDictItemsFromCache(dictCode)
+      if (getDictItemsFromCache(dictCode, type)) {
+        if (type === 0) {
+          data[obj] = getDictItemsFromCache(dictCode, type)
+        } else if (type === 1){
+          data[obj] = getDictItemsFromCache(dictCode, type).children
+        }
         Object.assign(this, data)
         return
       }
       //根据字典Code, 初始化字典数组
-      ajaxGetDictItems(dictCode, null).then((res) => {
-        if (res.success) {
-          data[obj] = res.result
-          Object.assign(this, data)
-        }
-      })
+      if (type === 0) {
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            data[obj] = res.result
+            Object.assign(this, data)
+          }
+        })
+      } else if (type === 1) {
+        ajaxGetCategoryItems().then((res) => {
+          if (res.success) {
+            data[obj] = res.result[dictCode].children
+            Object.assign(this, data)
+          }
+        })
+      }  
+    },
+    // 过滤
+    filter(inputValue, path) {
+      return path.some((option) => option.title.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
     },
     // 初始化列表数据
     loadData(arg) {
@@ -350,7 +371,53 @@ export const JeecgListMixin = {
       }
       let url = getFileAccessHttpUrl(text)
       window.open(url);
+    },
+    // 转为知识
+    bindKnowledge(id, url, infoKeys) {
+      const that = this
+      that.loadData()
+      that.$confirm({
+          title: '处理成功',
+          content: '知识点击积累汇集成磅礴之力，您是否愿意将处理方案发布为知识库?',
+          okText: '发布知识',
+          cancelText: '取消',
+          onOk: function () {
+            that.releaseKnowledge(id, url, infoKeys)
+          },
+          onCancel() {
+            return
+          }
+      })    
+    },
+    // 获取详情
+    releaseKnowledge(id, url, infoKeys) {
+      if (!url) return
+      getAction(url, { id }).then((res) => {
+          if (res.code === 200) {
+            let ywAttaches = res.result.ywAttaches
+            let orderInfo = res.result[infoKeys]
+            let reason = orderInfo.reason ?  orderInfo.reason : ""
+            let solution = orderInfo.solution ?  orderInfo.solution : ""
+            let rowInfo = {
+              // 附件
+              attachment: ywAttaches ? ywAttaches : [],
+              // 标题
+              title: orderInfo.eventContent,
+              // 知识明细
+              content: "<p>【问题原因】</p>\n<p style=\"padding-left: 40px;\">"+ reason +"</p>\n<p>【解决方案】</p>\n<p style=\"margin: 0px; padding: 3px 0px 3px 40px; outline: none; line-height: 30px; color: #222222; font-family: tahoma, arial, 'Microsoft YaHei'; font-size: 16px; background-color: #ffffff;\">"+ solution +"</p>"
+            }
+            // 关联服务
+            if (orderInfo.serviceCatFullName) {
+                let name = orderInfo.serviceCatFullName.split("/")
+                rowInfo.serviceCatNames =  name[name.length - 1]
+                rowInfo.serviceCatId = [orderInfo.serviceCatId]
+            }
+            this.$refs['knowledgeInfo'].initOptionsData(rowInfo)
+            this.$refs['knowledgeInfo'].add()
+            this.$refs['knowledgeInfo'].title = "发布知识"
+            this.$refs['knowledgeInfo'].disableSubmit = false
+          }
+      })  
     }
   }
-
 }

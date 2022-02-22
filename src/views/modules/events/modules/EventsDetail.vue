@@ -1,5 +1,4 @@
 <template>
-  <!--style="width: calc(100% - 100px); height: calc(100% - 55px);"-->
   <!-- 弹出框 -->
   <a-modal
     :visible="visible"

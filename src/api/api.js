@@ -98,6 +98,7 @@ export const ajaxGetCategoryItems = () => getAction("/sys/category/treeMap");
 function getDictItemsFromCache(dictCode, type=0) {
   const types = ['sysAllDictItems', 'sysAllCategoryItems']
   if (Vue.ls.get(UI_CACHE_DB_DICT_DATA)) {
+    // console.log(Vue.ls.get(UI_CACHE_DB_DICT_DATA));
     if (Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]] && Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]][dictCode]) {
       let dictItems = Vue.ls.get(UI_CACHE_DB_DICT_DATA)[types[type]][dictCode];
       // console.log("-----------getDictItemsFromCache----------dictCode="+dictCode+"---- dictItems=",dictItems)

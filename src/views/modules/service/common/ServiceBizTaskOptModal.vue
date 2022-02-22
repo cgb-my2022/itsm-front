@@ -18,7 +18,7 @@
             <a-icon type="file-text"/>
             <span>任务办理</span>
           </span>
-          <service-biz-task-module :taskData="taskData" :formData="formData" @complete = "completeProcess"></service-biz-task-module>
+          <service-biz-task-module :taskData="taskData" :formData="formData" @complete = "completeProcess" @knowledge="knowledgeProcess"></service-biz-task-module>
         </a-tab-pane>
         <a-tab-pane key="2">
           <span slot="tab">
@@ -73,6 +73,10 @@
       completeProcess(){
         this.visible = false;
         this.$emit('ok');
+      },
+      knowledgeProcess() {
+        this.visible = false;
+        this.$emit('knowledge');
       },
       getBizProcessNodeInfo() {
         let url = '/process/extActProcessNode/getBizProcessNodeInfo'

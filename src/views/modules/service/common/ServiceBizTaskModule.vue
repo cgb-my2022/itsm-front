@@ -196,6 +196,7 @@
       <front-line-service-order-solution
         :formData="formData"
         @complete="handleDataReload()"
+        @knowledge="handleKnowledge()"
       ></front-line-service-order-solution>
       <!-- <biz-select-user-modal ref="selectHqUserModal" @selectFinished="selectHqUserOK"></biz-select-user-modal>
 -->
@@ -207,7 +208,7 @@
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { getAction, httpAction, getFileAccessHttpUrl, putAction } from '@/api/manage'
-import AListItem from 'ant-design-vue/es/list/Item'
+import AListItem from 'ant-design-vue/es/list/Item' 
 import { initDictOptions } from '@/components/dict/JDictSelectUtil'
 import FrontLineServiceOrderSolution from '../frontline/FrontLineServiceOrderSolution'
 import JEllipsis from '@/components/jeecg/JEllipsis.vue'
@@ -354,6 +355,10 @@ export default {
     handleDataReload() {
       const that = this
       that.$emit('complete')
+    },
+    handleKnowledge() {
+      const that = this
+      that.$emit('knowledge')
     },
     /* handleProcessComplete (nextnode) {
         const that = this;

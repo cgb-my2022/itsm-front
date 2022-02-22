@@ -1,5 +1,6 @@
 
 // 服务请求的公共列表表头
+import { getAction } from '@/api/manage'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { ServiceMixin } from './ServiceMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
@@ -17,7 +18,7 @@ export const ServiceColumns = {
         StaffServiceOrderModal,
         ServiceProcessInstPicModal,
         ServiceTaskDealModal,
-        ServiceTaskDetailModal,
+        ServiceTaskDetailModal
       },
     data() {
         return {
@@ -104,7 +105,9 @@ export const ServiceColumns = {
     },
     computed: {
         importExcelUrl: function () {
-            return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+            if (this.url && this.url.importExcelUrl) {
+                return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+            }
         },
         // 处理人
         setRealname() {

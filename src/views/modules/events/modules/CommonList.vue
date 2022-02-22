@@ -158,7 +158,7 @@ import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import JDate from '@/components/jeecg/JDate.vue'
 import '@/assets/less/TableExpand.less'
 import { postAction, putAction } from '@/api/manage'
-import { ajaxGetDictItems, getDictItemsFromCache } from '@/api/api'
+import { ajaxGetDictItems, getDictItemsFromCache, ajaxGetCategoryItems } from '@/api/api'
 import AddEvents from './AddEvents.vue'
 import EventsDetail from './EventsDetail.vue'
 import EventsProcess from '@/views/modules/service/common/ServiceProcessInstPicModal';
@@ -305,9 +305,9 @@ export default {
     /** 获取数据字典内容 */
     initDictConfig() {
       // 事件等级
-      this.setDic("EVENT_LEVEL", "dictOptions")
+      this.setDic("event_level", "dictOptions")
       // 工单状态
-      this.setDic("SERVICE_ORDER_STATUS", "dictStatus")
+      this.setDic("service_order_status", "dictStatus")
     },
     // 初始化工单类型
     initDictData() {

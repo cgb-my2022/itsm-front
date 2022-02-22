@@ -99,6 +99,7 @@
       ref="bpmBizTaskOptModal"
       :formData="formData"
       @ok="completeProcess"
+      @knowledge="knowledgeProcess"
     ></service-biz-task-opt-modal>
     <!--运维转办-->
     <biz-service-task-select-entruster-modal
@@ -190,7 +191,7 @@
 
 <script>
 import { putAction, postAction, getAction } from '@/api/manage'
-import { isURL } from '@/utils/validate'
+import { isURL } from '@/utils/validate' 
 import ServiceBizTaskOptModal from './ServiceBizTaskOptModal.vue'
 import StaffServiceOrderForm from '../staff/modules/StaffServiceOrderForm'
 import Vue from 'vue'
@@ -206,7 +207,7 @@ export default {
     StaffServiceOrderForm,
     ServiceBizTaskOptModal,
     BizServiceTaskSelectEntrusterModal,
-    BizServiceTaskSelectTwo,
+    BizServiceTaskSelectTwo
   },
   computed: {
     isComp: function () {
@@ -280,7 +281,7 @@ export default {
         receiveOrderUserList: '/system/userOrderRule/receiveOrderUserList',  //一线运维选择人员
         frontSup: '/system/usrServiceOrderRule/frontSup',  //一线经理选择人员
         vipDelegateFrontSup: '/system/serviceOrderVip/vipDelegateFrontSup',  //转一线经理 
-      },
+      }
     }
   },
   created() {},
@@ -462,6 +463,10 @@ export default {
     completeProcess() {
       this.visible = false
       this.$emit('ok')
+    },
+    knowledgeProcess() {
+      this.visible = false
+      this.$emit('knowledge', this.formData.id, this.url.moreInfo, 'serviceOrder') 
     },
     taskDeal() {
       this.$refs.bpmBizTaskOptModal.deal()

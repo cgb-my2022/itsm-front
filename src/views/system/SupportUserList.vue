@@ -177,7 +177,7 @@
     },
     data() {
       return {
-        description: '这是用户管理页面',
+        description: '二线运维管理页面',
         queryParam: {},
         recycleBinVisible: false,
         columns: [

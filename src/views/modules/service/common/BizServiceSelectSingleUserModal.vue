@@ -88,6 +88,10 @@
       url: {
         type: String,
         default: "/sys/user/serviceUserlist"
+      },
+      query: {
+        type: Object,
+        default: () => {}
       }
     },
     data () {
@@ -158,7 +162,7 @@
       }
     },
     created() {
-
+      
     },
     methods: {
       searchQuery(){
@@ -198,7 +202,7 @@
         })
       },
       getQueryParams(){
-        var param = Object.assign({}, this.queryParam,this.isorter, this.eventParams);
+        var param = Object.assign({}, this.queryParam,this.isorter, this.eventParams, this.query);
         param.field = this.getQueryField();
         return filterObj(param);
       },

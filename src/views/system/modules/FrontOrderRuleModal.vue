@@ -138,7 +138,7 @@ export default {
   },
   data() {
     return {
-      // 0：一线 1：二线 2：vip
+      // 0：一线运维 1：二线运维 2：vip运维 3.问题运维
       operations: 0,
       orderType: '', //工单类型
       title: "",
@@ -245,6 +245,11 @@ export default {
           role: 'VIP_SUP',
           title: 'VIP接单规则'
         },
+        // 问题运维人员接单参数
+        {
+          role: 'PROBLEM_PERSONNEL',
+          title: '问题运维接单规则'
+        }
       ],
       identity: '1',
       fileList: [],
@@ -314,7 +319,7 @@ export default {
     },
     // 初始化工单类型
     initDictData() {
-      let dictCode = 'ORDER_TYPE'
+      let dictCode = 'order_type'
       let dictOptions = []
       const firstOpion = {
         text: '全部',

@@ -133,16 +133,13 @@
       <br />
     </a-card>
     <!-- 资源详情 -->
-    <resources-detail 
-      :detailId="detailId" 
-      v-if="showDetail" 
-      ref="resourcesDetail" 
-      @closeDetail="closeDetail">
+    <resources-detail :detailId="detailId" v-if="showDetail" ref="resourcesDetail" @closeDetail="closeDetail">
     </resources-detail>
   </a-spin>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import AListItem from 'ant-design-vue/es/list/Item'
 import JEllipsis from '@/components/jeecg/JEllipsis.vue'
 import JUpload from '@/components/jeecg/JUpload'
@@ -192,11 +189,11 @@ export default {
       remnant: 500,
       url: {
         upload: window._CONFIG['domianURL'] + '/sys/common/upload',
-        frontresolve: '/system/serviceOrder/frontresolveOrder',  //一线解决
+        frontresolve: '/system/serviceOrder/frontresolveOrder', //一线解决
         supportresolve: '/system/serviceOrder/supportresolveOrder', //二线解决
         vipResolveOrder: '/system/serviceOrderVip/vipResolveOrder', //二线解决
-        getResourceListById: 'cmdb/resource/getResourceListById',   //获取关联资源
-        getResourcePermission: '/sys/permission/getResourcePermission',  //资源编辑权限
+        getResourceListById: 'cmdb/resource/getResourceListById', //获取关联资源
+        getResourcePermission: '/sys/permission/getResourcePermission', //资源编辑权限
       },
       fileList: [],
       headers: {},
@@ -246,7 +243,7 @@ export default {
           title: '资源名称',
           dataIndex: 'name',
           ellipsis: true,
-          align: 'center'
+          align: 'center',
         },
         {
           title: '资源描述',
@@ -263,8 +260,8 @@ export default {
         },
       ],
       showDetail: false,
-      detailId: "",
-      disabledSolution: true
+      detailId: '',
+      disabledSolution: true,
     }
   },
   watch: {
@@ -284,26 +281,31 @@ export default {
       immediate: true,
     },
   },
+  computed: {
+    ...mapState({
+      // 发布知识权限
+      knowledgeRelease: state => state.user.knowledgeRelease
+    })
+  },
   methods: {
     // 回显服务
     setCatalog(item) {
       this.$nextTick(() => {
-          this.serviceOrderModel.serviceCatIds = JSON.parse(item.serviceCatIds)
-          const info = {
-              serviceCatIds: item.serviceCatIds,
-              serviceCatId: item.serviceCatId,
-              serviceCatFullName: item.serviceCatFullName,
-              eventContent: item.catName
-          }
-          Object.keys(info).forEach(item => {
-              this.rowInfo[item] = info[item]
-          })
-
+        this.serviceOrderModel.serviceCatIds = JSON.parse(item.serviceCatIds)
+        const info = {
+          serviceCatIds: item.serviceCatIds,
+          serviceCatId: item.serviceCatId,
+          serviceCatFullName: item.serviceCatFullName,
+          eventContent: item.catName,
+        }
+        Object.keys(info).forEach((item) => {
+          this.rowInfo[item] = info[item]
+        })
       })
     },
-    // 是否可以编辑资源 
+    // 是否可以编辑资源
     pesourcePermission() {
-      getAction(this.url.getResourcePermission).then(res => {
+      getAction(this.url.getResourcePermission).then((res) => {
         if (res.code == 200) {
           const result = res.result
           this.disabledSolution = result.length === 0 ? true : false
@@ -369,7 +371,7 @@ export default {
             content: '确认提交吗?',
             onOk: function () {
               that.okConfirm(url)
-            }
+            },
           })
         } else {
           return false
@@ -398,7 +400,11 @@ export default {
               if (res.success) {
                 if (res.success) {
                   that.$message.success(res.message)
-                  that.$emit('complete')
+                  if (that.knowledgeRelease) {
+                    that.$emit('knowledge')
+                  } else {
+                    that.$emit('complete')
+                  }
                 } else {
                   that.$message.warning(res.message)
                 }
@@ -436,22 +442,21 @@ export default {
       }
       this.ncList = ncList
       this.setNc(this.serviceOrderModel.serviceCatIds)
-      return ncList;
+      return ncList
     },
     // 获取相关资源
     getResources() {
       this.loadingTable = true
-      getAction(
-        this.url.getResourceListById,
-        { id: this.formData.userId }
-      ).then(res => {
-        this.loadingTable = false
-        if (res.result) {
-          this.dataSource = res.result
-        }
-      }).finally( () => {
-        this.loadingTable = false
-      })
+      getAction(this.url.getResourceListById, { id: this.formData.userId })
+        .then((res) => {
+          this.loadingTable = false
+          if (res.result) {
+            this.dataSource = res.result
+          }
+        })
+        .finally(() => {
+          this.loadingTable = false
+        })
     },
     //先关资源编辑
     bindEdite(id) {
@@ -463,7 +468,7 @@ export default {
         this.getResources()
       }
       this.showDetail = false
-    }
+    },
   },
   created() {
     /*const token = Vue.ls.get(ACCESS_TOKEN);

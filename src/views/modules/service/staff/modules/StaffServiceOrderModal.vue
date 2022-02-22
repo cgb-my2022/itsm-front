@@ -41,12 +41,19 @@
                 rows="4"
                 :maxLength="300"
                 placeholder="请输入请求内容(有效长度1-300)"
+                @blur="changeContent"
               />
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="相关知识" :labelCol="labelCol2" :wrapperCol="labelCol2">
-              <div class="des-catalog">暂无相关知识</div>
+              <div v-if="knowledgeList.length === 0" class="des-catalog">暂无相关知识</div>
+              <template v-else v-for="(item, index) in knowledgeList">
+                <a-tag v-if="index < 4" :key="item.id" @click="checkKnowledge(item.id)">
+                  {{ item.title }}
+                </a-tag>
+              </template>
+              <a-tag v-if="knowledgeList.length > 3" @click="moreKnowledge"> 查看更多 >> </a-tag>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -54,10 +61,15 @@
               <a-radio-group
                 name="radioGroup"
                 :disabled="disabledLevel"
-                v-decorator="['serviceLevel', { initialValue: serviceLevel, rules: [{ required: true, message: '请选择优先级!' }] }]"
+                v-decorator="[
+                  'serviceLevel',
+                  { initialValue: serviceLevel, rules: [{ required: true, message: '请选择优先级!' }] },
+                ]"
               >
                 <template v-for="item in dictOptions">
-                  <a-radio :disabled="item.value === '1' && !isLeader" :key="item.value" :value="item.value">{{item.text || item.title}}</a-radio>
+                  <a-radio :disabled="item.value === '1' && !isLeader" :key="item.value" :value="item.value">{{
+                    item.text || item.title
+                  }}</a-radio>
                 </template>
               </a-radio-group>
             </a-form-item>
@@ -111,7 +123,7 @@
                     rules: [{ type: 'array', required: true, message: '请选择当前所在公司/园区' }],
                   },
                 ]"
-                autocomplete='off'
+                autocomplete="off"
                 :options="departTree"
                 :showSearch="true"
                 :fieldNames="{ label: 'title', value: 'id', children: 'children' }"
@@ -154,6 +166,8 @@
       ref="selectSingleUserModal"
       @selectFinished="selectUserOK"
     ></biz-select-single-user-modal>
+    <!-- 知识详情 -->
+    <knowledge-detail :showPage="showPage" :rowInfo="knowledge" @service="detailClose"></knowledge-detail>
   </a-modal>
 </template>
 
@@ -251,14 +265,14 @@ export default {
         sysOrgCode: '',
       },
       // 优先级
-      serviceLevel: "3", //默认值
+      serviceLevel: '3', //默认值
       disabledLevel: false, //是否可修改
-      dictOptions: [],  //列表
-      isLeader: false
+      dictOptions: [], //列表
+      isLeader: false,
     }
   },
   created() {
-    this.initDictData("service_level")
+    this.initDictData('service_level')
     this.queryDepartTree()
     this.getCatalog(3)
   },
@@ -269,15 +283,18 @@ export default {
       this.form.resetFields()
       this.isLeader = isLeader
       if (isLeader) {
-        this.serviceLevel ="1"
+        this.serviceLevel = '1'
         this.disabledLevel = true
       } else {
-        this.serviceLevel ="3"
+        this.serviceLevel = '3'
         this.disabledLevel = false
       }
       this.defaultWorkplaceDeparts = JSON.parse(workplaceDeptParentIdes).slice(0, 2)
       this.rowInfo.userName = username
       this.rowInfo.sysOrgCode = orgCode
+    },
+    changeContent(value) {
+      this.eventContent = this.form.getFieldsValue().eventContent
     },
     // 选择代理
     handleSelectUser() {
@@ -291,7 +308,9 @@ export default {
             this.$message.warning(res.message)
             return
           }
-          this.defaultWorkplaceDeparts = res.result.workplaceDeptParentIdes ? JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2) : []
+          this.defaultWorkplaceDeparts = res.result.workplaceDeptParentIdes
+            ? JSON.parse(res.result.workplaceDeptParentIdes).slice(0, 2)
+            : []
           const isLeader = res.result.isLeader
           const form = this.form.getFieldsValue(['serviceLevel'])
           this.disabledLevel = isLeader
@@ -301,7 +320,7 @@ export default {
             deptName: res.result.myDeptParentNames,
             workplaceDetail: res.result.workplaceDetail,
             workplaceDepartids: this.defaultWorkplaceDeparts,
-            serviceLevel: isLeader ? '1' :  form.serviceLevel === '1' ? '3' : form.serviceLevel
+            serviceLevel: isLeader ? '1' : form.serviceLevel === '1' ? '3' : form.serviceLevel,
           })
           this.rowInfo.userName = data.username
           this.rowInfo.sysOrgCode = res.result.orgCode
@@ -468,6 +487,10 @@ export default {
 <style scoped>
 .des-catalog {
   font-size: 12px;
+}
+.ant-tag {
+  display: inline;
+  cursor: pointer;
 }
 .line {
   width: 100%;

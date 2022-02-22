@@ -1,7 +1,7 @@
 import JEditableTable from '@/components/jeecg/JEditableTable'
 import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import { httpAction, getAction, postAsyncAction } from '@/api/manage'
-import {ajaxGetDictItems,getDictItemsFromCache} from '@/api/api'
+import { ajaxGetDictItems, getDictItemsFromCache, ajaxGetCategoryItems } from '@/api/api'
 
 export const JEditableTableMixin = {
   components: {
@@ -28,24 +28,42 @@ export const JEditableTableMixin = {
     /**
      * 获取数据字典的内容
      * @param {*} dictCode 数据字典的key
-     * @param {*} obj     data对应的key
+     * @param {*} obj       data对应的key
+     * @param {*} type      对应数据字典数据的取值对象   0：sysAllDictItems  1：sysAllCategoryItems
      * @returns 
      */
-     initDictData(dictCode, obj="dictOptions") {
+    initDictData(dictCode, obj="dictOptions", type=0) {
       let data = {}
       //优先从缓存中读取字典配置
-      if (getDictItemsFromCache(dictCode)) {
-        data[obj] = getDictItemsFromCache(dictCode)
+      if (getDictItemsFromCache(dictCode, type)) {
+        if (type === 0) {
+          data[obj] = getDictItemsFromCache(dictCode, type)
+        } else if (type === 1){
+          data[obj] = getDictItemsFromCache(dictCode, type).children
+        }
         Object.assign(this, data)
         return
       }
       //根据字典Code, 初始化字典数组
-      ajaxGetDictItems(dictCode, null).then((res) => {
-        if (res.success) {
-          data[obj] = res.result
-          Object.assign(this, data)
-        }
-      })
+      if (type === 0) {
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            data[obj] = res.result
+            Object.assign(this, data)
+          }
+        })
+      } else if (type === 1) {
+        ajaxGetCategoryItems().then((res) => {
+          if (res.success) {
+            data[obj] = res.result[dictCode].children
+            Object.assign(this, data)
+          }
+        })
+      }  
+    },
+    // 过滤
+    filter(inputValue, path) {
+      return path.some((option) => option.title.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
     },
     /** 获取所有的editableTable实例 */
     getAllTable() {
@@ -169,6 +187,14 @@ export const JEditableTableMixin = {
     handleCancel() {
       this.close()
     },
+    /** 整理成formData */
+    classifyIntoFormData(allValues) {
+      let main = Object.assign(this.model, allValues.formValue)
+      return {
+        ...main, // 展开
+        orderAttachList: allValues.tablesValue[0].values,
+      }
+    },
     /** 确定按钮点击事件 */
     handleOk() {
       /** 触发表单验证 */
@@ -192,7 +218,6 @@ export const JEditableTableMixin = {
       })
     },
     //确定按钮点击事件 返回新增数据结果
-
     handleReturnOk() {
       /** 触发表单验证 */
       this.getAllTable().then(tables => {

@@ -13,10 +13,29 @@
         <service-biz-dynamic-link :path="path" width="100%" height="100%" :formData="formData"></service-biz-dynamic-link>
       </div>
     </a-spin>
+    <div
+      v-if="knowledgeRelease" 
+      class="box-bot"
+      :style="{
+        position: 'absolute',
+        bottom: 0,
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'left',
+        zIndex: 99
+      }">
+      <a-space :size="8" align="center">
+        <template>
+          <a-button @click="bindKnowledge()" type="primary">发布知识</a-button>
+        </template>
+      </a-space>
+     </div>
   </a-modal>
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   import { getAction } from '@/api/manage'
   import { isURL } from '@/utils/validate'
   import ServiceBizDynamicLink from './ServiceBizDynamicLink.vue';
@@ -41,7 +60,11 @@
           return false;
         }
         return true;
-      }
+      },
+      ...mapState({
+        // 发布知识权限
+        knowledgeRelease: state => state.user.knowledgeRelease
+      })
     },
     data() {
       return {
@@ -51,9 +74,9 @@
         confirmLoading: false,
         currTask: {},
         bodyStyle: {
-          padding: '0',
-          height: (window.innerHeight-100) + 'px',
-          'overflow-y': 'auto'
+          paddingBottom: '70px',
+          height: (window.innerHeight - 200) + 'px',
+          'overflow-y': 'auto',
         },
         iframeUrl: '',
         path: '',
@@ -67,9 +90,12 @@
         }
       }
     },
-    created() {
-    },
     methods: {
+      // 发布知识
+      bindKnowledge() {
+        this.visible = false
+        this.$emit('knowledge', this.formData.id, this.url.moreInfo, 'serviceOrder') 
+      },
       // 关闭模态框
       handleModalCancel() {
         this.visible = false
@@ -120,5 +146,12 @@
   /** Button按钮间距 */
   .ant-btn {
     margin-left: 3px
+  }
+  .box-bot {
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    left: 0;
+    right: 0;
   }
 </style>
