@@ -3,6 +3,7 @@
     <editor
       v-model="myValue"
       :init="init"
+      :key="tinymceFlag"
       :disabled="disabled"
       @onClick="onClick">
     </editor>
@@ -84,11 +85,13 @@
             })
           }
         },
-        myValue: this.value
+        myValue: this.value,
+        tinymceFlag: 1
       }
     },
     mounted() {
       //tinymce.init({})
+      this.tinymceFlag++;
     },
     methods: {
 
@@ -111,6 +114,9 @@
           this.$emit('input', newValue)
         }
       }
+    },
+    activated() {
+      this.tinymceFlag++;
     }
   }
 
