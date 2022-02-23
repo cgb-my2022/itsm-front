@@ -418,7 +418,6 @@ export default {
         })
     },
     requestMethods(formData, type) {
-      this.confirmLoading = true
       // 所有参数
       let params = Object.assign({}, this.model, formData)
       // 类型
@@ -428,11 +427,13 @@ export default {
       params.knowledgeCatId = formData.knowledgeCatIds[len]
       params.knowledgeCatIds = formData.knowledgeCatIds.join(',')
       //  服务目录
-      params.serviceCatNames = formData.serviceCatNames.join(',')
-      params.serviceCatId = formData.serviceCatId.join(',')
+      if (params.serviceCatNames) {
+        params.serviceCatNames = formData.serviceCatNames.join(',')
+        params.serviceCatId = formData.serviceCatId.join(',')
+      }
       // 知识关联服务分类集合
       let knowledgeServiceCatRelateList = []
-      if (formData.serviceCatId.length > 0) {
+      if (formData.serviceCatId && formData.serviceCatId.length > 0) {
         formData.serviceCatId.forEach((item, index) => {
           knowledgeServiceCatRelateList.push({
             serviceCatId: item,

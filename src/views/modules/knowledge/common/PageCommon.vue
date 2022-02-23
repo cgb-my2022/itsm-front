@@ -95,7 +95,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :xl="13" :lg="14" :md="15" :sm="24">
+              <a-col :xl="15" :lg="16" :md="17" :sm="24">
                 <a-form-item label="创建日期">
                   <j-date
                     :show-time="true"
@@ -368,7 +368,7 @@ export default {
       ],
       // 关联服务
       serviceOptions: [],
-      serviceCatName: [],
+      serviceCatName: []
     }
   },
   watch: {
@@ -604,7 +604,9 @@ export default {
         parentId: info ? info.parentId : null, // 父id
       }
       const title = info && info.id ? '编辑目录' : '新增目录'
-      this.handleSubmit('modalForm', title)
+      this.$nextTick(() => {
+        this.handleSubmit('modalForm', title)
+      })
     },
     // 选择事项 catLevel, title, parentId, children
     onContextMenuClick(menuKey, info) {
