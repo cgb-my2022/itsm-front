@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form layout="inline" @keyup.enter.native="searchQuery" class="row_search">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="工单编号">
@@ -36,7 +36,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
+          <a-col>
             <a-form-item label="创建日期">
               <j-date
                 :show-time="true"
@@ -57,7 +57,7 @@
               ></j-date>
             </a-form-item>
           </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+          <a-col>
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -403,4 +403,7 @@ export default {
 
 <style scoped>
 @import '~@assets/less/common.less';
+.query-group-cust {
+  width: 200px;
+}
 </style>

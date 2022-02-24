@@ -26,7 +26,6 @@ export default {
                     align: 'center',
                     width: 100,
                     dataIndex: 'commonUse',
-                    sorter: true,
                     scopedSlots: { customRender: 'commonUse' }
                 },
                 {

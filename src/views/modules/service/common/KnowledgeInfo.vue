@@ -223,7 +223,7 @@ export default {
           rules: [{ required: true, message: '请输入知识明细!' }],
         },
         changeReason: {
-          rules: [{ required: true, message: '请输入修改描叙!' }],
+          rules: [{ required: true, message: '请输入修改描述!' }],
         }
       },
       // 是否常用
@@ -324,7 +324,7 @@ export default {
         'content', //知识明细·
         'attachment', //附件
         'changeReason', //修改原因
-        'changeDesc', //修改描叙
+        'changeDesc', //修改描述
       ]
       let fieldval = pick(this.model, ...info)
       this.$nextTick(() => {

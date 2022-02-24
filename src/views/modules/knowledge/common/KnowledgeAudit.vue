@@ -18,7 +18,6 @@
           <!-- 头部内容 -->
           <div class="left_title">
             <h2>标题：{{rowInfo.title}}</h2>
-            <span v-if="rowInfo.commonUse == 1">常用知识</span>
           </div>
           <div class="left_info">
             <span>创建人：{{rowInfo.createName}}</span>

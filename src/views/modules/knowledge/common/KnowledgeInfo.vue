@@ -142,7 +142,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="修改描叙" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+            <a-form-item label="修改描述" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-textarea
                 v-decorator="['changeDesc', { initialValue: rowInfo.changeDesc || ''}]"
                 :maxLength="500"
@@ -265,8 +265,7 @@ export default {
         { id: '2', title: '否', value: 0 },
         { id: '3', title: '是', value: 1 },
       ],
-      contentDefault:
-        '<p>【业务范围】</p>\n<p>&nbsp;</p>\n<p>【问题描述】</p>\n<p>&nbsp;</p>\n<p>【解决方案】</p>\n<p>&nbsp;</p>',
+      contentDefault: '',
       // 服务工单附件
       refKeys: ['serviceOrderAttach'],
       tableKeys: ['serviceOrderAttach'],
@@ -301,6 +300,7 @@ export default {
           this.serviceOrderAttachTable.dataSource = []
           this.model.serviceCatNames =  ""
           this.model.knowledgeCatName = ""
+          this.contentDefault = '<p>【业务范围】</p>\n<p>&nbsp;</p>\n<p>【问题描述】</p>\n<p>&nbsp;</p>\n<p>【解决方案】</p>\n<p>&nbsp;</p>' 
         }
       },
       immediate: true,
@@ -364,7 +364,7 @@ export default {
         'content', //知识明细·
         'attachment', //附件
         'changeReason', //修改原因
-        'changeDesc', //修改描叙
+        'changeDesc', //修改描述
       ]
       let fieldval = pick(this.model, ...info)
       this.$nextTick(() => {

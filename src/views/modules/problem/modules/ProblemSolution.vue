@@ -43,7 +43,7 @@
                 <a-input
                   autocomplete="off"
                   @click="handleSelect"
-                  v-decorator="['currentUserName']"
+                  v-model="businessInfo.changeOrderIds"
                 >
                 </a-input>
                 <a-button icon="search" @click="handleSelect">选择变更</a-button>
@@ -70,6 +70,8 @@
         </a-row>
       </a-form>
     </a-spin>
+     <!-- 选择关联变更 -->
+    <check-order ref="checkOrder" :serviceType="2" @checkSuccess="checkOrderSuccess"></check-order>
   </a-modal>
 </template>
 
@@ -81,13 +83,14 @@ import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import ARow from 'ant-design-vue/es/grid/Row'
 import { postAction } from '@/api/manage'
-
+import CheckOrder from '../../alteration/modules/CheckOrder.vue'
 export default {
   name: 'ServiceOrderModal',
   mixins: [JEditableTableMixin],
   components: {
     ARow,
     JDictSelectTag,
+    CheckOrder
   },
   props: {
     formData: {
@@ -145,6 +148,11 @@ export default {
           },
         ],
       },
+      // 关联工单
+      changeOrderIds: [],
+      businessInfo: {
+        changeOrderIds: ''
+      }
     }
   },
   computed: {
@@ -162,7 +170,7 @@ export default {
     },
     // 提交
     request(formData) {
-      let params = Object.assign({}, formData)
+      let params = Object.assign(this.businessInfo, formData)
       params.id = this.formData.id
       params.version = this.formData.version
       this.confirmLoading = true
@@ -189,9 +197,17 @@ export default {
       this.$router.replace('/conserResource/conserResource')
     },
     handleSelect(e) {
-      e.srcElement.blur()
-      // this.$refs.selectSingleUserModal.select(3);
-    }
-  },
+       e.srcElement.blur()
+      const queryParam = {
+        orderStatus: 7   // 订单状态（已结束）
+      }
+      this.$refs.checkOrder.add('关联测试变更', queryParam, this.changeOrderIds);
+    },
+    // 选择测试工单完成
+    checkOrderSuccess(value) {
+      this.businessInfo.changeOrderIds = value.join(",")
+      this.changeOrderIds = value
+    },
+  }
 }
 </script>

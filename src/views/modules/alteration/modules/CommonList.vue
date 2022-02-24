@@ -27,7 +27,7 @@
               <a-select placeholder="请选择" allow-clear v-model="queryParam.orderStatus">
                 <a-select-option v-for="item in dictStatus" :key="item.value" :value="item.value">
                   <span style="display: inline-block; width: 100%" :title="item.text">
-                    {{ item.text }}  {{ item.value }} 
+                    {{ item.text }} 
                   </span>
                 </a-select-option>
               </a-select>
@@ -54,7 +54,7 @@
               ></j-date>
             </a-form-item>
           </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+          <a-col>
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -89,7 +89,7 @@
             <span v-if="text == 2" class="order-status_round c-green"></span>
             <span v-if="text == 7 || text == 12" class="order-status_round c-gray"></span>
             <span>{{ setStatus(text) }}</span>
-            <span v-if="record.currentRole">（{{ record.currentRole }}）</span>
+            <span v-if="record.currentRole && text != 11">（{{ record.currentRole }}）</span>
           </span>
         </template>
         <!-- 操作按钮 -->
@@ -236,10 +236,18 @@ export default {
     // 设置是否显示办理按钮
     setManage() {
       return function (text) { 
-        if (text.orderStatus == 2) {
-          return true
+        const id =  this.userInfo.id
+        const signUserIds = text.signUserIds ? text.signUserIds.split(",") : null
+        if (text.orderStatus != 2) return false
+        if (text.currentUserId != id) {
+          if (text.signNum == 0) {
+            return false
+          }
+          if (text.signNum != 0 && signUserIds && signUserIds[signUserIds.length - 1] == this.userInfo.id) {
+            return false
+          }
         }
-        return false
+        return true
       }
     },
     // 设置是否有办理按钮
@@ -252,10 +260,8 @@ export default {
         if (text.signNum == 0 && text.currentUserId == this.userInfo.id) {
           return false
         }
-        if (text.signNum != 0) {
-          if (signUserIds && signUserIds[signUserIds.length - 1] == this.userInfo.id) {
-            return false
-          }  
+        if (text.signNum != 0 && signUserIds && signUserIds[signUserIds.length - 1] == this.userInfo.id) {
+          return false
         } 
         return true
       }
@@ -346,6 +352,6 @@ export default {
 <style scoped>
 @import '~@assets/less/common.less';
 .query-group-cust {
-  width: 300px;
+  width: 200px;
 }
 </style>

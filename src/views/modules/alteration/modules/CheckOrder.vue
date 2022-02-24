@@ -12,6 +12,7 @@
   >
     <order-list
       :queryParams="queryParam"
+      :serviceType="serviceType"
       :selectedDefault="selectedInfo"
       @chechRows="chechRows"> 
     </order-list>
@@ -40,6 +41,13 @@
 import OrderList from './OrderList.vue'
 export default {
   name: 'CheckOrder',
+  props: {
+    // 是否显示选择业务
+    serviceType: {
+      type: Number,
+      default: 1
+    }
+  },
   components: { OrderList },
   data() {
     return {

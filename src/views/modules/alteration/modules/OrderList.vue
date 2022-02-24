@@ -9,6 +9,19 @@
               <a-input v-model="queryParam.id" allow-clear />
             </a-form-item>
           </a-col>
+          <a-col v-if="serviceType === 2" :xl="12" :lg="7" :md="12" :sm="24">
+            <a-form-item label="选择业务">
+              <a-cascader
+                placeholder="请选择"
+                :field-names="{ label: 'title', value: 'id', children: 'children' }"
+                :show-search="{ filter }"
+                v-model="changeCatId"
+                :options="dictOptions"
+                allow-clear
+                @change="serviceChange"
+              />
+            </a-form-item>
+          </a-col>
           <a-col>
             <a-form-item label="创建日期">
               <j-date
@@ -30,10 +43,10 @@
               ></j-date>
             </a-form-item>
           </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+          <a-col>
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
           </a-col>
         </a-row>
@@ -82,6 +95,11 @@ export default {
     queryParams: {
       type: Object
     },
+    // 是否显示选择业务
+    serviceType: {
+      type: Number,
+      default: 1
+    }
   },
   components: {
     JDate,
@@ -92,6 +110,8 @@ export default {
         list: '/sys/change/allList',
       },
       defaultCheckedId: [], //默认选中的id
+      dictOptions: [], //选择业务
+      changeCatId: [], //业务
       queryParam: {
         id: ''
       },
@@ -182,7 +202,25 @@ export default {
     },
   },
   methods: {
-    
+    /** 获取数据字典内容 */
+    initDictConfig() {
+      // 选择业务
+      this.setDic('B06', 'dictOptions', 1)
+    },
+    // 重置
+    bindReset() {
+      if (this.serviceType === 2) {
+        this.changeCatId = []
+        this.queryParam.changeCatId = ''
+      }
+      this.queryParam.id = ''
+      this.loadData()
+    },
+    // 选择业务
+    serviceChange(value, selectedOptions) {
+      const changeCatId = value.length > 0 ? value[value.length - 1] : ''
+      this.queryParam.changeCatId = changeCatId
+    }
   }
 }
 </script>
@@ -190,7 +228,7 @@ export default {
 <style scoped>
 @import '~@assets/less/common.less';
 .query-group-cust {
-  width: 300px;
+  width: 200px;
 }
 .row_search > .ant-row{
   display: flex;

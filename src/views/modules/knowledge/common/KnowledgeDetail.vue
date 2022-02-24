@@ -10,18 +10,19 @@
   >
     <template v-if="rowInfo.createTime">  
       <div class="detail_top">
-        <a-tag color="#87d068">{{ setStatus(rowInfo.status) }}</a-tag>
+        <a-tag v-if="source === 1 || source === 2" color="#87d068">已发布</a-tag>
+        <a-tag v-else color="#87d068">{{ setStatus(rowInfo.status) }}</a-tag>
       </div>
       <div class="detail_main">
         <!-- 详情 -->
         <div class="left">
           <div class="left_title">
-            <h2>{{rowInfo.title}}</h2>
-            <span v-if="rowInfo.commonUse == 1">常用知识</span>
+            <h2>标题：{{rowInfo.title}}</h2>
           </div>
           <div class="left_info">
             <span>创建人：{{rowInfo.createName}}</span>
             <span>创建时间：{{rowInfo.createTime}}</span>
+            <span>常用知识：{{rowInfo.commonUse == 1 ? '是' : '否'}}</span>
             <span>关键字：{{rowInfo.keyWords}}</span>
           </div>
           <div class="left_main" v-html="rowInfo.content"></div>
@@ -87,6 +88,11 @@ import { FormTypes, getRefPromise } from '@/utils/JEditableTableUtil'
 import JEditableTable from '@/components/jeecg/JEditableTable'
 export default {
   props: {
+    // 页面来源
+    source: {
+      type: Number,
+      default: 1,
+    },
     // 详情内容
     rowInfo: {
       type: Object,
@@ -360,7 +366,9 @@ export default {
       font-size: 14px;
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       align-items: center;
+      width: 90%;
       span {
         display: inline-block;
         margin-right: 40px;

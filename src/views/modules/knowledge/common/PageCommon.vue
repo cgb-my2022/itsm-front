@@ -117,7 +117,7 @@
                   ></j-date>
                 </a-form-item>
               </a-col>
-              <a-col :xl="6" :lg="7" :md="8" :sm="24">
+              <a-col>
                 <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
                   <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                   <a-button type="primary" @click="bindReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -217,7 +217,7 @@
     <!-- 历史记录 -->
     <knowledge-historyList ref="knowledgeHistoryList" :historyList="historyList"></knowledge-historyList>
     <!-- 详情 -->
-    <knowledge-detail ref="KnowledgeDetail" :statusOptions="statusOptions" :rowInfo="rowInfo" @closeLoad="closeLoad()"></knowledge-detail>
+    <knowledge-detail ref="KnowledgeDetail" :source="source" :statusOptions="statusOptions" :rowInfo="rowInfo" @closeLoad="closeLoad()"></knowledge-detail>
   </a-row>
 </template>
 
@@ -444,6 +444,7 @@ export default {
     closeLoad() {
       this.selectedRowKeys = []
       this.rowInfo = {}
+      this.historyList = []
       this.paramsInfo = {}
       this.getTreeData()
       this.getList()
@@ -648,7 +649,7 @@ export default {
 <style scoped>
 @import '~@assets/less/common.less';
 .query-group-cust {
-  width: 300px;
+  width: 200px;
 }
 .r-h2 {
   font-size: 16px;

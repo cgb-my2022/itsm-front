@@ -68,7 +68,6 @@ export default {
       },
     }
   },
-
   methods: {
     add(title, selectedDefault) {
       this.title = title

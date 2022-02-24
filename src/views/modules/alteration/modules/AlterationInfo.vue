@@ -149,7 +149,7 @@
     <!-- 选择负责人 -->
     <change-role ref="changeRole" type='radio' @checkSuccess="checkRoleSuccess"></change-role>
     <!-- 选择测试工单 -->
-    <check-order ref="checkOrder" @checkSuccess="checkOrderSuccess"></check-order>
+    <check-order ref="checkOrder" :serviceType='1' @checkSuccess="checkOrderSuccess"></check-order>
   </a-modal>
 </template>
 

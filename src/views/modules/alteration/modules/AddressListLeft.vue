@@ -6,7 +6,7 @@
       <a-tree
         showLine
         checkStrictly
-        :expandedKeys.sync="expandedKeys"
+        :expandedKeys.sync="expandedKeys" 
         :selectedKeys="selectedKeys"
         :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
         :treeData="treeDataSource"
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import { queryDepartTreeList, searchByKeywords } from '@/api/api'
 
   export default {
@@ -33,6 +34,19 @@
     },
     created() {
       this.queryTreeData()
+    },
+    computed: {
+      ...mapGetters(['userInfo'])
+    },
+    watch: {
+      userInfo: {
+        handler(newVal) {
+          if (newVal) {
+            // this.selectedKeys = [newVal.orgCode]
+          }
+        },
+        immediate: true,
+      }
     },
     methods: {
 
