@@ -55,7 +55,7 @@ export default {
         'overflow-y': 'auto',
       },
       historyStatus: ['知识提交', '知识发布', '知识修改', '知识退回'],
-      historyPerson: ['提交人', '发布人', '修改人', '审批人']
+      historyPerson: ['提交人', '审批人', '修改人', '审批人']
     }
   },
   methods: {

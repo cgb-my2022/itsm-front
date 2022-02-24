@@ -80,7 +80,7 @@
     </a-spin>
     <!-- <staff-serviceOrder-modal ref="modalForm" @ok="modalFormOk"></staff-serviceOrder-modal> -->
     <service-task-deal-modal ref="taskDealModal" @ok="taskOk" @knowledge="bindKnowledge" />
-    <service-task-detail-modal ref="taskDetailModal" @knowledge="bindKnowledge" />
+    <service-task-detail-modal ref="taskDetailModal" @knowledge="releaseKnowledge" />
     <!-- 发布知识 -->
     <knowledge-info ref="knowledgeInfo"></knowledge-info>
   </div>

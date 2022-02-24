@@ -183,7 +183,7 @@ export default {
           this.formData = result
           this.visible = true
           // 判断是否有办理按钮
-          this.setShowBtns(result)
+          this.setManage(result)
           this.getResources()
         }
       })
@@ -204,6 +204,20 @@ export default {
             this.stringSource = stringSource.join(",")
           }
         })
+    },
+    setManage(text) {
+      const id =  this.userInfo.id
+      const signUserIds = text.signUserIds ? text.signUserIds.split(",") : []
+      if (text.orderStatus != 2) return false
+      if (text.currentUserId != id) {
+        if (text.signNum == 0) {
+          return false
+        }
+        if (text.signNum != 0 && signUserIds.indexOf(this.userInfo.id) === -1) {
+          return false
+        }
+      }
+      this.setShowBtns(text)
     },
     // 是否显示操作按钮
     setShowBtns(text) {

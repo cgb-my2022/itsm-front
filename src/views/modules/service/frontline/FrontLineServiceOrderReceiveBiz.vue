@@ -156,7 +156,7 @@
     <!-- 办理 -->
     <service-task-deal-modal ref="taskDealModal" @ok="taskOk" @knowledge="bindKnowledge"></service-task-deal-modal>
     <!-- 详情 -->
-    <service-task-detail-modal ref="taskDeatilModal" @knowledge="bindKnowledge"></service-task-detail-modal>
+    <service-task-detail-modal ref="taskDeatilModal" @knowledge="releaseKnowledge"></service-task-detail-modal>
     <!-- 发布知识 -->
     <knowledge-info ref="knowledgeInfo"></knowledge-info>
     <!-- 弹出框 -->

@@ -98,7 +98,7 @@
     <!-- 知识详情 -->
     <knowledge-detail ref="KnowledgeDetail" :rowInfo="rowInfo" @closeLoad="getKnowledge()"></knowledge-detail>
     <!-- 详情 -->
-    <service-task-detail-modal ref="taskDetailModal" @knowledge="bindKnowledge" />
+    <service-task-detail-modal ref="taskDetailModal" @knowledge="releaseKnowledge" />
     <!-- 快速发起 -->
     <staff-service-order-modal ref="modalForm" @closeLoad="loadData"></staff-service-order-modal>
     <!-- 服务目录 -->

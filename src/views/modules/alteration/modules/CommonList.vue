@@ -237,13 +237,13 @@ export default {
     setManage() {
       return function (text) { 
         const id =  this.userInfo.id
-        const signUserIds = text.signUserIds ? text.signUserIds.split(",") : null
+        const signUserIds = text.signUserIds ? text.signUserIds.split(",") : []
         if (text.orderStatus != 2) return false
         if (text.currentUserId != id) {
           if (text.signNum == 0) {
             return false
           }
-          if (text.signNum != 0 && signUserIds && signUserIds[signUserIds.length - 1] == this.userInfo.id) {
+          if (text.signNum != 0 && signUserIds.indexOf(this.userInfo.id) === -1) {
             return false
           }
         }

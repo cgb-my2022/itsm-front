@@ -186,7 +186,7 @@
 
     <staff-service-order-modal ref="modalForm" @ok="modalFormOk"></staff-service-order-modal>
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
-    <service-task-detail-modal ref="taskDetailModal" @knowledge="bindKnowledge"></service-task-detail-modal>
+    <service-task-detail-modal ref="taskDetailModal" @knowledge="releaseKnowledge"></service-task-detail-modal>
     <service-task-deal-modal  ref="taskDealModal" @closeLoad="taskOk" @knowledge="bindKnowledge"/>
     <!-- 发布知识 -->
     <knowledge-info ref="knowledgeInfo"></knowledge-info>

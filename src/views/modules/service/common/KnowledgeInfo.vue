@@ -85,7 +85,7 @@
               <a-input
                 v-decorator="[
                   'keyWords',
-                  { initialValue: rowInfo.keyWords || '', rules: validatorRules.keyWords.rules },
+                  { initialValue: rowInfo.keyWords || ''},
                 ]"
                 :maxLength="30"
                 placeholder="有效长度1-30，请用逗号隔开"
@@ -103,7 +103,7 @@
               <j-editor
                 v-decorator="[
                   'content',
-                  { initialValue: rowInfo.content || contentDefault, rules: validatorRules.content.rules },
+                  { initialValue: rowInfo.content || contentDefault },
                 ]"
                 triggerChange
               />
@@ -215,12 +215,6 @@ export default {
         },
         title: {
           rules: [{ required: true, message: '请输入标题！' }],
-        },
-        keyWords: {
-          rules: [{ required: true, message: '30个字符以内，请用逗号隔开!' }],
-        },
-        content: {
-          rules: [{ required: true, message: '请输入知识明细!' }],
         },
         changeReason: {
           rules: [{ required: true, message: '请输入修改描述!' }],

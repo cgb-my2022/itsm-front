@@ -198,7 +198,7 @@
     <!-- 流程图 -->
     <service-process-inst-pic-modal ref="extActProcessInstPicModal"></service-process-inst-pic-modal>
     <!-- 详情 -->
-    <service-task-detail-modal ref="taskDetailModal" @knowledge="bindKnowledge"></service-task-detail-modal>
+    <service-task-detail-modal ref="taskDetailModal" @knowledge="releaseKnowledge"></service-task-detail-modal>
     <!-- 办理 -->
     <service-task-deal-modal ref="taskDealModal" @closeLoad="taskOk" @knowledge="bindKnowledge"/>
     <!-- 评价 -->
