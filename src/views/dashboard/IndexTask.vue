@@ -86,7 +86,7 @@
           </p>
           <p class="card-head-p2" @click="toKnowledgeInfo">更多 <a-icon type="double-right" /></p>
         </div>
-        <div class="card-tb">
+        <div class="card-tb1">
           <a-table :columns="columns" :data-source="dataSource3" rowKey="id" :pagination="false">
             <span slot="action" slot-scope="text, record">
               <a @click="showDetailKnowledge(record.id)">详情</a>
@@ -339,7 +339,7 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
 .staff-box {
   display: flex;
   justify-content: center;
@@ -388,9 +388,8 @@ export default {
   color: gray;
   font-size: 12px;
 }
-.card-tb {
+.card-tb1 {
   background-color: white;
-  height: 271px;
   padding-left: 15px;
   padding-right: 15px;
 }

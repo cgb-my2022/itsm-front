@@ -26,7 +26,12 @@
       </a-form>
     </a-spin>
     <!-- 添加业务内容 -->
-    <alteration-info ref="alterationInfo" @close="handleCancel"></alteration-info>
+    <alteration-info 
+      ref="alterationInfo" 
+      :changeOptions="changeType"
+      @close="handleCancel"
+      @ok="handleOk">
+    </alteration-info>
   </a-modal>
 </template>
 
@@ -45,6 +50,11 @@ export default {
   props: {
     // 业务分类
     businessOptions: {
+      type: Array,
+      default: () => []
+    },
+    // 变更类型
+    changeType: {
       type: Array,
       default: () => []
     }
@@ -93,16 +103,22 @@ export default {
       this.form.resetFields()
     },
     // 选择分类
-    serviceChange(value, label) {
-      let businessInfo = {
-        businessId: '', 
-        businessFullName: ''
-      }
+    serviceChange(value, label) {   
       if (value.length > 0) {
-        businessInfo.businessId = value[value.length - 1]
-        businessInfo.businessFullName = label[value.length - 1].title
+        let title = []
+        label.forEach(item => {
+          title.push(item.title)
+        })
+        let businessInfo = {
+          changeCatId: value[value.length - 1], 
+          changeCatFullName: title.join("/"),
+          changeCatIds: value.join(",")
+        }
+        this.$refs.alterationInfo.add(businessInfo)
       }
-      this.$refs.alterationInfo.add(businessInfo)
+    },
+    handleOk() {
+      this.$emit("ok")
     }
   }
 }

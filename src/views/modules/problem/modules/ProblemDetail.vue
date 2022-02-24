@@ -203,7 +203,7 @@ export default {
       const that = this
       that.$confirm({
         title: '确认解挂吗',
-        content: '是否解挂改任务?',
+        content: '是否解挂该任务?',
         onOk: function () {
           that.handleOk({}, 'unLock')
         },

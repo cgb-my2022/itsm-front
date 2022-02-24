@@ -17,6 +17,7 @@ export default {
                     title: '点赞数',
                     width: 100,
                     align: 'center',
+                    sorter: true,
                     dataIndex: 'star',
                 },
                 {

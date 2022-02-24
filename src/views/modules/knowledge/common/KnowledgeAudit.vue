@@ -17,7 +17,7 @@
         <div class="left">
           <!-- 头部内容 -->
           <div class="left_title">
-            <h2>{{rowInfo.title}}</h2>
+            <h2>标题：{{rowInfo.title}}</h2>
             <span v-if="rowInfo.commonUse == 1">常用知识</span>
           </div>
           <div class="left_info">
@@ -26,10 +26,11 @@
             <span>关键字：{{rowInfo.keyWords}}</span>
             <span>常用知识：{{rowInfo.commonUse == 1 ? '是' : '否'}}</span>
             <span>类型：{{rowInfo.knowledgeCatName}}</span>
-            <span>关联服务：{{rowInfo.serviceCatNames}}</span>
+            <span v-if="rowInfo.serviceCatNames">关联服务：{{rowInfo.serviceCatNames}}</span>
           </div>
           <!-- 富文本 -->
-          <div class="left_main" v-html="rowInfo.content"></div>
+          <div v-if="rowInfo.content" class="left_main" v-html="rowInfo.content"></div>
+          <div v-else class="left_main"></div>
           <!-- 文件 -->
           <div class="left_file">
              <j-editable-table
@@ -256,6 +257,8 @@ export default {
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
+      width: 85%;
+      margin: 0 auto;
       span {
         display: inline-block;
         margin-right: 40px;

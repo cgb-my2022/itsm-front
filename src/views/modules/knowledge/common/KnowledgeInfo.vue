@@ -85,7 +85,7 @@
               <a-input
                 v-decorator="[
                   'keyWords',
-                  { initialValue: rowInfo.keyWords || '', rules: validatorRules.keyWords.rules },
+                  { initialValue: rowInfo.keyWords || '' },
                 ]"
                 :maxLength="30"
                 placeholder="有效长度1-30，请用逗号隔开"
@@ -103,7 +103,7 @@
               <j-editor
                 v-decorator="[
                   'content',
-                  { initialValue: rowInfo.content || contentDefault, rules: validatorRules.content.rules },
+                  { initialValue: rowInfo.content || contentDefault},
                 ]"
                 triggerChange
               />
@@ -136,18 +136,18 @@
               <a-input
                 v-decorator="['changeReason', { initialValue: rowInfo.changeReason || '', rules: validatorRules.changeReason.rules }]"
                 :maxLength="32"
-                placeholder="请输入修改原因(有效长度1-32)"
+                placeholder="请输入(有效长度1-32)"
               >
               </a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="修改原因" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+            <a-form-item label="修改描叙" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-textarea
                 v-decorator="['changeDesc', { initialValue: rowInfo.changeDesc || ''}]"
                 :maxLength="500"
                 :auto-size="{ minRows: 3, maxRows: 5 }"
-                placeholder="请输入修改描叙(有效长度1-500)"
+                placeholder="请输入(有效长度1-500)"
               >
               </a-textarea>
             </a-form-item>
@@ -169,9 +169,9 @@
       }"
     >
       <a-space :size="8" align="center">
-        <a-button v-if="rowInfo && rowInfo.createTime" @click="handleCancel()">取消</a-button>
-        <a-button v-else v-loading="confirmLoading" @click="handleOkConfirm(0)">保存为草稿</a-button>
-        <a-button v-loading="confirmLoading" @click="handleOkConfirm(1)" type="primary">{{rowInfo.createTime ? '提交' : '提交数据'}}</a-button>
+        <a-button @click="handleCancel()">取消</a-button>
+        <a-button v-if="rowInfo.status === 0 || !rowInfo.status" @click="handleOkConfirm(0)">保存</a-button>
+        <a-button @click="handleOkConfirm(1)" type="primary">提交</a-button>
       </a-space>
     </div>
   </a-modal>
@@ -256,14 +256,8 @@ export default {
         title: {
           rules: [{ required: true, message: '请输入标题！' }],
         },
-        keyWords: {
-          rules: [{ required: true, message: '30个字符以内，请用逗号隔开!' }],
-        },
-        content: {
-          rules: [{ required: true, message: '请输入知识明细!' }],
-        },
         changeReason: {
-          rules: [{ required: true, message: '请输入修改描叙!' }],
+          rules: [{ required: true, message: '请输入修改原因!' }],
         }
       },
       // 是否常用
@@ -302,6 +296,7 @@ export default {
           this.serviceOrderAttachTable.dataSource = JSON.parse(newVal.attachment)
           this.model.serviceCatNames =  newVal.serviceCatNames ? newVal.serviceCatNames.split(",") : ""
           this.model.knowledgeCatName = newVal.knowledgeCatName
+          this.contentDefault = newVal.content     
         } else {
           this.serviceOrderAttachTable.dataSource = []
           this.model.serviceCatNames =  ""
@@ -393,6 +388,7 @@ export default {
      * type: 0-草稿 1-提交
      */
     handleOkConfirm(type) {
+      if(this.confirmLoading) return
       const that = this
       /** 触发表单验证 */
       that
@@ -447,6 +443,7 @@ export default {
       if (this.rowInfo.id) {
         params.id = this.rowInfo.id
       }
+      this.confirmLoading = true
       // 方法
       const axo = this.rowInfo.id ? putAction(this.urls.knowledgeEdit, params) : postAction(this.urls.knowledgeAdd, params)
       axo

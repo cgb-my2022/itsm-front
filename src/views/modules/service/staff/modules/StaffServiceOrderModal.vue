@@ -491,6 +491,8 @@ export default {
 .ant-tag {
   display: inline;
   cursor: pointer;
+  padding: 7px;
+  font-size: 14px;
 }
 .line {
   width: 100%;

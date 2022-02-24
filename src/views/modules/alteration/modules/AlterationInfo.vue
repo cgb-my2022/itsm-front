@@ -1,14 +1,13 @@
 <template>
   <a-modal
-    title="新增变更"
-    :width="1000"
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    :okButtonProps="{ props: { disabled: disableSubmit } }"
-    @ok="handleOk"
+    :title="title"
+    width="900px"
+    destroyOnClose
+    :bodyStyle="bodyStyle"
+    style="top: 0px"
+    :footer="null"
     @cancel="handleCancel"
-    cancelText="取消"
-    okText="提交"
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -17,7 +16,7 @@
           <a-col :span="24">
             <a-form-item label="所属业务" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-input
-                v-model="businessInfo.businessFullName"
+                v-model="businessInfo.changeCatFullName"
                 :disabled="true"
               ></a-input>
             </a-form-item>
@@ -26,8 +25,11 @@
         <a-row>
           <a-col :xs="24" :sm="12">
             <a-form-item label="变更类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select placeholder="请选择" v-decorator="['problemSource', validatorRules.problemSource]">
-                <a-select-option v-for="item in typeOptions" :key="item.value" :value="item.value">
+              <a-select 
+                placeholder="请选择" 
+                v-decorator="['changeType', { initialValue: fromData.changeType, rules: validatorRules.changeType.rules }]"
+                @change="bindChangeType">
+                <a-select-option v-for="item in changeOptions" :key="item.value" :value="item.value">
                   <span style="display: inline-block; width: 100%" :title="item.text">
                     {{ item.text}}
                   </span>
@@ -36,19 +38,26 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row>
+        <a-row v-if="businessInfo.changeType != 2">
           <a-col :xs="24" :sm="12">
             <a-form-item label="是否需要测试" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-radio-group
                 name="radioGroup"
-                v-decorator="[
-                  'problemLevel',
-                  { initialValue: 1, rules: validatorRules.problemLevel.rules },
-                ]"
+                v-model="businessInfo.changeTest"
               >
                 <a-radio :value="1">是</a-radio>
                 <a-radio :value="0">否</a-radio>
               </a-radio-group>
+            </a-form-item>
+          </a-col>
+          <a-col v-if="businessInfo.changeTest === 1" :span="24">
+            <a-form-item class="change_order" label="关联测试工单" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+              <a-input
+                v-decorator="['changeOrderIds', { initialValue: businessInfo.changeOrderIds, rules: validatorRules.changeOrderIds.rules }]"
+                placeholder="输入测试工单账号(用英文,号隔开)"
+                @click="handleSelect"
+              ></a-input>
+              <a-button type="primary" @click="handleSelect">选择</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -56,7 +65,7 @@
           <a-col :span="24">
             <a-form-item label="变更标题" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-input
-                v-decorator="['problemTitle', validatorRules.problemTitle]"
+                v-decorator="['changeTitle', { initialValue: fromData.changeTitle, rules: validatorRules.changeTitle.rules }]"
                 :maxLength="50"
                 placeholder="请输入(有效长度1-50)"
               ></a-input>
@@ -66,7 +75,7 @@
             <a-form-item label="变更描述" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-textarea 
                 :maxLength="300" 
-                v-decorator="['problemDesc', validatorRules.problemDesc]" 
+                v-decorator="['changeDesc', { initialValue: fromData.changeDesc, rules: validatorRules.changeDesc.rules }]"
                 rows="4" 
                 placeholder="请输入(有效长度1-300)" />
             </a-form-item>
@@ -92,7 +101,7 @@
           <a-col :xs="24" :sm="12">
             <a-form-item label="申请人电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input
-                v-decorator="['phoneNo', { initialValue: userInfo.phone, rules: validatorRules.phoneNo.rules }]"
+                v-decorator="['phoneNo', { initialValue: fromData.phoneNo, rules: validatorRules.phoneNo.rules }]"
                 :maxLength="16"
                 placeholder="请输入"
               ></a-input>
@@ -118,6 +127,29 @@
         </a-row>
       </a-form>
     </a-spin>
+    <!-- 操作 -->
+    <div
+      class="box-bot"
+      :style="{
+        position: 'absolute',
+        bottom: 0,
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'left',
+        zIndex: 99,
+      }"
+    >
+      <a-space :size="8" align="center">
+        <a-button @click="handleCancel()">取消</a-button>
+        <a-button @click="handleOkConfirm(11)">保存</a-button>
+        <a-button @click="handleOkConfirm(2)" type="primary">提交</a-button>
+      </a-space>
+    </div>
+    <!-- 选择负责人 -->
+    <change-role ref="changeRole" type='radio' @checkSuccess="checkRoleSuccess"></change-role>
+    <!-- 选择测试工单 -->
+    <check-order ref="checkOrder" @checkSuccess="checkOrderSuccess"></check-order>
   </a-modal>
 </template>
 
@@ -129,16 +161,24 @@ import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import ARow from 'ant-design-vue/es/grid/Row'
 import { postAction } from '@/api/manage'
 import { mapGetters } from 'vuex'
+import ChangeRole from './AddressList.vue'
+import CheckOrder from './CheckOrder.vue'
 
 export default {
   name: 'ServiceOrderModal',
   mixins: [JEditableTableMixin],
   components: {
     ARow,
-    JDictSelectTag
+    JDictSelectTag,
+    ChangeRole,
+    CheckOrder
   },
   props: {
-    
+    // 变更类型
+    changeOptions: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -161,38 +201,41 @@ export default {
         xs: { span: 24 },
         sm: { span: 20 },
       },
+      bodyStyle: {
+        paddingBottom: '70px',
+        height: window.innerHeight - 200 + 'px',
+        'overflow-y': 'auto',
+      },
       validatorRules: {
-        problemSource: {
-          rules: [{ required: true, message: '请选择变更来源!' }],
-        },
-        problemCatIds: {
-          rules: [{ required: true, message: '请选择变更分类!' }],
-        },
-        problemLevel: {
-          rules: [{ required: true, message: '请选择是否需要测试！' }]
+        changeType: {
+          rules: [{ required: true, message: '请选择变更类型!' }],
         },
         phoneNo: {
           rules: [{ required: true, message: '请输入办公电话！' }],
         },
-        problemTitle: {
+        changeOrderIds: {
+          rules: [{ required: true, message: '请选择关联测试工单！' }],
+        },
+        changeTitle: {
           rules: [{ required: true, message: '请输入变更标题!' }],
         },
-        problemDesc: {
+        changeDesc: {
           rules: [{ required: true, message: '请输入变更描述!' }],
         }
       },
       url: {
-        add: '/sys/problem/addAndSubmit'
+        add: '/sys/change/addAndSubmit'
       },
-      fromData: {
-        problemCatId: '',  //变更分类id
-        problemCatFullName: '', //变更分类全名称
-        eventCatFullName: '',  //事件分类名称
-      },
+      fromData: {},
       businessInfo: {
-        businessFullName: ''
+        changeCatFullName: '',   // 所属业务
+        changeType: '',  //选择变更类型
+        changeOrderIds: "", // 关联测试工单
+        changeTest: 1,  //是否需要测试
+        orderStatus: null,   //变更工单状态
+        currentUserId: null, //当前处理人员id
       },
-      typeOptions: [],  //变更类型 
+      changeOrderIds: [], 
       // 服务工单附件
       refKeys: ['serviceOrderAttach'],
       tableKeys: ['serviceOrderAttach'],
@@ -219,38 +262,82 @@ export default {
     ...mapGetters(['userInfo']),
   },
   created() {
-    // 变更来源
-    this.initDictData('problem_source', 'typeOptions')  
+    // 变更类型
+    // this.initDictData('problem_source', 'typeOptions')  
   },
   methods: {
     //  初始页面内容
-    add(businessInfo) {
-      this.businessInfo = businessInfo
-      this.visible = true
-      this.form.resetFields()
-      Object.keys(this.fromData).forEach(item => {
-        this.fromData[item] = ""
-      })
-    },
-    // 选择变更分类
-    serviceChange(value, label) {
-      let problemCatId = '', problemCatFullName = []
-      if (value.length > 0) {
-        problemCatId = value[value.length - 1]
-        label.forEach(item => {
-          problemCatFullName.push(item.title)
-        })
+    add(businessInfo, fromData) {
+      if (fromData) {
+        this.fromData = {
+          changeType: Number(fromData.changeType),
+          changeTitle: fromData.changeTitle,
+          changeDesc: fromData.changeDesc,
+          phoneNo: fromData.phoneNo,
+          id: fromData.id,       
+        }
+        if (fromData.userAttaches) {
+          this.serviceOrderAttachTable.dataSource = fromData.userAttaches
+        }
+        if (fromData.changeOrderIds) {
+          this.changeOrderIds = changeOrderIds.split(",")
+        }
+      } else {
+        this.fromData.phoneNo = this.userInfo.phone
       }
-      this.fromData.problemCatId = problemCatId
-      this.fromData.problemCatFullName = problemCatFullName.join("/")
+      this.businessInfo = Object.assign(this.businessInfo, businessInfo)
+      this.visible = true
+      this.form.resetFields()  
+    },
+    // 选择变更类型
+    bindChangeType(value) {
+      this.businessInfo.changeType = value
+    },
+    // 选择测试工单
+    handleSelect(e) {
+      e.srcElement.blur()
+      const queryParam = {
+        orderStatus: 7,   // 订单状态（已结束）
+        changeType: this.businessInfo.changeType,   //变更类型
+        changeCatId: this.businessInfo.changeCatId  //所属业务
+      }
+      this.$refs.checkOrder.add('关联测试变更', queryParam, this.changeOrderIds);
+    },
+    // 选择测试工单完成
+    checkOrderSuccess(value) {
+      this.businessInfo.changeOrderIds = value.join(",")
+      this.changeOrderIds = value
+    },
+    /**
+     * 提交
+     * type: 11-草稿 2-提交
+     */
+    handleOkConfirm(type) {
+      this.businessInfo.orderStatus = type
+      this.handleOk()
+    },
+    // 选择人员完成
+    checkRoleSuccess(value) {
+      this.businessInfo.currentUserId = value.ids.join(",")
+      this.handleOkConfirm(2)
     },
     // 提交
     request(formData) {
-      let params = Object.assign({}, formData, this.fromData)
-      params.problemCatIds = JSON.stringify(formData.problemCatIds)
+      if (this.confirmLoading) return
+      const { orderStatus, currentUserId } = this.businessInfo
+      // 选择负责人
+      if (orderStatus === 2 && !currentUserId) {
+        this.$refs.changeRole.add('选择审批人')
+        return
+      }
+      let params = Object.assign({}, formData, this.fromData, this.businessInfo)
       // 所属部门
       params.sysOrgCode = this.userInfo.orgCode
       params.deptName = this.userInfo.myDeptParentNames
+      //变更类型中文说明
+      const findItem = this.changeOptions.find( item => item.value == params.changeType)
+      params.changeTypeInfo = findItem.text 
+      delete params.changeTest
       this.confirmLoading = true
       postAction(this.url.add, params).then((res) => {
         if (res.success) {
@@ -261,6 +348,7 @@ export default {
           this.$message.warning(res.message)
         }
       }).finally(() => {
+        this.businessInfo.currentUserId = ""
         this.confirmLoading = false
       })
     },
@@ -270,7 +358,11 @@ export default {
         this.model,
         'realName',
         'phoneNo',
-        'deptName'
+        'deptName',
+        'changeType',
+        'changeOrderIds',
+        'changeTitle',
+        'changeDesc'
       )
       this.$nextTick(() => {
         this.form.setFieldsValue(fieldval)
@@ -289,5 +381,15 @@ export default {
 }
 .col-item >>> .ant-form-item-label > label {
   color: #fff;
+}
+.change_order >>> .ant-form-item-children {
+  display: flex;
+}
+.box-bot {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  left: 0;
+  right: 0;
 }
 </style>

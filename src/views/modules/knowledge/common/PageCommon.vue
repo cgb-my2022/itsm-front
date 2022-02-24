@@ -6,7 +6,7 @@
         <a-spin :spinning="loadingTree" style="overflow-x: 'auto'">
           <a-button v-if="source === 1" type="primary" @click="addRow(1)" icon="plus">添加目录</a-button>
           <div class="tab-all">
-            <span @click="checkAll" :class="{ 'tab-all_active': showAll }">全部根目录</span>
+            <span @click="checkAll" :class="{ 'tab-all_active': selectedKeys.length === 0 }">全部根目录</span>
           </div>
           <a-tree
             showLine
@@ -15,6 +15,7 @@
             :expanded-keys.sync="expandedKeys"
             :tree-data="gData"
             @select="handleTreeSelect"
+            class="tree_dropdown"
           >
             <template v-if="source === 1" #title="{ key: treeKey, title, catLevel, parentId, children }">
               <a-dropdown :trigger="['contextmenu']">
@@ -34,7 +35,7 @@
                       <a-icon type="zoom-out" />
                       <span>删除</span>
                     </a-menu-item>
-                    <a-menu-item key="3">
+                    <a-menu-item key="3"  v-if="catLevel != 4">
                       <a-icon type="zoom-in" />
                       <span>添加下级</span>
                     </a-menu-item>
@@ -51,7 +52,7 @@
       <a-card class="j-address-list-right-card-box" :bordered="false">
         <!-- 查询区域 -->
         <div class="table-page-search-wrapper">
-          <a-form layout="inline" @keyup.enter.native="searchQuery">
+          <a-form layout="inline" @keyup.enter.native="searchQuery" class="row_search">
             <a-row :gutter="24">
               <a-col :xl="6" :lg="7" :md="8" :sm="24">
                 <a-form-item label="标题">
@@ -95,7 +96,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :xl="15" :lg="16" :md="17" :sm="24">
+              <a-col>
                 <a-form-item label="创建日期">
                   <j-date
                     :show-time="true"
@@ -192,22 +193,6 @@
         </a-table>
       </a-card>
     </a-col>
-    <!-- 删除含有子集的目录提示 -->
-    <a-modal
-      title="提示"
-      :visible="visible"
-      @ok="delServiceMethods(deleteInfo.ids, deleteInfo.type)"
-      @cancel="visible = false"
-    >
-      <p v-if="deleteInfo.type === 2">
-        该目录下存在<span style="color: red">{{ deleteInfo.len }}个子级</span
-        >，确认要删除该目录及全部子级？删除后数据不可恢复，请谨慎操作！
-      </p>
-      <p v-if="deleteInfo.type === 1">
-        您确认删除选中的<span style="color: red">{{ deleteInfo.len }}条目录及其下的全部子级？</span
-        >删除后数据不可恢复，请谨慎操作！
-      </p>
-    </a-modal>
     <!-- 知识管理 -->
     <template v-if="source === 1">
       <!-- 添加/编辑 服务目录 -->
@@ -230,7 +215,7 @@
       ></knowledge-info>
     </template>
     <!-- 历史记录 -->
-    <knowledge-historyList ref="knowledgeHistoryList" :rowInfo="historyList"></knowledge-historyList>
+    <knowledge-historyList ref="knowledgeHistoryList" :historyList="historyList"></knowledge-historyList>
     <!-- 详情 -->
     <knowledge-detail ref="KnowledgeDetail" :statusOptions="statusOptions" :rowInfo="rowInfo" @closeLoad="closeLoad()"></knowledge-detail>
   </a-row>
@@ -238,7 +223,7 @@
 
 <script>
 import { postAction, getAction, deleteAction } from '@/api/manage'
-import { getServiceCat, getServiceInfo, delServiceInfo } from '@/api/api'
+import { getServiceCat } from '@/api/api'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate.vue'
 import ServiceInfo from './ServiceInfo.vue'
@@ -279,7 +264,6 @@ export default {
     return {
       description: '知识库页面',
       // 提示
-      visible: false,
       deleteInfo: {},
       // 左侧信息
       cardLoading: true,
@@ -292,7 +276,6 @@ export default {
       rowInfo: {},
       paramsInfo: {},
       historyList: [],
-      showAll: false,
       // 右侧信息
       disableMixinCreated: true,
       columns: [
@@ -301,7 +284,6 @@ export default {
           align: 'center',
           width: 180,
           ellipsis: true,
-          sorter: true,
           dataIndex: 'title',
         },
         {
@@ -309,7 +291,6 @@ export default {
           align: 'center',
           width: 100,
           ellipsis: true,
-          sorter: true,
           dataIndex: 'createName',
         },
         {
@@ -330,7 +311,6 @@ export default {
           title: '关键字',
           align: 'center',
           ellipsis: true,
-          sorter: true,
           dataIndex: 'keyWords',
         },
         {
@@ -351,7 +331,8 @@ export default {
       urls: {
         treeList: '/know/knowledgeCat/treeList', // 分类查询
         treeDelete: '/know/knowledgeCat/delete', // 分类删除
-        knowledgeDetail: '/know/knowledgeManage/detail', //知识详情
+        unReleaseDetail: '/know/knowledgeManage/detail/', //知识详情(其他)
+        isReleaseDetail: '/know/knowledgeInfo/detail/', //知识详情(已发布)
         knowledgeDelete: '/know/knowledgeManage/delete', //知识删除
       },
       statusOptions: [
@@ -401,8 +382,12 @@ export default {
     },
   },
   created() {
+    // 获取服务
     this.initService()
+    // 获取目录树
     this.getTreeData()
+    // 查询关联列表信息
+    this.getList()
   },
   methods: {
     // 初始化关联服务
@@ -421,7 +406,10 @@ export default {
     //表单重置
     bindReset() {
       this.serviceCatName = []
-      this.searchReset()
+      this.queryParam = {}
+      const keys = this.selectedKeys
+      this.queryParam.knowledgeCatId = keys.length > 0 ? keys[0] : ''
+      this.loadData()
     },
     // 服务目录数据
     getTreeData() {
@@ -430,13 +418,7 @@ export default {
         .then((res) => {
           this.loadingTree = false
           if (res.success) {
-            const result = res.result
-            this.gData = result
-            if (this.selectedKeys.length === 0 && result.length > 0 && !this.showAll) {
-              this.selectedKeys = [result[0].id]
-              // 查询关联列表信息
-              this.getList()
-            }
+            this.gData = res.result
           }
         })
         .finally(() => {
@@ -477,28 +459,28 @@ export default {
       switch (type) {
         // 详情
         case 1:
-          that.getDetailInfo(info.id).then((res) => {
+          that.getDetailInfo(info).then((res) => {
             that.rowInfo = res.knowledgeManage
             that.handleSubmit('KnowledgeDetail', '知识详情')
           })
           break
         // 历史记录
         case 2:
-          that.getDetailInfo(info.id).then((res) => {
+          that.getDetailInfo(info).then((res) => {
             that.historyList = res.knowledgeHistoryList
             that.handleSubmit('knowledgeHistoryList', '知识记录')
           })
           break
         // 知识审核
         case 31:
-          that.getDetailInfo(info.id).then((res) => {
+          that.getDetailInfo(info).then((res) => {
             that.rowInfo = res.knowledgeManage
             that.handleSubmit('KnowledgeAudit', '知识审核')
           })
           break
         // 修改（发布）
         case 41:
-          that.getDetailInfo(info.id).then((res) => {
+          that.getDetailInfo(info).then((res) => {
             let result = res.knowledgeManage
             result.knowledgeCatIds = result.knowledgeCatIds.split(',')
             result.serviceCatId = result.serviceCatId ? result.serviceCatId.split(',') : result.serviceCatId
@@ -535,9 +517,15 @@ export default {
       })
     },
     // 获取详情
-    getDetailInfo(id) {
+    getDetailInfo(info) {
+      let url = ''
+      if (this.source === 1 || this.source === 2) {
+        url = this.urls.isReleaseDetail
+      } else {
+        url = this.urls.unReleaseDetail
+      }
       return new Promise((resolve) => {
-        getAction(this.urls.knowledgeDetail + '/' + id).then((res) => {
+        getAction(url + info.id).then((res) => {
           if (res.success) {
             resolve(res.result)
           }
@@ -549,7 +537,6 @@ export default {
     checkAll() {
       this.selectedRowKeys = []
       this.selectedKeys = []
-      this.showAll = true
       this.getList()
     },
     // 刪除列表选择的
@@ -565,35 +552,6 @@ export default {
       } else {
         this.$message.warning('请勾选需要操作的知识列表！')
       }
-    },
-    // 删除提示
-    delMethods(ids, type, content) {
-      this.$confirm({
-        title: '删除',
-        content,
-        okText: '确定',
-        cancelText: '取消',
-        type: 'warning',
-        onOk: async () => {
-          this.delServiceMethods(ids, type)
-        },
-        onCancel() {},
-      })
-    },
-    // 公用删除方法
-    delServiceMethods(ids, type) {
-      delServiceInfo({ ids }).then((res) => {
-        if (type === 1) {
-          this.selectedRowKeys = []
-        } else {
-          if (this.selectedKeys[0] === ids) {
-            this.selectedKeys = []
-          }
-        }
-        this.visible = false
-        this.deleteInfo = {}
-        this.closeLoad()
-      })
     },
     // 添加目录
     addRow(catLevel = 1, info) {
@@ -617,25 +575,48 @@ export default {
           break
         // 删除
         case '2':
-          if (children && children.length > 0) {
-            // 存在子集
-            const lenArr = this.setArr(children, [])
-            this.deleteInfo = {
-              ids: info.id,
-              type: 2,
-              len: lenArr.length,
-            }
-            this.visible = true
-          } else {
-            // 没有子集
-            this.delMethods(id, 2, '确定删除该目录?')
+          const that = this
+          const params = {
+            pageNo: 1,
+            pageSize: 2,
+            knowledgeCatId: info.id
           }
+          getAction(that.url.list, params)
+            .then(res => {
+              const total = res.result.total;
+              if (total > 0) {
+                that.$message.error('该目录下仍有知识，请处理后再来删除')
+              } else {
+                that.$confirm({
+                  title: '删除',
+                  content: '确定删除该目录?删除后不可恢复。',
+                  okText: '确定',
+                  cancelText: '取消',
+                  type: 'warning',
+                  onOk: async () => {
+                    deleteAction(that.urls.treeDelete + '?ids=' + info.id)
+                      .then(res => {
+                        if (res.success) {
+                          that.$message.success(res.message)
+                          if (that.selectedKeys[0] == info.id) {
+                            that.selectedKeys = []
+                            that.getList()
+                          }
+                          that.getTreeData()
+                        } else {
+                          that.$message.error(res.message)
+                        }
+                      })
+                  },
+                  onCancel() {},
+                })
+              }
+            })
           break
         // 添加
         case '3':
           const rowInfo = {
             id: null,
-            catName: info.catName,
             parentId: info.id,
           }
           this.addRow(info.catLevel + 1, rowInfo)
@@ -644,21 +625,11 @@ export default {
           break
       }
     },
-    setArr(data, arr) {
-      if (data && data.length > 0) {
-        data.forEach((item) => {
-          arr.push(item.id)
-          this.setArr(item.children, arr)
-        })
-      }
-      return arr
-    },
     // 选择获取业务流程关联
     handleTreeSelect(selectedKeys, event) {
       if (selectedKeys.length > 0 && this.selectedKeys[0] !== selectedKeys[0]) {
         this.selectedKeys = [selectedKeys[0]]
         this.selectedRowKeys = []
-        this.showAll = false
         this.getList()
       }
     },
@@ -676,6 +647,9 @@ export default {
 </script>
 <style scoped>
 @import '~@assets/less/common.less';
+.query-group-cust {
+  width: 300px;
+}
 .r-h2 {
   font-size: 16px;
   margin-bottom: 18px;
@@ -692,14 +666,21 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block;
-  max-width: 200px;
+  max-width: 300px;
+}
+.tree_dropdown >>> .ant-tree-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 300px;
 }
 .tab-all {
   margin-top: 8px;
 }
 .tab-all span {
   cursor: pointer;
-  padding: 4px 0;
+  padding: 4px;
   display: inline-block;
 }
 .tab-all:hover span {
