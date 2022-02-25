@@ -373,7 +373,7 @@ export const JeecgListMixin = {
       window.open(url);
     },
     // 转为知识
-    bindKnowledge(id, url, infoKeys) {
+    bindKnowledge(id, url, infoKeys, titleKeys='eventContent') {
       const that = this
       that.loadData()
       that.$confirm({
@@ -382,7 +382,7 @@ export const JeecgListMixin = {
           okText: '发布知识',
           cancelText: '取消',
           onOk: function () {
-            that.releaseKnowledge(id, url, infoKeys)
+            that.releaseKnowledge(id, url, infoKeys, titleKeys)
           },
           onCancel() {
             return
@@ -390,7 +390,7 @@ export const JeecgListMixin = {
       })    
     },
     // 获取详情
-    releaseKnowledge(id, url, infoKeys) {
+    releaseKnowledge(id, url, infoKeys, titleKeys='eventContent') {
       if (!url) return
       getAction(url, { id }).then((res) => {
           if (res.code === 200) {
@@ -402,7 +402,7 @@ export const JeecgListMixin = {
               // 附件
               attachment: ywAttaches ? ywAttaches : [],
               // 标题
-              title: orderInfo.eventContent,
+              title: orderInfo[titleKeys], 
               // 知识明细
               content: "<p>【问题原因】</p>\n<p style=\"padding-left: 40px;\">"+ reason +"</p>\n<p>【解决方案】</p>\n<p style=\"margin: 0px; padding: 3px 0px 3px 40px; outline: none; line-height: 30px; color: #222222; font-family: tahoma, arial, 'Microsoft YaHei'; font-size: 16px; background-color: #ffffff;\">"+ solution +"</p>"
             }

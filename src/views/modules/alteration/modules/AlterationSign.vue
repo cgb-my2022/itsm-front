@@ -18,7 +18,7 @@
         :rules="rules"
         ref="ruleForm">
         <a-row>
-          <a-col :span="12">
+          <a-col :span="24">
             <a-form-model-item 
             :labelCol="labelCol" 
             :wrapperCol="wrapperCol"
@@ -31,31 +31,11 @@
                 @click="handleSelect"/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="24">
-            <a-form-model-item 
-            :labelCol="labelCol2" 
-            :wrapperCol="wrapperCol2"
-            ref="transferReason" 
-            label="转办原因" 
-            prop="transferReason">
-              <a-textarea
-                v-model="fromData.transferReason"
-                rows="4"
-                :maxLength="300"
-                placeholder="请输入(有效长度1-300)"
-                @blur="
-                  () => {
-                    $refs.transferReason.onFieldBlur()
-                  }
-                "
-              />
-            </a-form-model-item>
-          </a-col>
         </a-row>
       </a-form-model>
     </a-spin>
     <!-- 选择负责人 -->
-    <change-role ref="changeRole" type='radio' @checkSuccess="checkRoleSuccess"></change-role>
+    <change-role ref="changeRole" type='checkbox' @checkSuccess="checkRoleSuccess"></change-role>
   </a-modal>
 </template>
 
@@ -69,17 +49,9 @@ export default {
       title: "",
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-      labelCol2: {
-        xs: { span: 24 },
         sm: { span: 4 },
       },
-      wrapperCol2: {
+      wrapperCol: {
         xs: { span: 24 },
         sm: { span: 19 },
       },
@@ -91,15 +63,10 @@ export default {
       },
       rules: {
         currentUserName: [
-          { required: true, message: '请选择', trigger: 'blur' },
-        ],
-        transferReason: [
-          { required: true, message: '请输入内容', trigger: 'blur' },
-          { max: 300, message: '最多300个字符', trigger: 'blur' },
+          { required: true, message: '请选择', trigger: 'change' },
         ]
       },
       fromData: {
-        transferReason: '', // 转办原因
         currentUserName: '',  //当前处理人员
         currentUserId: '',  //当前处理人员id
       },
@@ -125,7 +92,6 @@ export default {
       this.info = value
       this.fromData.currentUserId = value.ids.join(",")
       this.fromData.currentUserName = value.names.join(",")
-      this.handleOkConfirm(2)
     },
     handleOkConfirm() {
       this.$refs.ruleForm.validate((valid) => {

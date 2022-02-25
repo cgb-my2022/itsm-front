@@ -250,7 +250,7 @@ export default {
     // 发布知识
     bindKnowledge() {
       this.visible = false
-      this.$emit('knowledge', this.formData.id, this.url.moreInfo, 'problemOrder')
+      this.$emit('knowledge', this.formData.id, this.url.moreInfo, 'problemOrder', 'problemTitle')
     },
     // 关闭模态框
     handleCancel() {

@@ -124,7 +124,7 @@
           </template>
           <!-- 问题办理操作 -->
           <template v-if="source === 3">
-            <template v-if="record.orderStatus == 2 || record.orderStatus == 5">
+            <template v-if="(record.orderStatus == 2 || record.orderStatus == 5) && userInfo.id == record.currentUserId">
               <a @click="bindBtn(1, record)">办理</a>
               <a-divider type="vertical" />
             </template>

@@ -53,7 +53,7 @@ export default {
   name: 'AddressListRight',
   mixins: [JeecgListMixin],
   components: {},
-  props: ['value', 'type', 'selectedDefault'],
+  props: ['value', 'type', 'selectedInfo'],
   data() {
     return {
       description: '用户信息',
@@ -81,6 +81,7 @@ export default {
         list: '/sys/user/queryByOrgCodeForAddressList',
         listByPosition: '/sys/position/list',
       },
+      info: null
     }
   },
   watch: {
@@ -91,10 +92,19 @@ export default {
         this.loadData(1, orgCode)
       },
     },
-    selectedDefault: {
+    selectedInfo: {
       immediate: true,
       handler(value) {
-        this.selectedRowKeys = value ? value : []
+        if (value) {
+          this.selectedRowKeys = value.ids
+          this.info = value
+        } else {
+          this.selectedRowKeys = []
+          this.info = {
+            ids: [],
+            rows: []
+          }
+        }
       }
     }
   },
@@ -173,17 +183,17 @@ export default {
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
-      let info = null
       if (selectedRowKeys.length > 0) {
-        info = {
-          ids: selectedRowKeys,
-          names: []
+        this.info.ids = selectedRowKeys
+        if (this.type === 'checkbox') {
+          this.info.rows = this.info.rows.concat(selectedRows)
+        } else {
+          this.info.rows = selectedRows
         }
-        selectedRows.forEach(item => {
-          info.names.push(item.realname)
-        })
+      } else {
+        this.info = null
       }
-      this.$emit("chechRows", info)
+      this.$emit("chechRows", this.info)
     },
   },
 }

@@ -40,7 +40,7 @@
           <a-button @click="bindAdd('alterationOk', '同意')" type="primary">同意</a-button>
           <a-button @click="bindAdd('alterationCancel', '驳回')" style="background: orange; color: #ffffff">驳回</a-button>
           <a-button @click="bindAdd('alterationComplaint', '转办')" type="primary">转办</a-button>
-          <a-button @click="bindAdd('changeRole', '选择审批人')" type="primary">加签</a-button>
+          <a-button @click="bindAdd('alterationSign', '加签')" type="primary">加签</a-button>
         </a-space>
       </div>
       <!-- 同意 -->
@@ -48,7 +48,7 @@
       <!-- 驳回 -->
       <alteration-back ref="alterationCancel" @ok="handleCancelOk"></alteration-back>
       <!-- 加签 -->
-      <change-role ref="changeRole" type='checkbox' @checkSuccess="checkRoleSuccess"></change-role>
+      <alteration-sign ref="alterationSign" type='checkbox' @ok="checkRoleSuccess"></alteration-sign>
       <!-- 转办 -->
       <alteration-complaint ref="alterationComplaint" @ok="handleComplaintOk"></alteration-complaint>
     </template>
@@ -88,7 +88,7 @@ import ATextarea from 'ant-design-vue/es/input/TextArea'
 import AlterationOk from './AlterationOk'
 import AlterationComplaint from './AlterationComplaint'
 import AlterationBack from './AlterationBack.vue'
-import ChangeRole from './AddressList.vue'
+import AlterationSign from './AlterationSign.vue'
 
 export default {
   name: 'ServiceTaskDealModal',
@@ -113,7 +113,7 @@ export default {
     AlterationOk,
     AlterationComplaint,
     AlterationBack,
-    ChangeRole
+    AlterationSign
   },
   computed: {
     ...mapGetters(['userInfo'])
@@ -266,14 +266,14 @@ export default {
       if (this.confirmLoading) return
       this.$refs[ref].add(title)
     },
-    // 选择人员完成
+    // 加签
     checkRoleSuccess(value) {
       if (this.confirmLoading) return
       this.confirmLoading = true
       let params = {
         id: this.rowId,
         version: this.formData.version,
-        signUserIdList: value.ids,
+        signUserIdList: value.currentUserId,
       }
       postAction(this.url.signOrder, params)
         .then((res) => {

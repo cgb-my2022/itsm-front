@@ -327,7 +327,7 @@ export default {
       const { orderStatus, currentUserId } = this.businessInfo
       // 选择负责人
       if (orderStatus === 2 && !currentUserId) {
-        this.$refs.changeRole.add('选择审批人')
+        this.$refs.changeRole.add('选择审批人', null)
         return
       }
       let params = Object.assign({}, formData, this.fromData, this.businessInfo)

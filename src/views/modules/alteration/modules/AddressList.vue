@@ -17,7 +17,7 @@
         <a-col :md="24 - 5" :sm="24">
           <address-list-right 
           v-model="currentOrgCode" 
-          :selectedDefault="selectedDefault"
+          :selectedInfo="selectedInfo"
           :type="type"
           @chechRows="chechRows"/>
         </a-col>
@@ -57,7 +57,6 @@ export default {
       description: '通讯录页面',
       currentOrgCode: '',
       selectedInfo: null,  //选择的内容
-      selectedDefault: [],  //默认选中
       visible: false,
       confirmLoading: false,
       title: "选择审批人",
@@ -69,17 +68,16 @@ export default {
     }
   },
   methods: {
-    add(title, selectedDefault) {
+    add(title, selectedInfo) {
       this.title = title
       this.visible = true
-      this.selectedDefault = selectedDefault ? selectedDefault : []
+      this.selectedInfo = JSON.parse(JSON.stringify(selectedInfo))
     },
     handleCancel() {
       this.visible = false
     },
     chechRows(list) {
       this.selectedInfo = list
-      this.selectedDefault = list ? list.ids : []
     },
     handleOkConfirm() {
       if (!this.selectedInfo) {
@@ -87,7 +85,20 @@ export default {
         return
       }
       this.visible = false
-      this.$emit("checkSuccess", this.selectedInfo)
+      let info = this.selectedInfo
+      let selectedInfo = {
+        ids: info.ids,
+        names: [],
+        rows: []
+      }
+      info.ids.forEach(item => {
+        const findItem = info.rows.find(citem => citem.userId == item)
+        if (findItem) {
+          selectedInfo.rows.push(findItem)
+          selectedInfo.names.push(findItem.realname)
+        }
+      });
+      this.$emit("checkSuccess", selectedInfo)
     }
   }
 }
