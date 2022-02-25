@@ -49,7 +49,7 @@
       <problem-solution
         ref="problemSolution"
         :formData="formData"
-        @knowledge="bindKnowledge"
+        @knowledge="bindKnowledge('knowledge')"
         @complete="handleDataReload()"
       ></problem-solution>
       <!-- 暂挂 -->
@@ -70,7 +70,7 @@
       }"
     >
       <a-space :size="8" align="center">
-        <a-button @click="bindKnowledge()" type="primary">发布知识</a-button>
+        <a-button @click="bindKnowledge('releaseKnowledge')" type="primary">发布知识</a-button>
       </a-space>
     </div>
   </a-modal>
@@ -248,9 +248,9 @@ export default {
       this.visible = false
     },
     // 发布知识
-    bindKnowledge() {
+    bindKnowledge(type) {
       this.visible = false
-      this.$emit('knowledge', this.formData.id, this.url.moreInfo, 'problemOrder', 'problemTitle')
+      this.$emit(type, this.formData.id, this.url.moreInfo, 'problemOrder', 'problemTitle')
     },
     // 关闭模态框
     handleCancel() {

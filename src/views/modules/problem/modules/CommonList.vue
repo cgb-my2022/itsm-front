@@ -101,6 +101,10 @@
             <span>{{ setStatus(text) }}</span>
           </span>
         </template>
+        <!-- 完成日期 -->
+        <template slot="solTime" slot-scope="text, record">
+          <span v-if="record.orderStatus == 7">{{ text }}</span>
+        </template>
         <!-- 操作按钮 -->
         <span slot="action" slot-scope="text, record">
           <!-- 问题列表操作 -->
@@ -162,7 +166,8 @@
       :userInfo="userInfo"
       ref="problemDetail"
       @ok="loadData"
-      @knowledge="releaseKnowledge"
+      @knowledge="bindKnowledge"
+      @releaseKnowledge="releaseKnowledge"
     >
     </problem-detail>
     <!-- 进度 -->
@@ -277,7 +282,8 @@ export default {
           align: 'center',
           width: 200,
           sorter: true,
-          dataIndex: 'comfirmTime',
+          dataIndex: 'solTime',
+          scopedSlots: { customRender: 'solTime' }
         },
         {
           title: '操作',

@@ -14,7 +14,7 @@
       </div>
     </a-spin>
     <div
-      v-if="knowledgeRelease && formData.orderStatus == 7" 
+      v-if="knowledgeRelease && (formData.orderStatus == 7 || formData.orderStatus == 6)" 
       class="box-bot"
       :style="{
         position: 'absolute',
