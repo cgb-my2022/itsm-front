@@ -162,7 +162,7 @@
       :userInfo="userInfo"
       ref="problemDetail"
       @ok="loadData"
-      @knowledge="bindKnowledge"
+      @knowledge="releaseKnowledge"
     >
     </problem-detail>
     <!-- 进度 -->

@@ -50,7 +50,7 @@
                 :dataSource="dataSource"
               >
               </a-table>
-              <a-button type='primary' @click="bindToCenter">进入资源维护中心</a-button>
+              <a-button v-if="resourcesMaintain" type='primary' @click="bindToCenter">进入资源维护中心</a-button>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 
 export default {
@@ -108,6 +109,12 @@ export default {
         },
       ]
     }
+  },
+  computed: {
+    ...mapState({
+      // 资源维护权限
+      resourcesMaintain: (state) => state.user.resourcesMaintain,
+    })
   },
   methods: {
     add(title) {

@@ -32,7 +32,7 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="24">
+          <a-col :span="24" v-if="resourcesMaintain">
             <a-form-item label="相关资源" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
               <a-button type="primary" @click="bindToSource">进入资源维护中心</a-button>
             </a-form-item>
@@ -158,7 +158,9 @@ export default {
   computed: {
     ...mapState({
       // 发布知识权限
-      knowledgeRelease: state => state.user.knowledgeRelease
+      knowledgeRelease: state => state.user.knowledgeRelease,
+      // 资源维护权限
+      resourcesMaintain: (state) => state.user.resourcesMaintain,
     })
   },
   created() {},

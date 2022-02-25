@@ -143,9 +143,9 @@
       }"
     >
       <a-space :size="8" align="center">
-        <a-button v-if="rowInfo && rowInfo.createTime" @click="handleCancel()">取消</a-button>
-        <a-button v-else v-loading="confirmLoading" @click="handleOkConfirm(0)">保存为草稿</a-button>
-        <a-button v-loading="confirmLoading" @click="handleOkConfirm(1)" type="primary">{{rowInfo.createTime ? '提交' : '提交数据'}}</a-button>
+        <a-button @click="handleCancel()">取消</a-button>
+        <a-button @click="handleOkConfirm(0)">保存</a-button>
+        <a-button @click="handleOkConfirm(1)" type="primary">提交</a-button>
       </a-space>
     </div>
   </a-modal>
@@ -343,6 +343,7 @@ export default {
      */
     handleOkConfirm(type) {
       const that = this
+      if(that.confirmLoading) return
       /** 触发表单验证 */
       that
         .getAllTable()

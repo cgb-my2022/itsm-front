@@ -93,7 +93,7 @@ export default {
               if (res.success) {
                 this.$message.success(res.message)
                 this.visible = false
-                this.$emit('closeLoad')
+                this.$emit('ok')
               } else {
                 this.$message.warning(res.message)
               }

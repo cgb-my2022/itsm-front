@@ -388,8 +388,8 @@ export default {
      * type: 0-草稿 1-提交
      */
     handleOkConfirm(type) {
-      if(this.confirmLoading) return
       const that = this
+      if(that.confirmLoading) return
       /** 触发表单验证 */
       that
         .getAllTable()

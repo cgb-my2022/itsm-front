@@ -13,7 +13,8 @@ const user = {
     welcome: '',
     avatar: '',
     permissionList: [],
-    knowledgeRelease: false,
+    knowledgeRelease: false,  // 是否有发布知识权限
+    resourcesMaintain: false,  // 是否有资源维护权限
     info: {}
   },
 
@@ -34,6 +35,9 @@ const user = {
     },
     SET_KNOWLEDGERELEASE: (state, knowledgeRelease) => {
       state.knowledgeRelease = knowledgeRelease
+    },
+    SET_RESOURCES: (state, resourcesMaintain) => {
+      state.resourcesMaintain = resourcesMaintain
     },
     SET_INFO: (state, info) => {
       state.info = info
@@ -127,7 +131,7 @@ const user = {
           sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData));
           if (menuData && menuData.length > 0) {
             // update--begin--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
-            let knowledgeRelease = false
+            let knowledgeRelease = false, resourcesMaintain = false
             menuData.forEach((item, index) => {
               if (item['children']) {
                 let hasChildrenMenu = item['children'].filter((i) => {
@@ -144,10 +148,15 @@ const user = {
                   knowledgeRelease = findRelease === -1 ? false : true
                 }
               }
+              // 判断是否有资源维护页面
+              if (item.name === 'conserResource') {
+                resourcesMaintain = true
+              }
             })
             console.log(' menu show json ', menuData)
             // update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
             commit('SET_KNOWLEDGERELEASE', knowledgeRelease)
+            commit('SET_RESOURCES', resourcesMaintain)
             commit('SET_PERMISSIONLIST', menuData)
           } else {
             reject('getPermissionList: permissions must be a non-null array !')

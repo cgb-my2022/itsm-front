@@ -57,7 +57,7 @@
     </template>
     <!-- 操作 -->
     <div
-      v-if="formData.orderStatus == 7 && knowledgeRelease"
+      v-if="(formData.orderStatus == 7 || formData.orderStatus == 6) && knowledgeRelease"
       class="box-bot"
       :style="{
         position: 'absolute',

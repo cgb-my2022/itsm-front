@@ -288,6 +288,8 @@ export default {
 .fs-12 {
   color: rgba(0, 0, 0, 0.65);
   font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 .td-left {
   width: 100%;
