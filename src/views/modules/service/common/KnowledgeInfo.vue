@@ -70,6 +70,8 @@
               </a-select>
             </a-form-item>
           </a-col>
+        </a-row>
+        <a-row>
           <a-col :span="12">
             <a-form-item label="标题" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
               <a-input
@@ -215,9 +217,6 @@ export default {
         },
         title: {
           rules: [{ required: true, message: '请输入标题！' }],
-        },
-        changeReason: {
-          rules: [{ required: true, message: '请输入修改描述!' }],
         }
       },
       // 是否常用
@@ -317,7 +316,6 @@ export default {
         'keyWords', //关键字(多个逗号分割)
         'content', //知识明细·
         'attachment', //附件
-        'changeReason', //修改原因
         'changeDesc', //修改描述
       ]
       let fieldval = pick(this.model, ...info)
@@ -368,7 +366,6 @@ export default {
         })
     },
     requestMethods(formData, type) {
-      this.confirmLoading = true
       // 所有参数
       let params = Object.assign({}, this.model, formData)
       // 类型
@@ -378,11 +375,13 @@ export default {
       params.knowledgeCatId = formData.knowledgeCatIds[len]
       params.knowledgeCatIds = formData.knowledgeCatIds.join(',')
       //  服务目录
-      params.serviceCatNames = formData.serviceCatNames.join(',')
-      params.serviceCatId = formData.serviceCatId.join(',')
+      if (params.serviceCatNames) {
+        params.serviceCatNames = formData.serviceCatNames.join(',')
+        params.serviceCatId = formData.serviceCatId.join(',')
+      }
       // 知识关联服务分类集合
       let knowledgeServiceCatRelateList = []
-      if (formData.serviceCatId.length > 0) {
+      if (formData.serviceCatId && formData.serviceCatId.length > 0) {
         formData.serviceCatId.forEach((item, index) => {
           knowledgeServiceCatRelateList.push({
             serviceCatId: item,
@@ -396,12 +395,14 @@ export default {
       if (this.rowInfo.id) {
         params.id = this.rowInfo.id
       }
+      this.confirmLoading = true
       // 方法
       const axo = this.rowInfo.id ? putAction(this.urls.knowledgeEdit, params) : postAction(this.urls.knowledgeAdd, params)
       axo
         .then((res) => {
           this.confirmLoading = false
           if (res.success) {
+            this.$message.success(res.message)
             this.visible = false
             this.$emit('closeLoad')
           } else {
@@ -412,8 +413,8 @@ export default {
           this.confirmLoading = false
           return ''
         })
-    },
-  },
+    }
+  }
 }
 </script>
 

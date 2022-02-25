@@ -1,5 +1,4 @@
 <template>
-  <!--style="width: calc(100% - 100px); height: calc(100% - 55px);"-->
   <!-- 弹出框 -->
   <a-modal
     :visible="visible"
@@ -13,18 +12,8 @@
   >
     <a-spin :spinning="confirmLoading">
       <div style="margin-top: 5px">
-        <!--<template v-if="isComp" >
-              <service-biz-dynamic-link path="modules/service/staff/modules/StaffServiceOrderForm" width="100%" height="100%" :formData="formData"></service-biz-dynamic-link>
-            </template>
-            <template v-else>
-              <iframe :src="iframeUrl" frameborder="0" width="100%" height="100%" scrolling="auto"></iframe>
-            </template>-->
         <staff-service-order-form :formData="formData"></staff-service-order-form>
       </div>
-      <!--<a-collapse-panel key="2" header="This is panel header 2" :disabled="false">
-          <p>{{ text }}</p>
-        </a-collapse-panel>-->
-      <!-- <a-divider />-->
     </a-spin>
     <div class="box-bot"
       :style="{

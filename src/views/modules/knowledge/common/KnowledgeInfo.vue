@@ -70,6 +70,8 @@
               </a-select>
             </a-form-item>
           </a-col>
+        </a-row>        
+        <a-row>
           <a-col :span="12">
             <a-form-item label="标题" :labelCol="labelCol1" :wrapperCol="wrapperCol1">
               <a-input
@@ -403,7 +405,7 @@ export default {
           }
           let formData = that.classifyIntoFormData(allValues)
           // 发起请求
-          that.requestMethods(formData, type)
+          that.requestMethods(formData, type) 
         })
         .catch((e) => {
           const VALIDATE_NO_PASSED = Symbol()
@@ -461,8 +463,8 @@ export default {
           this.confirmLoading = false
           return ''
         })
-    },
-  },
+    }
+  }
 }
 </script>
 
