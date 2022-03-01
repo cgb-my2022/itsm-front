@@ -1,5 +1,6 @@
 <template>
   <div class="index-container-ty">
+    <!-- 顶部提交事件 -->
     <div style="background-color: white; margin-bottom: 5px">
       <a-row type="flex">
         <a-col :flex="5">
@@ -10,81 +11,44 @@
           <!--</div>-->
         </a-col>
         <a-col :flex="5">
-          <a-card-grid class="tubg" @click="toServiceOrderList" style="cursor: pointer">
+          <a-card-grid class="tubg" @click="goPage('/service/StaffServiceOrderList')" style="cursor: pointer">
             <div><a-icon type="clock-circle" style="margin-right: 5px" /><span>历史事件</span></div>
           </a-card-grid>
         </a-col>
         <a-col :flex="5">
-          <a-card-grid class="tubg" @click="toUserCenter" style="cursor: pointer">
+          <a-card-grid class="tubg" @click="goPage('/account/center')" style="cursor: pointer">
             <div><a-icon type="user" style="margin-right: 5px" /><span>个人信息维护</span></div>
           </a-card-grid>
         </a-col>
       </a-row>
     </div>
+    <!-- 表格内容 -->
     <a-row type="flex" justify="start" :gutter="3">
-      <a-col style="padding-top: 10px" :sm="24" :lg="12">
-        <div class="card-head">
-          <p class="card-head-p1">
-            <span class="card-head-p1-span1">新的待办</span>
-            <span class="card-head-p1-span2">({{ dataSource1Size }})</span>
-          </p>
-          <p class="card-head-p2" @click="toServiceOrderList">更多 <a-icon type="double-right" /></p>
-        </div>
-        <div class="card-tb">
-          <a-table :columns="columns" :data-source="dataSource1" :pagination="false">
-            <template slot="ellipsisText" slot-scope="text">
-              <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-            </template>
-
-            <span slot="action" slot-scope="text, record">
-              <template v-if="record.orderStatus === 6">
-                <a @click="handleProcess(record)">确认</a>
-                <a-divider type="vertical" />
-                <a @click="cancelProcess(record)" style="color: orange">退回</a>
-                <a-divider type="vertical" />
-              </template>
-              <template v-if="record.orderStatus === 7 && record.commentStatus === 0">
-                <a @click="bindEvaluation(record)">评价</a>
-                <a-divider type="vertical" />
-              </template>
-              <a @click="showDetailServiceOrder(record)">查看</a>
-            </span>
-          </a-table>
-        </div>
-      </a-col>
-      <a-col style="padding-top: 10px" :sm="24" :lg="12">
-        <div class="card-head">
-          <p class="card-head-p1">
-            <span class="card-head-p1-span1">常用请求</span>
-            <span class="card-head-p1-span2">({{ dataSource2Size }})</span>
-          </p>
-          <!--<p class="card-head-p2" @click="toServiceOrderList">
-              更多 <a-icon type="double-right" />
-            </p>-->
-        </div>
-        <div class="card-tb">
-          <a-table :columns="columns" :data-source="dataSource2" :pagination="false">
-            <!--<template slot="ellipsisText" slot-scope="text">
-                <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-              </template>
-
-              <span slot="action" slot-scope="text, record">
-                <template v-if="record.bpmStatus === '1'">
-                  <a @click="startProcess(record)">提交流程</a>
-                  <a-divider type="vertical"/>
-                </template>
-                <a @click="showDetailServiceOrder(record)">查看</a>
-              </span>-->
-          </a-table>
-        </div>
-      </a-col>
+      <!-- 我的待办 -->
+      <my-dealing 
+        ref="myDealing1" 
+        :source="1" 
+        :listUrl="url.myWillDeal"
+        :orderType="orderType"
+        :loadIndex="loadIndex"
+        @loadAll="loadAll">
+      </my-dealing>
+      <!-- 我的在办 -->
+      <my-dealing 
+        ref="myDealing2" 
+        :source="2" 
+        :listUrl="url.myDealing"
+        :orderType="orderType"
+        :loadIndex="loadIndex"
+        @loadAll="loadAll">
+      </my-dealing>
+      <!-- 常用知识 -->
       <a-col style="padding-top: 10px" :sm="24" :lg="24">
         <div class="card-head">
           <p class="card-head-p1">
             <span class="card-head-p1-span1">常用知识</span>
-            <!-- <span class="card-head-p1-span2">({{ dataSource2Size }})</span> -->
           </p>
-          <p class="card-head-p2" @click="toKnowledgeInfo">更多 <a-icon type="double-right" /></p>
+          <p class="card-head-p2" @click="goPage('/knowledge/list')">更多 <a-icon type="double-right" /></p>
         </div>
         <div class="card-tb1">
           <a-table :columns="columns" :data-source="dataSource3" rowKey="id" :pagination="false">
@@ -97,20 +61,10 @@
     </a-row>
     <!-- 知识详情 -->
     <knowledge-detail ref="KnowledgeDetail" :rowInfo="rowInfo" @closeLoad="getKnowledge()"></knowledge-detail>
-    <!-- 详情 -->
-    <service-task-detail-modal ref="taskDetailModal" @knowledge="releaseKnowledge" />
     <!-- 快速发起 -->
     <staff-service-order-modal ref="modalForm" @closeLoad="loadData"></staff-service-order-modal>
     <!-- 服务目录 -->
     <staff-service-catalog ref="serviceCatalog" @closeLoad="loadData"></staff-service-catalog>
-    <!-- 办理 -->
-    <service-task-deal-modal ref="taskDealModal" @closeLoad="loadData" @knowledge="bindKnowledge" />
-    <!-- 发布知识 -->
-    <knowledge-info ref="knowledgeInfo"></knowledge-info>
-    <!-- 评价 -->
-    <staff-service-evaluation ref="serviceEvaluation" @closeLoad="loadData"></staff-service-evaluation>
-    <!-- 退回 -->
-    <staff-service-back ref="serviceBack" @closeLoad="loadData"></staff-service-back>
     <!-- 提交工单 -->
     <a-modal title="提交工单" :visible="visibleStaff" @cancel="visibleStaff = false">
       <div class="staff-box">
@@ -127,45 +81,30 @@
 </template>
 
 <script>
+import { ajaxGetDictItems, getDictItemsFromCache } from '@/api/api'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import StaffServiceOrderModal from '../modules/service/staff/modules/StaffServiceOrderModal'
 import StaffServiceCatalog from '../modules/service/staff/modules/StaffServiceCatalog'
-import ServiceTaskDetailModal from '../modules/service/common/ServiceTaskDetailModal'
-import ServiceTaskDealModal from '../modules/service/common/ServiceTaskDealModal'
-import StaffServiceEvaluation from '../modules/service/staff/modules/StaffServiceEvaluation'
-import StaffServiceBack from '../modules/service/staff/modules/StaffServiceBack'
 import KnowledgeDetail from '@/views/modules/knowledge/common/KnowledgeDetail.vue'
-import { filterDictTextByCache } from '@/components/dict/JDictSelectUtil'
-import { mapGetters } from 'vuex'
 import { getAction, postAction } from '@/api/manage'
+import MyDealing from './modules/MyDealing.vue'
 
 export default {
   name: 'IndexTask',
   mixins: [JeecgListMixin],
   components: {
     StaffServiceOrderModal,
-    ServiceTaskDetailModal,
-    ServiceTaskDealModal,
-    StaffServiceEvaluation,
     StaffServiceCatalog,
-    StaffServiceBack,
-    KnowledgeDetail
+    KnowledgeDetail,
+    MyDealing
   },
   data() {
     return {
       loading: false,
-      textMaxLength: 8,
-      formData: {},
-      path: '',
       flowCode: 'onl_service_order',
-      dataSource1: [],
-      dataSource1Size: 0,
-      dataSource2: [],
-      dataSource2Size: 0,
+      // 常用知识
       dataSource3: [],
       dataSource32Size: 0,
-      dataSource4: [],
-      dataSource4Size: 0,
       disableMixinCreated: true,
       visibleStaff: false,
       columns: [
@@ -219,16 +158,31 @@ export default {
         resolve: '/system/serviceOrder/confirmOrderResolved',
         knowledgeInfo: '/know/knowledgeInfo/indexList',
         knowledgeDetail: '/know/knowledgeManage/detail/', //知识详情
+        myDealing: '/sys/index/myDealing', // 我的在办
+        myWillDeal: '/sys/index/myWillDeal', // 我的待办
       },
       rowInfo: {},
+      //工单类型(1->服务工单 2->事件工单 3->问题工单 4->变更工单·)
+      orderType: [
+        { text: '服务工单', dictCode: 'service_order_status', orderStatus: [] },
+        { text: '事件工单', dictCode: 'service_order_status', orderStatus: [] },
+        { text: '问题工单', dictCode: 'problem_order_status', orderStatus: [] },
+        { text: '变更工单', dictCode: 'change_order_status', orderStatus: [] }
+      ],
+      loadIndex: 0
     }
   },
   created() {
-    this.loadData()
     this.getKnowledge()
+    this.getOrderStatus()
   },
   methods: {
-    ...mapGetters(['nickname', 'welcome']),
+    // 获取不同工单状态
+    getOrderStatus() {
+      this.orderType.forEach((item, index) => {
+        this.setDic(item.dictCode, index)
+      })
+    },
     // 获取常用知识
     getKnowledge() {
       getAction(this.url.knowledgeInfo).then((res) => {
@@ -237,9 +191,8 @@ export default {
         }
       })
     },
-    // 知识列表页
-    toKnowledgeInfo() {
-      this.$router.push('/knowledge/list')
+    loadAll() {
+      this.loadIndex += 1
     },
     // 知识详情
     showDetailKnowledge(id) {
@@ -252,46 +205,6 @@ export default {
         }
       })
     },
-    // 办理
-    handleProcess(record) {
-      // this.$refs.taskDealModal.title = '确认服务请求';
-      // this.$refs.taskDealModal.deal(record.id);
-      const that = this
-      that.$confirm({
-        title: '确认',
-        content: '确认问题已经解决了吗?',
-        okText: '确定',
-        cancelText: '取消',
-        type: 'warning',
-        onOk: async () => {
-          var params = {
-            id: record.id,
-            version: record.version,
-          }
-          postAction(that.url.resolve, params).then((res) => {
-            if (res.success) {
-              that.$message.success(res.message)
-              that.bindEvaluation(record)
-            } else {
-              that.$message.warning(res.message)
-              that.loadData()
-            }
-          })
-        },
-        onCancel() {},
-      })
-    },
-    // 退回
-    cancelProcess(record) {
-      this.$refs.serviceBack.deal(record)
-    },
-    // 评价
-    bindEvaluation(record) {
-      this.$refs.serviceEvaluation.deal(record.id)
-    },
-    loadData() {
-      this.myUnfinished()
-    },
     // 弹框方法
     handleSubmitStaff: function (title, ref) {
       this.visibleStaff = false
@@ -299,43 +212,31 @@ export default {
       this.$refs[ref].title = title
       this.$refs[ref].disableSubmit = false
     },
-    // 详情
-    showDetailServiceOrder(record) {
-      const path = 'modules/service/staff/modules/StaffServiceOrderForm'
-      this.$refs.taskDetailModal.deal(record.id, path)
+    goPage(url) {
+      this.$router.replace(url)
     },
-    toServiceOrderList() {
-      this.$router.replace('/service/StaffServiceOrderList')
-    },
-    toUserCenter() {
-      this.$router.replace('/account/center')
-    },
-    goPage() {
-      this.$message.success('请根据具体业务跳转页面')
-      // this.$router.push({ path: '/comp/mytask' })
-    },
-    mock() {},
-    handleData() {
-      this.$message.success('办理完成')
-    },
-    myUnfinished() {
-      var params = {}
-      getAction(this.url.myUnfinished, params).then((res) => {
-        if (res.success) {
-          this.dataSource1Size = res.result.length
-          if (this.dataSource1Size <= 5) {
-            this.dataSource1 = res.result
-          } else {
-            this.dataSource1 = res.result.slice(0, 5)
+    /**
+     * 获取数据字典的内容
+     * @param {*} dictCode 数据字典的key
+     * @param {*} obj       data对应的key
+     * @param {*} type      对应数据字典数据的取值对象   0：sysAllDictItems  1：sysAllCategoryItems
+     * @returns 
+     */
+    setDic(dictCode, index, type=0) {
+      //优先从缓存中读取字典配置
+      if (getDictItemsFromCache(dictCode, type)) {
+        this.orderType[index].orderStatus = getDictItemsFromCache(dictCode, type)
+        return
+      }
+      //根据字典Code, 初始化字典数组
+      if (type === 0) {
+        ajaxGetDictItems(dictCode, null).then((res) => {
+          if (res.success) {
+            this.orderType[index].orderStatus = res.result
           }
-          // this.ipagination.total = res.result.total;
-        }
-        if (res.code === 510) {
-          this.$message.warning(res.message)
-        }
-        this.loading = false
-      })
-    },
+        })
+      } 
+    }
   },
 }
 </script>

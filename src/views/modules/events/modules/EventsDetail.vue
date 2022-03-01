@@ -219,6 +219,7 @@ export default {
             if (load === 1) {
               that.handleDataReload()
             } else {
+              that.$emit('ok')
               that.getDetail()
             }
           } else {

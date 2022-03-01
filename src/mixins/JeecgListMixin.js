@@ -266,7 +266,9 @@ export const JeecgListMixin = {
         } else {
           this.isorter.column = sorter.field;
         }
-        this.isorter.order = sorter.order == 'ascend' ? 'asc' : 'desc'
+        this.isorter.order = sorter.order == 'ascend' ? 
+          'asc' : sorter.order == 'descend' ?
+          'desc' : ''
       }
       this.ipagination = pagination;
       this.loadData();

@@ -22,7 +22,7 @@
       </div>
     </a-spin>
     <!-- 审批操作 -->
-    <template v-if="showBtns">
+    <template v-if="showBtns && type === 1">
       <!-- 操作 -->
       <div
         class="box-bot"
@@ -105,6 +105,12 @@ export default {
     // 变更类型
     changeType: {
       type: Array,
+      default: () => {
+        return [
+          { value: 1, text: '应用系统正式环境补丁' },
+          { value: 2, text: '应用系统测试环境补丁' },
+        ]
+      }
     }
   },
   components: {

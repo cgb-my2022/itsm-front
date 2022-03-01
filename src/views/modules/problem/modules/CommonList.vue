@@ -281,7 +281,6 @@ export default {
           title: '完成日期',
           align: 'center',
           width: 200,
-          sorter: true,
           dataIndex: 'solTime',
           scopedSlots: { customRender: 'solTime' }
         },
@@ -369,6 +368,7 @@ export default {
                 if (res.success) {
                   that.$message.success(res.message)
                   that.loadData()
+                  that.bindBtn(8, record)
                 } else {
                   that.$message.warning(res.message)
                 }

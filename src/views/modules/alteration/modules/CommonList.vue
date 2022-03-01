@@ -295,27 +295,6 @@ export default {
           // 添加
           this.$refs.addAlteration.add()
           break
-        case 5:
-          // 确认
-          const that = this
-          that.$confirm({
-            title: '确认',
-            content: '确认问题已经解决了吗?',
-            onOk: function () {
-              postAction(that.url.confirmOrderResolved, {
-                id: record.id,
-                version: record.version,
-              }).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message)
-                  that.loadData()
-                } else {
-                  that.$message.warning(res.message)
-                }
-              })
-            },
-          })
-          break
         default:
           break
       }

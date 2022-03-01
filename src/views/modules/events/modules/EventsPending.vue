@@ -59,7 +59,7 @@
         e.preventDefault();
         this.form.validateFields((err, values) => {
           if (!err) {
-            this.$emit('ok', values, 'supportPending');
+            this.$emit('ok', values, 'supportPending', 1);
             this.visible = false;
           }
         });
