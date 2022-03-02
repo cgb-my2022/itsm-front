@@ -284,6 +284,8 @@ export default {
         }
       } else {
         this.fromData.phoneNo = this.userInfo.phone
+        this.businessInfo.changeOrderIds = ""
+        this.changeOrderIds = []
       }
       this.businessInfo = Object.assign(this.businessInfo, businessInfo)
       this.visible = true

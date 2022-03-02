@@ -380,7 +380,7 @@ export const JeecgListMixin = {
       that.loadData()
       that.$confirm({
           title: '处理成功',
-          content: '知识点击积累汇集成磅礴之力，您是否愿意将处理方案发布为知识库?',
+          content: '知识的点滴积累汇集成磅礴之力，您是否愿意将处理方案发布至知识库?',
           okText: '发布知识',
           cancelText: '取消',
           onOk: function () {

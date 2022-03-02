@@ -68,7 +68,7 @@ export default {
       },
       fromData: {
         currentUserName: '',  //当前处理人员
-        currentUserId: '',  //当前处理人员id
+        currentUserId: [],  //当前处理人员id
       },
       info: null
     }
@@ -90,7 +90,7 @@ export default {
     // 选择人员完成
     checkRoleSuccess(value) {
       this.info = value
-      this.fromData.currentUserId = value.ids.join(",")
+      this.fromData.currentUserId = value.ids
       this.fromData.currentUserName = value.names.join(",")
     },
     handleOkConfirm() {

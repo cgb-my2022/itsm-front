@@ -269,7 +269,7 @@ export default {
         ).then(res => {
           this.contentLoading = false
           if (res.success) {
-            this.$notification['error']({
+            this.$notification['success']({
               message: '提示',
               description: '评论完成！'
             })
@@ -439,6 +439,8 @@ export default {
           .content {
             flex: 1;
             padding-left: 10px;
+            word-break: break-all;
+            white-space: pre-wrap;
           }
         }
       }
