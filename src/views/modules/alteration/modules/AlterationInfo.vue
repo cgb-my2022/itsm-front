@@ -326,9 +326,9 @@ export default {
     // 提交
     request(formData) {
       if (this.confirmLoading) return
-      const { orderStatus, currentUserId } = this.businessInfo
+      const { orderStatus, currentUserId, changeType } = this.businessInfo
       // 选择负责人
-      if (orderStatus === 2 && !currentUserId) {
+      if (changeType === 1 && orderStatus === 2 && !currentUserId) {
         this.$refs.changeRole.add('选择审批人', null)
         return
       }
