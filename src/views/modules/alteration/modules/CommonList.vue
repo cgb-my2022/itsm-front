@@ -309,7 +309,8 @@ export default {
         changeOrderIds: info.changeOrderIds ? info.changeOrderIds : '', // 关联测试工单
         changeTest: info.changeOrderIds ? 1 : 0, //是否需要测试
         orderStatus: null, //变更工单状态
-        createName: info.createName
+        createName: info.createName,
+        id: info.id
       }
       this.$refs.alterationInfo.add(businessInfo, info)
     },

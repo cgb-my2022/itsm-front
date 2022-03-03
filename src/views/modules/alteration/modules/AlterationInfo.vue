@@ -276,11 +276,12 @@ export default {
           phoneNo: fromData.phoneNo,
           id: fromData.id,       
         }
+
         if (fromData.userAttaches) {
           this.serviceOrderAttachTable.dataSource = fromData.userAttaches
         }
         if (fromData.changeOrderIds) {
-          this.changeOrderIds = changeOrderIds.split(",")
+          this.changeOrderIds = fromData.changeOrderIds.split(",")
         }
       } else {
         this.fromData.phoneNo = this.userInfo.phone
@@ -332,7 +333,7 @@ export default {
         this.$refs.changeRole.add('选择审批人', null)
         return
       }
-      let params = Object.assign({}, formData, this.fromData, this.businessInfo)
+      let params = Object.assign({}, formData, this.businessInfo)
       // 所属部门
       params.sysOrgCode = this.userInfo.orgCode
       params.deptName = this.userInfo.myDeptParentNames

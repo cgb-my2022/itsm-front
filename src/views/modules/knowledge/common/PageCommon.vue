@@ -133,7 +133,7 @@
             <a-button @click="bindList(2)" type="primary">移动</a-button>
           </template>
           <template v-if="source === 4">
-            <a-button @click="bindRelease(1)" type="primary" icon="add">发布</a-button>
+            <a-button @click="bindRelease()" type="primary" icon="add">发布</a-button>
           </template>
         </div>
         <!-- table -->
@@ -334,6 +334,7 @@ export default {
         unReleaseDetail: '/know/knowledgeManage/detail/', //知识详情(其他)
         isReleaseDetail: '/know/knowledgeInfo/detail/', //知识详情(已发布)
         knowledgeDelete: '/know/knowledgeManage/delete', //知识删除
+        allParentInfo: '/know/knowledgeCat/allParentInfo'
       },
       statusOptions: [
         { id: '1', title: '全部', value: '' },
@@ -486,7 +487,7 @@ export default {
             result.knowledgeCatIds = result.knowledgeCatIds.split(',')
             result.serviceCatId = result.serviceCatId ? result.serviceCatId.split(',') : result.serviceCatId
             that.rowInfo = result
-            that.bindRelease(2)
+            that.handleSubmit('knowledgeInfo', '知识信息修改')
           })
           break
         // 删除（发布）
@@ -632,18 +633,29 @@ export default {
         this.selectedKeys = [selectedKeys[0]]
         this.selectedRowKeys = []
         this.getList()
+
       }
     },
     /************* 知识发布 ********/
     // 发布知识
-    bindRelease(type) {
-      if (type === 1) {
-        this.rowInfo = {}
+    bindRelease() {
+      const id = this.selectedKeys[0]
+      this.rowInfo = {}
+      if (id) {
+        getAction(this.urls.allParentInfo, { id: id }).then(res => {
+          if (res.success) {
+            this.rowInfo = {
+              knowledgeCatIds: res.result.ids,
+              knowledgeCatName: res.result.names
+            }
+          }
+          this.handleSubmit('knowledgeInfo','发布知识')
+        })
+      } else {
+        this.handleSubmit('knowledgeInfo','发布知识')
       }
-      const title = type === 1 ? '发布知识' : '知识信息修改'
-      this.handleSubmit('knowledgeInfo', title)
-    },
-  },
+    }
+  }
 }
 </script>
 <style scoped>
