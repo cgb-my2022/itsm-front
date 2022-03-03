@@ -264,7 +264,6 @@ export default {
   methods: {
     //  初始页面内容
     add(businessInfo, fromData) {
-      console.log(businessInfo);
       if (fromData) {
         this.fromData = {
           changeType: Number(fromData.changeType),
@@ -327,7 +326,7 @@ export default {
       if (this.confirmLoading) return
       const { orderStatus, currentUserId, changeType, changeTest } = this.businessInfo
       // 选择负责人
-      if (changeType === 1 && orderStatus === 2 && !currentUserId) {
+      if (changeType == 1 && orderStatus == 2 && !currentUserId) {
         this.$refs.changeRole.add('选择审批人', null)
         return
       }
