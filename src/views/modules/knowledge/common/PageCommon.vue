@@ -80,7 +80,7 @@
               </a-col>
               <a-col v-if="source === 1 || source === 2" :xl="6" :lg="7" :md="8" :sm="24">
                 <a-form-item label="常用">
-                  <a-select default-value="" @change="useChange">
+                  <a-select default-value="" v-model="queryParam.commonUse">
                     <a-select-option v-for="item in useOption" :key="item.id" :value="item.value">
                       {{ item.title }}
                     </a-select-option>
@@ -89,7 +89,7 @@
               </a-col>
               <a-col v-else :xl="6" :lg="7" :md="8" :sm="24">
                 <a-form-item label="状态">
-                  <a-select default-value="" @change="statusChange">
+                  <a-select default-value="" v-model="queryParam.status">
                     <a-select-option v-for="item in statusOptions" :key="item.id" :value="item.value">
                       {{ item.title }}
                     </a-select-option>
@@ -278,6 +278,11 @@ export default {
       historyList: [],
       // 右侧信息
       disableMixinCreated: true,
+      queryParam: {
+        knowledgeCatId: "",
+        status: "",
+        commonUse: ""
+      },
       columns: [
         {
           title: '标题',
@@ -406,10 +411,13 @@ export default {
     },
     //表单重置
     bindReset() {
-      this.serviceCatName = []
-      this.queryParam = {}
       const keys = this.selectedKeys
-      this.queryParam.knowledgeCatId = keys.length > 0 ? keys[0] : ''
+      this.serviceCatName = []
+      this.queryParam = {
+        knowledgeCatId: keys.length > 0 ? keys[0] : "",
+        status: "",
+        commonUse: ""
+      }
       this.loadData()
     },
     // 服务目录数据
@@ -432,14 +440,6 @@ export default {
       const keys = this.selectedKeys
       this.queryParam.knowledgeCatId = keys.length > 0 ? keys[0] : ''
       this.loadData()
-    },
-    // 常用
-    useChange(value) {
-      this.queryParam.commonUse = value
-    },
-    // 状态
-    statusChange(value) {
-      this.queryParam.status = value
     },
     // 添加编辑完成
     closeLoad() {

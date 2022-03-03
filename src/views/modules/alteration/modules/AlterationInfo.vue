@@ -276,15 +276,13 @@ export default {
           phoneNo: fromData.phoneNo,
           id: fromData.id,       
         }
-
-        if (fromData.userAttaches) {
-          this.serviceOrderAttachTable.dataSource = fromData.userAttaches
-        }
-        if (fromData.changeOrderIds) {
-          this.changeOrderIds = fromData.changeOrderIds.split(",")
-        }
+        this.serviceOrderAttachTable.dataSource = fromData.userAttaches ? fromData.userAttaches : []
+        this.changeOrderIds = fromData.changeOrderIds ? fromData.changeOrderIds.split(",") : []
       } else {
-        this.fromData.phoneNo = this.userInfo.phone
+        this.fromData = {
+          phoneNo: this.userInfo.phone
+        }
+        this.serviceOrderAttachTable.dataSource = []
         this.businessInfo.changeOrderIds = ""
         this.changeOrderIds = []
       }
@@ -327,13 +325,17 @@ export default {
     // 提交
     request(formData) {
       if (this.confirmLoading) return
-      const { orderStatus, currentUserId, changeType } = this.businessInfo
+      const { orderStatus, currentUserId, changeType, changeTest } = this.businessInfo
       // 选择负责人
       if (changeType === 1 && orderStatus === 2 && !currentUserId) {
         this.$refs.changeRole.add('选择审批人', null)
         return
       }
+      
       let params = Object.assign({}, formData, this.businessInfo)
+      if(changeTest === 0) {
+        params.changeOrderIds = ""
+      }
       // 所属部门
       params.sysOrgCode = this.userInfo.orgCode
       params.deptName = this.userInfo.myDeptParentNames
