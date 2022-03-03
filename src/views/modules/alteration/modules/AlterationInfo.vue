@@ -261,13 +261,10 @@ export default {
   computed: {
     ...mapGetters(['userInfo']),
   },
-  created() {
-    // 变更类型
-    // this.initDictData('problem_source', 'typeOptions')  
-  },
   methods: {
     //  初始页面内容
     add(businessInfo, fromData) {
+      console.log(businessInfo);
       if (fromData) {
         this.fromData = {
           changeType: Number(fromData.changeType),
@@ -283,7 +280,7 @@ export default {
           phoneNo: this.userInfo.phone
         }
         this.serviceOrderAttachTable.dataSource = []
-        this.businessInfo.changeOrderIds = ""
+        // this.businessInfo.changeOrderIds = ""
         this.changeOrderIds = []
       }
       this.businessInfo = Object.assign(this.businessInfo, businessInfo)
@@ -306,6 +303,9 @@ export default {
     },
     // 选择测试工单完成
     checkOrderSuccess(value) {
+      this.form.setFieldsValue({
+        changeOrderIds: value.join(",")
+      })
       this.businessInfo.changeOrderIds = value.join(",")
       this.changeOrderIds = value
     },
@@ -333,6 +333,11 @@ export default {
       }
       
       let params = Object.assign({}, formData, this.businessInfo)
+      // 不是正式的时候清空
+      if (changeType != 1) {
+        params.changeOrderIds = ""
+      }
+      // 选择否的时候清空
       if(changeTest === 0) {
         params.changeOrderIds = ""
       }

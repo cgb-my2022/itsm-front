@@ -307,7 +307,7 @@ export default {
         changeCatIds: info.changeCatIds,
         changeType: info.changeType, //选择变更类型
         changeOrderIds: info.changeOrderIds ? info.changeOrderIds : '', // 关联测试工单
-        changeTest: info.changeOrderIds ? 1 : 0, //是否需要测试
+        changeTest: info.changeType != 1 ? 1 : info.changeOrderIds ? 1 : 0, //是否需要测试
         orderStatus: null, //变更工单状态
         createName: info.createName,
         id: info.id
