@@ -264,6 +264,7 @@ export default {
   methods: {
     //  初始页面内容
     add(businessInfo, fromData) {
+      this.businessInfo.currentUserId = null
       if (fromData) {
         this.fromData = {
           changeType: Number(fromData.changeType),
@@ -279,7 +280,7 @@ export default {
           phoneNo: this.userInfo.phone
         }
         this.serviceOrderAttachTable.dataSource = []
-        // this.businessInfo.changeOrderIds = ""
+        this.businessInfo.changeOrderIds = ""
         this.changeOrderIds = []
       }
       this.businessInfo = Object.assign(this.businessInfo, businessInfo)
